@@ -62,7 +62,7 @@ You now have a **fully functional WhatsApp AI agent platform** ready to handle c
 ## Files Created/Modified
 
 ```
-car-wash-ai-agent-mvp/
+whatsapp-ai-platform/
 ├── ai-agents/
 │   ├── business_configs/
 │   │   ├── supermarket.json          ✅ NEW

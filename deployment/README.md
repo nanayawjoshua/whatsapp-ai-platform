@@ -145,7 +145,7 @@ chmod +x backup.sh
 ./backup.sh
 
 # Windows - manual backup:
-# Your data is in Docker volume: car-wash-ai-agent-mvp_n8n_data
+# Your data is in Docker volume: whatsapp-ai-platform_n8n_data
 # Backups saved to: deployment/n8n-backups/
 ```
 

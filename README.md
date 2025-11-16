@@ -34,8 +34,8 @@ An end-to-end **WhatsApp-based AI agent platform** that enables small businesses
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/nanayawjoshua/car-wash-ai-agent-mvp.git
-cd car-wash-ai-agent-mvp
+git clone https://github.com/nanayawjoshua/whatsapp-ai-platform.git
+cd whatsapp-ai-platform
 
 # 2. Start n8n workflow engine
 cd deployment
@@ -166,7 +166,7 @@ Built for modularity - same platform, different configs:
 ## 📂 Project Structure
 
 ```
-car-wash-ai-agent-mvp/
+whatsapp-ai-platform/
 ├── backend/                    # WhatsApp listener (Node.js + Baileys)
 │   ├── index.js               # Main WhatsApp service
 │   ├── package.json           # Dependencies
@@ -331,7 +331,7 @@ Inspired by:
 
 **Maintainer:** Joshua (Ghana)
 **GitHub:** [@nanayawjoshua](https://github.com/nanayawjoshua)
-**Project Link:** [https://github.com/nanayawjoshua/car-wash-ai-agent-mvp](https://github.com/nanayawjoshua/car-wash-ai-agent-mvp)
+**Project Link:** [https://github.com/nanayawjoshua/whatsapp-ai-platform](https://github.com/nanayawjoshua/whatsapp-ai-platform)
 
 ---
 

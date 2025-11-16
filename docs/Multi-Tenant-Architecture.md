@@ -64,7 +64,7 @@ CREATE POLICY tenant_isolation ON products
 ## Folder Structure (Multi-Tenant)
 
 ```
-car-wash-ai-agent-mvp/  (rename to: whatsapp-ai-platform)
+whatsapp-ai-platform/
 ├── ai-agents/
 │   ├── business_configs/
 │   │   ├── _template.json           # Base template
