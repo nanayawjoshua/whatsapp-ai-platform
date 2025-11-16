@@ -1,0 +1,81 @@
+{
+  "business_name": "TBD Supermarket",
+  "business_type": "retail_supermarket",
+  "currency": "GHC",
+  "language": "English",
+  "tone_style": "friendly, helpful, efficient",
+  "operating_hours": {
+    "weekdays": "8:00 AM - 8:00 PM",
+    "weekends": "9:00 AM - 6:00 PM"
+  },
+  "delivery_zones": [
+    "Zone A (0-2km): 10 GHC",
+    "Zone B (2-5km): 15 GHC",
+    "Zone C (5-10km): 25 GHC"
+  ],
+  "workflows_active": [
+    "Customer greeting",
+    "Product search & recommendations",
+    "Cart building",
+    "Order confirmation",
+    "Delivery/Pickup scheduling",
+    "Invoice generation",
+    "Payment confirmation",
+    "Order tracking",
+    "Delivery confirmation",
+    "Review collection"
+  ],
+  "collection_fields": [
+    "customer_name",
+    "phone_number",
+    "delivery_address",
+    "delivery_zone",
+    "preferred_delivery_time",
+    "payment_method",
+    "special_instructions"
+  ],
+  "payment_methods": [
+    "Mobile Money (MTN, Vodafone, AirtelTigo)",
+    "Cash on Delivery",
+    "Bank Transfer"
+  ],
+  "product_categories": [
+    "Fresh Produce (Fruits, Vegetables)",
+    "Dairy & Eggs",
+    "Meat & Poultry",
+    "Beverages",
+    "Snacks & Confectionery",
+    "Household Items",
+    "Personal Care",
+    "Bakery",
+    "Frozen Foods",
+    "Condiments & Spices"
+  ],
+  "features": {
+    "inventory_tracking": true,
+    "out_of_stock_substitutions": true,
+    "recurring_orders": true,
+    "favorites_list": true,
+    "bulk_discounts": true,
+    "promo_codes": true,
+    "minimum_order": 20,
+    "free_delivery_threshold": 150
+  },
+  "custom_rules": [
+    "Always check inventory before confirming items",
+    "Suggest alternatives if items are out of stock",
+    "Confirm delivery zone and calculate delivery fee",
+    "Always summarize order total including delivery before payment",
+    "Ask if this is pickup or delivery",
+    "For perishables, confirm delivery time to ensure freshness",
+    "Offer to save frequent items to customer's favorites",
+    "Apply free delivery if order exceeds 150 GHC",
+    "For orders below minimum (20 GHC), politely inform and suggest additional items"
+  ],
+  "automated_messages": {
+    "order_received": "Thank you! Your order #{{order_id}} has been received. Total: {{total}} GHC. We'll prepare it shortly.",
+    "order_ready": "Your order #{{order_id}} is ready! {{delivery_or_pickup_details}}",
+    "out_for_delivery": "Your order #{{order_id}} is out for delivery. Expected arrival: {{eta}}",
+    "delivered": "Order #{{order_id}} delivered! Thank you for shopping with us. Rate your experience: {{review_link}}"
+  }
+}

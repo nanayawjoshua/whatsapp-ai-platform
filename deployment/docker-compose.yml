@@ -1,0 +1,69 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: car-wash-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # Basic Configuration
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+
+      # Webhook Configuration
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+
+      # Database - SQLite for MVP (switch to Postgres when scaling)
+      - DB_TYPE=sqlite
+      - DB_SQLITE_DATABASE=/home/node/.n8n/database.sqlite
+
+      # Timezone (Ghana/UTC)
+      - GENERIC_TIMEZONE=Africa/Accra
+      - TZ=Africa/Accra
+
+      # Execution settings
+      - EXECUTIONS_DATA_SAVE_ON_ERROR=all
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=all
+      - EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS=true
+
+      # Performance tuning
+      - N8N_PAYLOAD_SIZE_MAX=16
+      - EXECUTIONS_TIMEOUT=300
+      - EXECUTIONS_TIMEOUT_MAX=3600
+
+    volumes:
+      # Persist n8n data (workflows, credentials, executions)
+      - n8n_data:/home/node/.n8n
+      # Mount backup directory (optional)
+      - ./n8n-backups:/backups
+
+    networks:
+      - car-wash-network
+
+  # Optional: Add PostgreSQL for production (commented out for MVP)
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: car-wash-postgres
+  #   restart: unless-stopped
+  #   environment:
+  #     - POSTGRES_USER=${POSTGRES_USER}
+  #     - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+  #     - POSTGRES_DB=n8n
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - car-wash-network
+
+volumes:
+  n8n_data:
+    driver: local
+  # postgres_data:
+  #   driver: local
+
+networks:
+  car-wash-network:
+    driver: bridge

@@ -75,3 +75,7 @@ We will create a Day-by-Day development roadmap (`docs/Day-by-day-plan.md`) and 
 - Git version control via GitHub Desktop.
 - All changes will be committed with clear commit messages.
 - ChatGPT & Claude Code will serve as development copilots.
+
+
+## Current MVP Focus (Step 1)
+We are currently developing a Car Wash Agent MVP using modular architecture that will later support multiple business types via dynamic config.

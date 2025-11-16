@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(git -C \"c:\\Users\\USER\\Documents\\GitHub\\car-wash-ai-agent-mvp\" log --oneline --all)",
+      "Bash(git -C \"c:\\Users\\USER\\Documents\\GitHub\\car-wash-ai-agent-mvp\" show:*)",
+      "Bash(git -C \"c:\\Users\\USER\\Documents\\GitHub\\car-wash-ai-agent-mvp\" show 5a4550d)",
+      "Bash(git -C \"c:\\Users\\USER\\Documents\\GitHub\\car-wash-ai-agent-mvp\" status)",
+      "Bash(git -C \"c:\\Users\\USER\\Documents\\GitHub\\car-wash-ai-agent-mvp\" diff README.md)",
+      "Bash(tree:*)",
+      "Bash(docker-compose logs:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

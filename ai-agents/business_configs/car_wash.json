@@ -1,0 +1,33 @@
+{
+  "business_name": "Motormate",
+  "business_type": "mobile car wash",
+  "currency": "GHC",
+  "language": "English",
+  "tone_style": "friendly, professional, concise",
+  "workflows_active": [
+    "Customer greeting",
+    "Service explanation",
+    "Booking",
+    "Invoice prep",
+    "Payment confirmation (future)",
+    "Review collection"
+  ],
+  "collection_fields": [
+    "customer_name",
+    "car_type",
+    "service_package",
+    "preferred_date",
+    "preferred_time",
+    "wash_location"
+  ],
+  "service_packages": [
+    { "name": "Basic Wash", "price": 80, "desc": "Exterior only, 20 mins" },
+    { "name": "Standard Wash", "price": 120, "desc": "Exterior + Interior vacuum, 30 mins" },
+    { "name": "Premium Deep Clean", "price": 200, "desc": "Full wash + dashboard detailing + waxing, 1 hour" }
+  ],
+  "custom_rules": [
+    "Always confirm location before finalizing booking",
+    "Always summarize order before next step",
+    "Ask customer if they need same-day or future service"
+  ]
+}
