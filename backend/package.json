@@ -1,0 +1,31 @@
+{
+  "name": "whatsapp-ai-platform-backend",
+  "version": "0.1.0",
+  "description": "WhatsApp AI Agent Platform - Backend Service",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Tests coming soon\" && exit 0"
+  },
+  "keywords": [
+    "whatsapp",
+    "ai-agent",
+    "groq",
+    "n8n",
+    "baileys"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.9",
+    "qrcode-terminal": "^0.12.0",
+    "pino": "^9.5.0",
+    "dotenv": "^16.4.7",
+    "axios": "^1.7.9"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

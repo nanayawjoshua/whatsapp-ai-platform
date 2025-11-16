@@ -9,7 +9,10 @@
       "Bash(git -C \"c:\\Users\\USER\\Documents\\GitHub\\car-wash-ai-agent-mvp\" diff README.md)",
       "Bash(tree:*)",
       "Bash(docker-compose logs:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm install)"
     ],
     "deny": [],
     "ask": []
