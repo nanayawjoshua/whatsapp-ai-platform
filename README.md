@@ -1,6 +1,6 @@
-# WhatsApp AI Agent Platform 🤖💬
+# Multi-Channel AI Agent Platform 🤖💬📱
 
-> **A multi-tenant AI platform for automating customer service via WhatsApp**
+> **A unified AI platform for automating customer service across WhatsApp, Telegram, SMS & more**
 > Built from scratch for billion-dollar scale. Currently powering retail supermarkets in Ghana.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -12,25 +12,34 @@
 
 ## 🎯 What This Is
 
-An end-to-end **WhatsApp-based AI agent platform** that enables small businesses to automate customer conversations, order processing, and service bookings.
+An end-to-end **multi-channel AI agent platform** that enables small businesses to automate customer conversations, order processing, and service bookings across **WhatsApp, Telegram, SMS, and iMessage** - all from ONE unified system.
 
 **Current Focus:** Retail supermarkets (product search, ordering, delivery scheduling, payment)
 **Designed For:** Any service business (car washes, salons, restaurants, pharmacies, hotels, etc.)
 
 ### Why This Matters
 
-- **60M+ SMBs in Africa** rely on WhatsApp for customer communication
-- **Most can't afford** Shopify ($29-299/mo) or custom development
+- **60M+ SMBs in Africa** rely on messaging apps for customer communication
+- **Most can't afford** Shopify ($29-299/mo) or Intercom ($74-395/mo)
 - **AI agents are now feasible** thanks to Groq (10x faster, 95% cheaper than GPT-4)
-- **WhatsApp Business API** is now accessible without Meta partnership
+- **Multi-channel = 3x reach** - Meet customers on their preferred platform
 
-**This platform bridges the gap: Enterprise-grade AI automation at SMB prices.**
+**This platform bridges the gap: Enterprise-grade AI automation at SMB prices ($29-199/mo).**
+
+### Key Differentiators
+
+🚀 **Unified Inbox** - WhatsApp, Telegram, SMS → One AI brain
+⚡ **Sub-1-second responses** - Groq LPU infrastructure
+🌍 **Local language support** - Twi, Ga, Ewe voice & text
+💰 **Built-in commerce** - Cart, payment (MoMo), delivery (Yango)
+📊 **AI business insights** - Weekly Groq-generated trend reports
+🔧 **90-second onboarding** - AI creates catalog from voice input
 
 ---
 
 ## 🚀 Quick Start (15 Minutes)
 
-**Prerequisites:** Docker, Node.js 18+, WhatsApp Business account
+**Prerequisites:** Docker, Node.js 18+, Telegram app (or WhatsApp)
 
 ```bash
 # 1. Clone the repo
@@ -43,41 +52,61 @@ start.bat  # Windows (or ./start.sh for Mac/Linux)
 # Access: http://localhost:5678
 # Login: admin / CarWash2025!Secure
 
-# 3. Start WhatsApp backend
+# 3. Start unified message backend
 cd ../backend
 npm install
-npm start
-# Scan QR code with WhatsApp Business app
+npm run dev
 
-# 4. Set up n8n workflow (5 mins)
+# 4. Set up your first channel (choose ONE):
+
+# Option A: Telegram (Fastest - 2 mins)
+# - Message @BotFather on Telegram
+# - /newbot → Get token
+# - Add token to .env
+# - Send message → Get AI response! 🎉
+
+# Option B: WhatsApp (Requires Meta approval)
+# - Follow: docs/whatsapp-meta-api-setup.md
+
+# Option C: SMS (Requires Twilio account)
+# - Follow: docs/sms-setup.md
+
+# 5. Set up n8n workflow (5 mins)
 # Follow: workflows/n8n-setup-guide.md
-
-# 5. Send a WhatsApp message → Get AI response! 🎉
 ```
 
 **Full guide:** [QUICKSTART.md](QUICKSTART.md)
+**Telegram setup:** [docs/telegram-setup.md](docs/telegram-setup.md) (Recommended for testing)
 
 ---
 
 ## 🏗️ Architecture
 
+### Unified Multi-Channel Flow
+
 ```
-Customer WhatsApp Message
+Customer Message (WhatsApp/Telegram/SMS/iMessage)
     ↓
-WhatsApp Business Number
-    ↓
-Baileys Listener (backend/index.js)
+Unified Inbound Webhook (backend/unified-inbound.js)
+    │
+    ├─ Auto-detects channel (WhatsApp/Telegram/SMS)
+    ├─ Maps customer to tenant_id
+    └─ Normalizes message format
     ↓
 n8n Workflow Orchestrator (localhost:5678)
     ↓
-Groq Llama 3.1 70B (AI Brain)
+Groq Llama 3.3 70B (AI Brain) - Sub-1-second response
     ↓
-Business Logic (product search, cart, payment)
+Business Logic (product search, cart, payment, delivery)
     ↓
-Google Sheets Database (MVP)
+Google Sheets Database (MVP) → PostgreSQL (Production)
     ↓
-AI Response → Customer
+Response Router (sends via correct channel)
+    ↓
+AI Response → Customer (same channel they used)
 ```
+
+**Key Innovation**: ONE webhook, ONE AI brain, ALL channels. No code changes to add new platforms.
 
 ### Multi-Tenant Design
 
