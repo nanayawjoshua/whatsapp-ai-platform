@@ -13,9 +13,7 @@
 import 'dotenv/config';
 import makeWASocket, {
   DisconnectReason,
-  useMultiFileAuthState,
-  makeInMemoryStore,
-  Browsers
+  useMultiFileAuthState
 } from '@whiskeysockets/baileys';
 import qrcode from 'qrcode-terminal';
 import pino from 'pino';
@@ -32,7 +30,8 @@ const config = {
 const logger = pino({ level: config.logLevel });
 
 // Message store (keeps message history)
-const store = makeInMemoryStore({ logger });
+// Note: makeInMemoryStore removed in newer Baileys versions - not needed for MVP
+// const store = makeInMemoryStore({ logger });
 
 // Global socket reference
 let sock;
@@ -45,10 +44,8 @@ async function connectToWhatsApp() {
 
   sock = makeWASocket({
     auth: state,
-    printQRInTerminal: false, // We'll handle QR ourselves
-    logger: pino({ level: 'silent' }), // Reduce Baileys noise
-    browser: Browsers.ubuntu('Chrome'), // Pretend to be Chrome on Ubuntu
-    markOnlineOnConnect: true
+    printQRInTerminal: true, // Show QR in terminal
+    logger: pino({ level: 'silent' }) // Reduce Baileys noise
   });
 
   // Save session on update
@@ -100,8 +97,8 @@ async function connectToWhatsApp() {
     }
   });
 
-  // Bind store to socket events
-  store.bind(sock.ev);
+  // Bind store to socket events (disabled - store not available in newer Baileys)
+  // store.bind(sock.ev);
 }
 
 /**

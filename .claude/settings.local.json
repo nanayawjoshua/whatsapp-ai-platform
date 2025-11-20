@@ -13,7 +13,12 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(npm install)",
-      "Bash(git remote:*)"
+      "Bash(git remote:*)",
+      "Bash(rename:*)",
+      "Bash(ren car-wash-ai-agent-mvp whatsapp-ai-platform)",
+      "Bash(npm run dev:*)",
+      "Bash(curl:*)",
+      "Bash(node unified-inbound.js:*)"
     ],
     "deny": [],
     "ask": []
