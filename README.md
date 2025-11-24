@@ -13,7 +13,7 @@ Vendor's Real Phone Number (their trusted number)
     ↓
 Raspberry Pi (Baileys multi-session) ← One Pi = 50+ vendors
     ↓
-Linode Cloud (n8n + Groq Llama-3.3-70B)
+Render Cloud (n8n + Groq Llama-3.3-70B)
     ↓
 AI Response with full conversation memory
     ↓
@@ -37,52 +37,58 @@ Looks 100% like the vendor typed it
 6. **Channel-death resistant** — One-click fallback to Meta Cloud API / Twilio / TikTok.
 7. **The real product** — In 5-10 years: commerce graph of 200M+ African merchants.
 
-## What Works TODAY (November 23, 2025)
+## What Works TODAY (November 24, 2025)
 
-- ✅ Multi-turn conversation memory (8+ turns, interruptions, pricing calculations)
-- ✅ Telegram bot live with real Ghanaian conversations
-- ✅ Groq Llama-3.3-70B (<4s responses)
-- ✅ n8n workflow orchestration
-- ✅ Render cloud brain running ([n8n-latest-4dbq.onrender.com](https://n8n-latest-4dbq.onrender.com))
-- ✅ Pi multi-session Baileys code ready
-- ✅ "Powered by Beeline" + referral in every AI reply
+- ✅ **Full cloud Telegram bot** — zero laptop dependency, runs 24/7 on Render
+- ✅ **Dual-channel architecture** — Telegram (cloud-native) + WhatsApp (Pi-ready)
+- ✅ **Ghana-localized AI** — GHS pricing, MoMo payments, Yango delivery, "Akwaaba" greetings
+- ✅ **Groq Llama-3.3-70B** — <600ms response time
+- ✅ **n8n workflow** — Telegram Trigger → Code → Groq → IF → Response routing
+- ✅ **Render cloud brain** — [n8n-latest-4dbq.onrender.com](https://n8n-latest-4dbq.onrender.com)
+- ✅ **Pi multi-session Baileys** — code ready in `pi/index.js`
+- ✅ **Viral footer** — "Powered by Beeline" on every message
+- ✅ **Live bot** — [@beelyne_ai_bot](https://t.me/beelyne_ai_bot) on Telegram
 
 ## Architecture
 
 ```
+┌─────────────────────────────────────────────────────────────┐
+│                    RENDER CLOUD ($7/mo)                     │
+│                                                             │
+│   ┌─────────────┐                                          │
+│   │  Telegram   │ ←── Cloud-native (no hardware needed)    │
+│   │  Trigger    │                                          │
+│   └──────┬──────┘                                          │
+│          │                                                  │
+│          ▼                                                  │
+│   ┌──────────────────────────────────────────────────┐     │
+│   │                    n8n Workflow                   │     │
+│   │  Code → Groq API → IF (channel?) → Response      │     │
+│   └──────────────────────────────────────────────────┘     │
+│          ▲                    │                             │
+│          │                    ├──→ Telegram Send            │
+│   ┌──────┴──────┐             └──→ Respond to Webhook       │
+│   │   Webhook   │                                          │
+│   │  /whatsapp  │                                          │
+│   └──────┬──────┘                                          │
+│          │                                                  │
+└──────────┼──────────────────────────────────────────────────┘
+           │ HTTPS
+           ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                      RASPBERRY PI                           │
 │                   (Physical Device)                         │
 │                                                             │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
 │  │ Vendor #1   │  │ Vendor #2   │  │ Vendor #50  │  ...   │
-│  │ Session     │  │ Session     │  │ Session     │        │
+│  │ WhatsApp    │  │ WhatsApp    │  │ WhatsApp    │        │
 │  │ (Baileys)   │  │ (Baileys)   │  │ (Baileys)   │        │
 │  └─────────────┘  └─────────────┘  └─────────────┘        │
-│                         │                                   │
-│                         ▼                                   │
-│              Unified Message Handler                        │
-│                         │                                   │
-└─────────────────────────┼───────────────────────────────────┘
-                          │
-                          ▼ HTTPS
-┌─────────────────────────────────────────────────────────────┐
-│                    RENDER CLOUD                             │
-│                   ($7/mo Starter)                           │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │                     n8n                              │   │
-│  │  Webhook → Code → Groq API → Telegram/Response      │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                         │                                   │
-│                         ▼                                   │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │              Groq (Llama-3.3-70B)                   │   │
-│  │           $0.27/1M tokens, <1s inference            │   │
-│  └─────────────────────────────────────────────────────┘   │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+**Key insight:** Telegram runs 100% in cloud. WhatsApp needs Pi for session persistence.
 
 ## Quick Start — Raspberry Pi
 
