@@ -1,0 +1,29 @@
+version: '3.8'
+
+# Beeline Pi Bridge - Docker Compose
+# One Raspberry Pi = 50+ WhatsApp vendors
+# Cloud brain: https://n8n-latest-4dbq.onrender.com
+
+services:
+  beeline-bridge:
+    build: .
+    container_name: beeline-bridge
+    restart: unless-stopped
+    environment:
+      - N8N_WEBHOOK_URL=https://n8n-latest-4dbq.onrender.com/webhook/whatsapp
+      - LOG_LEVEL=info
+      - MAX_VENDORS=50
+      - AUTO_RECONNECT=true
+      - RECONNECT_DELAY=5000
+    volumes:
+      # Persist WhatsApp sessions across restarts
+      - ./sessions:/app/sessions
+      # Persist logs
+      - ./logs:/app/logs
+    # No ports needed - outbound only to cloud
+    networks:
+      - beeline-net
+
+networks:
+  beeline-net:
+    driver: bridge

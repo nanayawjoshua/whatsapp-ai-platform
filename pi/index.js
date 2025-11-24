@@ -23,7 +23,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Configuration
 const config = {
-  n8nWebhookUrl: process.env.N8N_WEBHOOK_URL || 'http://172.237.109.60/webhook/whatsapp',
+  n8nWebhookUrl: process.env.N8N_WEBHOOK_URL || 'https://n8n-latest-4dbq.onrender.com/webhook/whatsapp',
   sessionsPath: process.env.SESSIONS_PATH || './sessions',
   maxVendors: parseInt(process.env.MAX_VENDORS || '50'),
   autoReconnect: process.env.AUTO_RECONNECT !== 'false',

@@ -43,7 +43,7 @@ Looks 100% like the vendor typed it
 - ✅ Telegram bot live with real Ghanaian conversations
 - ✅ Groq Llama-3.3-70B (<4s responses)
 - ✅ n8n workflow orchestration
-- ✅ Linode cloud brain running (172.237.109.60)
+- ✅ Render cloud brain running ([n8n-latest-4dbq.onrender.com](https://n8n-latest-4dbq.onrender.com))
 - ✅ Pi multi-session Baileys code ready
 - ✅ "Powered by Beeline" + referral in every AI reply
 
@@ -67,8 +67,8 @@ Looks 100% like the vendor typed it
                           │
                           ▼ HTTPS
 ┌─────────────────────────────────────────────────────────────┐
-│                    LINODE CLOUD                             │
-│                   ($5/mo Nanode)                            │
+│                    RENDER CLOUD                             │
+│                   ($7/mo Starter)                           │
 │                                                             │
 │  ┌─────────────────────────────────────────────────────┐   │
 │  │                     n8n                              │   │
@@ -92,7 +92,7 @@ git clone https://github.com/nanayawjoshua/whatsapp-ai-platform.git
 cd whatsapp-ai-platform/pi
 npm install
 cp .env.example .env
-nano .env  # Set N8N_WEBHOOK_URL=http://172.237.109.60/webhook/whatsapp
+nano .env  # Set N8N_WEBHOOK_URL=https://n8n-latest-4dbq.onrender.com/webhook/whatsapp
 
 # Add first vendor
 npm run add-vendor mango-shop-001
@@ -170,12 +170,12 @@ Includes:
 | AI Brain | Groq Llama-3.3-70B | $0.27/1M tokens |
 | Orchestration | n8n (self-hosted) | Free |
 | WhatsApp | Baileys (multi-session) | Free |
-| Cloud | Linode Nanode | $5/mo |
+| Cloud | Render Starter | $7/mo |
 | Hardware | Raspberry Pi 4 | $55 one-time |
 | Payments | MTN MoMo | 1% fee |
 | Delivery | Yango API | Per-delivery |
 
-**Total infrastructure cost for 50 vendors:** ~$10/month
+**Total infrastructure cost for 50 vendors:** ~$12/month
 
 ## The Vision
 

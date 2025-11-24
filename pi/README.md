@@ -11,7 +11,7 @@
 One Raspberry Pi = WhatsApp bridge for 50+ vendors.
 
 Each vendor scans a QR code ONCE → their WhatsApp session lives on the Pi.
-All messages route through our n8n brain in the cloud (172.237.109.60).
+All messages route through our n8n brain in the cloud (Render).
 
 ## Architecture
 ```
