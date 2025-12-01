@@ -15,6 +15,7 @@ import makeWASocket, {
 } from '@whiskeysockets/baileys';
 import axios from 'axios';
 import pino from 'pino';
+import qrcode from 'qrcode-terminal';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -139,7 +140,6 @@ async function connectVendor(vendorId) {
     version,
     auth: state,
     logger: pino({ level: 'silent' }),
-    printQRInTerminal: true, // Show QR for new sessions
     browser: ['Beeline', 'Chrome', '120.0.0'],
     connectTimeoutMs: 60000,
     defaultQueryTimeoutMs: 60000,
@@ -154,6 +154,9 @@ async function connectVendor(vendorId) {
     const { connection, lastDisconnect, qr } = update;
 
     if (qr) {
+      console.log(`\n📱 QR CODE FOR VENDOR: ${vendorId}\n`);
+      qrcode.generate(qr, { small: true });
+      console.log(`\n✅ Scan this QR code with WhatsApp to connect ${vendorId}\n`);
       logger.info({ vendorId }, 'QR Code generated — vendor should scan now');
     }
 
