@@ -317,6 +317,11 @@ async function main() {
   }
 
   logger.info({ activeVendors: vendorSockets.size }, '🚀 Beeline Pi Bridge is running');
+
+  // Keep process alive
+  setInterval(() => {
+    logger.debug({ activeVendors: vendorSockets.size }, 'Health check');
+  }, 60000); // Log every 60 seconds
 }
 
 // Export for scripts
