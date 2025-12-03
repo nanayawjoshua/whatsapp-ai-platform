@@ -201,6 +201,9 @@ docker run -d \
 - QR code generation for vendor onboarding
 - Typing indicators
 - `/clear` command to reset conversation
+- **BUZZ referral system** (unique trigger word)
+- **Payment detection** (MoMo/GHS regex)
+- **Conditional virality footer** (only after payment)
 
 **Code Highlights:**
 
@@ -209,14 +212,26 @@ docker run -d \
 const vendorSockets = new Map();  // Active connections
 const conversationHistory = new Map();  // Message history
 
-// Conversation memory (per vendor + customer)
-function getHistoryKey(vendorId, customerId) {
-  return `${vendorId}:${customerId}`;
+// BUZZ referral detection (line 222-241)
+if (messageContent.toLowerCase().trim() === 'buzz') {
+  const referralLink = `https://beeline.works/signup?ref=${vendorId}`;
+  await sock.sendMessage(customerId, {
+    text: `🐝 *Awesome! Let's get you your own AI employee!*\n\n` +
+          `Click here: ${referralLink}\n\n` +
+          `✨ Your vendor gets *7 days free*!`
+  });
+  logger.info({ vendorId, referralInitiated: true }, '🐝 BUZZ detected');
+  continue; // Skip AI processing
 }
 
-// Auto-reconnect logic
-if (shouldReconnect && config.autoReconnect) {
-  setTimeout(() => connectVendor(vendorId), 5000);
+// Payment detection + conditional footer (line 254-268)
+const paymentDetected = aiResponse.match(/(momo|ghs\s*\d+)/i);
+if (paymentDetected) {
+  fullResponse += `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                  `_Powered by Beeline 🐝_\n\n` +
+                  `Need your own AI employee?\n` +
+                  `Reply *BUZZ* and get started!\n\n` +
+                  `_(Your vendor gets 7 days free!)_`;
 }
 
 // Message payload to n8n
@@ -522,12 +537,14 @@ if (history.length > 2 && aiReply.includes('Akwaaba')) {
 | Profitable | 250 | $2,250 | Month 2 |
 | Scale | 1,000 | $9,000 | Q1 2026 |
 
-**Virality Assumption:**
-- Footer: "Powered by Beeline. Want your own AI? Say YES."
-- Conversion rate: 5% of customers become vendors
-- Average vendor → 100 customers/month
-- 50 vendors × 100 customers × 5% = 250 new vendors/month
-- Viral coefficient: 5.0 (explosive growth)
+**Virality Mechanism (Updated):**
+- Footer: "Powered by Beeline 🐝 Need your own AI? Reply BUZZ!"
+- Trigger word: "BUZZ" (unique, brand-aligned, no confusion with "yes" for orders)
+- Only shown AFTER payment detected (MoMo/GHS mentioned)
+- Referral reward: 7 days free (cost: $2.25 per referral)
+- Conversion rate: 2% of paying customers (conservative)
+- 50 vendors × 250 paid orders/month × 2% = 5 new vendors/month
+- Viral coefficient: 0.1 (sustainable 10% monthly growth)
 
 ---
 
@@ -541,11 +558,12 @@ if (history.length > 2 && aiReply.includes('Akwaaba')) {
 - [ ] Implement strongest solution (A, B, or C)
 - [ ] Verify with 10 test messages
 
-**Priority 2: Payment Detection**
-- [ ] Add n8n node to check AI response for "MoMo"/"GHS"
-- [ ] Set `orderComplete = true` if payment mentioned
-- [ ] Only show virality footer after payment
-- [ ] Test with mock order
+**Priority 2: Payment Detection** ✅ COMPLETED
+- [x] Add regex to check AI response for "MoMo"/"GHS"
+- [x] Set `paymentDetected = true` if payment mentioned
+- [x] Only show virality footer after payment
+- [x] Test with mock order
+- **Implementation:** [pi/index.js:254](pi/index.js:254) - Regex: `/(momo|ghs\s*\d+)/i`
 
 **Priority 3: Product Integration**
 - [ ] Upload `products.csv` to n8n (708 products)
