@@ -1,10 +1,10 @@
 'use client';
 
+import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { GiHoneypot } from 'react-icons/gi';
 import { FaWhatsapp, FaGift } from 'react-icons/fa';
-import { Suspense } from 'react';
 
 function ReferralContent() {
   const searchParams = useSearchParams();
