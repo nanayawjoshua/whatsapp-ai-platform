@@ -77,17 +77,17 @@ export default function Home() {
             </h2>
             <div className="grid sm:grid-cols-3 gap-8 mt-12">
               <div className="text-center">
-                <div className="text-5xl mb-4">😴</div>
+                <div className="text-5xl mb-4">Sleeping Face</div>
                 <h3 className="font-semibold text-lg mb-2">You Sleep</h3>
                 <p className="text-gray-600">Customer messages at 2am. No response until morning.</p>
               </div>
               <div className="text-center">
-                <div className="text-5xl mb-4">💸</div>
+                <div className="text-5xl mb-4">Money with Wings</div>
                 <h3 className="font-semibold text-lg mb-2">Sales Lost</h3>
                 <p className="text-gray-600">By morning, they bought from your competitor.</p>
               </div>
               <div className="text-center">
-                <div className="text-5xl mb-4">🔁</div>
+                <div className="text-5xl mb-4">Repeat</div>
                 <h3 className="font-semibold text-lg mb-2">Repeat Daily</h3>
                 <p className="text-gray-600">Lose 20-30% of potential sales every month.</p>
               </div>
@@ -233,27 +233,27 @@ export default function Home() {
 
                 <ul className="text-left space-y-4 mb-8">
                   <li className="flex items-start gap-3">
-                    <span className="text-beeline-yellow text-xl">✓</span>
+                    <span className="text-beeline-yellow text-xl">Checkmark</span>
                     <span>Unlimited messages & conversations</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="text-beeline-yellow text-xl">✓</span>
+                    <span className="text-beeline-yellow text-xl">Checkmark</span>
                     <span>24/7 availability, no breaks</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="text-beeline-yellow text-xl">✓</span>
+                    <span className="text-beeline-yellow text-xl">Checkmark</span>
                     <span>English & Twi support</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="text-beeline-yellow text-xl">✓</span>
+                    <span className="text-beeline-yellow text-xl">Checkmark</span>
                     <span>Your own WhatsApp number</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="text-beeline-yellow text-xl">✓</span>
+                    <span className="text-beeline-yellow text-xl">Checkmark</span>
                     <span>7-day free trial</span>
                   </li>
                   <li className="flex items-start gap-3">
-                    <span className="text-beeline-yellow text-xl">✓</span>
+                    <span className="text-beeline-yellow text-xl">Checkmark</span>
                     <span>Cancel anytime</span>
                   </li>
                 </ul>
@@ -296,7 +296,7 @@ export default function Home() {
               <span className="text-xl font-bold text-white">Beeline</span>
             </div>
             <div className="text-center md:text-right">
-              <p>&copy; 2025 Beeline Ghana. Built with 🐝 in Accra.</p>
+              <p>© 2025 Beeline Ghana. Built with Honey in Accra.</p>
               <p className="text-sm mt-2">
                 Making African vendors unstoppable.
               </p>
