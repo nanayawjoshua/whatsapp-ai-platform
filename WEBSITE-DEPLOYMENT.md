@@ -1,0 +1,301 @@
+# Beeline Website Deployment Guide
+
+## Overview
+
+The Beeline landing page and vendor onboarding portal has been built using Next.js 14 with TypeScript and Tailwind CSS.
+
+## What's Been Built
+
+### Pages
+1. **Landing Page** (`/`) - [app/page.tsx](website/app/page.tsx)
+   - Hero section with compelling value proposition
+   - Problem statement
+   - Solution showcase
+   - How it works steps
+   - Pricing section
+   - CTAs throughout
+
+2. **Signup Flow** (`/signup`) - [app/signup/page.tsx](website/app/signup/page.tsx)
+   - 4-step onboarding process
+   - Step 1: Basic info (name, phone, business type)
+   - Step 2: Voice note recording
+   - Step 3: AI personality selection (3 styles)
+   - Step 4: QR code connection
+
+3. **Referral Landing** (`/ref?ref=vendor-id`) - [app/ref/page.tsx](website/app/ref/page.tsx)
+   - Special page for referred vendors
+   - Shows 7-day free trial offer
+   - Tracks referrer ID from URL
+
+### Tech Stack
+- **Framework**: Next.js 14.2.18 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Icons**: React Icons
+- **Hosting**: Vercel (recommended)
+
+### Brand Colors
+- **Primary**: `#FFD700` (Beeline Yellow)
+- **Secondary**: `#1a1a1a` (Beeline Black)
+- **Background**: `#f5f5f5` (Beeline Gray)
+
+## Deployment Steps
+
+### Option 1: Deploy to Vercel (Recommended - Free)
+
+#### Step 1: Push to GitHub
+```bash
+cd whatsapp-ai-platform-beeline-main
+git add .
+git commit -m "Add Beeline website landing page and signup flow"
+git push origin website
+```
+
+#### Step 2: Connect to Vercel
+1. Go to [vercel.com](https://vercel.com)
+2. Sign in with GitHub
+3. Click "Add New Project"
+4. Select `whatsapp-ai-platform-beeline` repository
+5. Select `website` branch
+6. Set root directory to `website`
+7. Click "Deploy"
+
+#### Step 3: Configure Environment Variables
+In Vercel project settings, add:
+```
+NEXT_PUBLIC_API_URL=https://your-backend-api.com
+NEXT_PUBLIC_N8N_WEBHOOK_URL=https://n8n-latest-4dbq.onrender.com/webhook/vendor-onboard
+NEXT_PUBLIC_SITE_URL=https://beeline.works
+```
+
+#### Step 4: Add Custom Domain
+1. In Vercel project → Settings → Domains
+2. Add `beeline.works`
+3. Update DNS records at your domain registrar:
+   - Add A record: `76.76.21.21`
+   - Add CNAME: `cname.vercel-dns.com`
+4. Wait for DNS propagation (5-60 minutes)
+5. SSL certificate auto-generated
+
+### Option 2: Deploy to Other Platforms
+
+#### Netlify
+```bash
+cd website
+npm run build
+# Upload 'out' folder or connect GitHub repo
+```
+
+#### Railway
+```bash
+# Add Railway project
+railway login
+railway init
+railway up
+```
+
+## Local Development
+
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+
+### Setup
+```bash
+cd website
+npm install
+npm run dev
+```
+
+Open http://localhost:3000
+
+## File Structure
+
+```
+website/
+├── app/
+│   ├── page.tsx              # Landing page
+│   ├── signup/
+│   │   └── page.tsx          # Signup flow
+│   ├── ref/
+│   │   └── page.tsx          # Referral page
+│   ├── layout.tsx            # Root layout
+│   └── globals.css           # Global styles
+├── public/                   # Static assets
+├── package.json              # Dependencies
+├── tailwind.config.ts        # Tailwind config
+├── tsconfig.json             # TypeScript config
+├── next.config.js            # Next.js config
+└── vercel.json               # Vercel config
+```
+
+## Integration Points
+
+### Backend API Endpoints Needed
+The website expects these endpoints (to be created):
+
+1. **Vendor Onboarding**: `POST /api/vendor/onboard`
+   ```json
+   {
+     "name": "Kwame Mensah",
+     "phone": "+233241234567",
+     "businessType": "supermarket",
+     "voiceNote": "base64_audio_data",
+     "personality": "casual"
+   }
+   ```
+   Response: `{ "vendorId": "vendor-001", "qrCode": "data:image/png..." }`
+
+2. **QR Code Generation**: `GET /api/vendor/qr/:vendorId`
+   Returns QR code image for WhatsApp scanning
+
+3. **Referral Tracking**: `POST /api/referral/track`
+   ```json
+   {
+     "referrerId": "vendor-001",
+     "newVendorId": "vendor-002"
+   }
+   ```
+
+### n8n Workflow Integration
+The signup flow should trigger this n8n workflow:
+- URL: `https://n8n-latest-4dbq.onrender.com/webhook/vendor-onboard`
+- Method: POST
+- Expected workflow:
+  1. Receive vendor data
+  2. Transcribe voice note (Groq STT)
+  3. Generate AI persona
+  4. Save to database
+  5. Generate QR code
+  6. Return QR to frontend
+
+## Next Steps
+
+### Must-Do Before Launch
+- [ ] Test on real mobile devices (iOS + Android)
+- [ ] Create backend API endpoints
+- [ ] Implement voice recording (Web Audio API)
+- [ ] Connect signup form to n8n webhook
+- [ ] Add Google Analytics or Vercel Analytics
+- [ ] Test referral flow end-to-end
+- [ ] Add testimonials (after first 5 vendors)
+
+### Nice-to-Have
+- [ ] Add FAQ section
+- [ ] Create blog for SEO
+- [ ] Add live chat support
+- [ ] Implement vendor dashboard
+- [ ] Add onboarding tutorial video
+- [ ] Create social proof counters (X vendors using Beeline)
+- [ ] Add WhatsApp testimonial screenshots
+
+## SEO Optimization
+
+### Already Implemented
+- Meta titles and descriptions
+- Open Graph tags
+- Semantic HTML
+- Mobile-responsive
+- Fast loading with Next.js
+
+### TODO
+- [ ] Add sitemap.xml
+- [ ] Add robots.txt
+- [ ] Implement structured data (JSON-LD)
+- [ ] Optimize images (convert to WebP)
+- [ ] Add alt tags to all images
+- [ ] Create blog content
+
+## Performance
+
+Current Next.js app should achieve:
+- Lighthouse Performance: 90+
+- First Contentful Paint: <1.5s
+- Time to Interactive: <3.5s
+- Largest Contentful Paint: <2.5s
+
+## Support & Maintenance
+
+### Updating Content
+All content is in the respective page files:
+- Landing page copy: [website/app/page.tsx](website/app/page.tsx)
+- Signup flow: [website/app/signup/page.tsx](website/app/signup/page.tsx)
+- Referral page: [website/app/ref/page.tsx](website/app/ref/page.tsx)
+
+### Updating Styles
+- Colors: [website/tailwind.config.ts](website/tailwind.config.ts)
+- Global styles: [website/app/globals.css](website/app/globals.css)
+
+### Adding New Pages
+```bash
+cd website/app
+mkdir new-page
+touch new-page/page.tsx
+```
+
+## Monitoring
+
+Once deployed, monitor:
+- Vercel Analytics (built-in)
+- Google Analytics (add later)
+- Error tracking with Sentry (optional)
+- Uptime monitoring with UptimeRobot
+
+## Version Control Strategy
+
+The website lives on the `website` branch:
+```
+beeline-main (production backend/Pi code)
+  └── website (landing page & frontend)
+```
+
+When ready to merge:
+```bash
+git checkout beeline-main
+git merge website
+git push origin beeline-main
+```
+
+## Cost Breakdown
+
+### Free Tier (Good for 0-1000 vendors)
+- **Vercel Hosting**: Free (includes SSL, CDN, auto-deploy)
+- **Domain**: ~$12/year (beeline.works)
+- **Total**: $1/month
+
+### Paid Tier (If needed)
+- **Vercel Pro**: $20/month (if you exceed free limits)
+- **Custom analytics**: $0-$50/month
+- **Total**: $20-70/month
+
+## Security Checklist
+
+- [ ] Environment variables not committed
+- [ ] API endpoints use authentication
+- [ ] Rate limiting on signup endpoint
+- [ ] Input validation on all forms
+- [ ] HTTPS enforced (auto with Vercel)
+- [ ] CORS configured correctly
+- [ ] No sensitive data in frontend code
+
+---
+
+## Quick Deploy Commands
+
+```bash
+# 1. Commit website code
+cd whatsapp-ai-platform-beeline-main
+git add website/
+git commit -m "Add Beeline website - landing page, signup flow, and referral system"
+git push origin website
+
+# 2. Deploy to Vercel (from Vercel dashboard)
+# Or use Vercel CLI:
+cd website
+npm i -g vercel
+vercel --prod
+```
+
+---
+
+Built with 🐝 by Joshua in Accra

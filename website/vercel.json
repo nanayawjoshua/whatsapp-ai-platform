@@ -1,0 +1,16 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "rewrites": [
+    {
+      "source": "/signup/:path*",
+      "destination": "/signup"
+    },
+    {
+      "source": "/ref/:path*",
+      "destination": "/ref"
+    }
+  ]
+}

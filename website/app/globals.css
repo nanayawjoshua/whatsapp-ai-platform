@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --beeline-yellow: #FFD700;
+  --beeline-black: #1a1a1a;
+  --beeline-gray: #f5f5f5;
+}
+
+body {
+  color: var(--beeline-black);
+  background: white;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-beeline-yellow text-beeline-black font-semibold px-8 py-4 rounded-lg hover:bg-yellow-400 transition-all duration-200 shadow-lg hover:shadow-xl;
+  }
+
+  .btn-secondary {
+    @apply bg-beeline-black text-white font-semibold px-8 py-4 rounded-lg hover:bg-gray-800 transition-all duration-200;
+  }
+
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24;
+  }
+}
