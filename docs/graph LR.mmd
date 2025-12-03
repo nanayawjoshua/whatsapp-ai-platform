@@ -1,0 +1,25 @@
+graph LR
+    subgraph Current["💰 CURRENT (Pi Setup)"]
+        A1[Hardware: $75] --> Total1
+        A2[Power: $5/mo] --> Total1
+        A3[Internet: $20/mo] --> Total1
+        A4[UPS: $50] --> Total1
+        A5[n8n: $7/mo] --> Total1
+        A6[Groq: $6/mo] --> Total1
+        Total1[Total: $150 upfront<br/>+ $38/month]
+    end
+
+    subgraph Cloud["☁️ CLOUD (Future)"]
+        B1[Hardware: $0] --> Total2
+        B2[Railway: $5/mo] --> Total2
+        B3[PostgreSQL: $0] --> Total2
+        B4[Redis: $0] --> Total2
+        B5[n8n: $7/mo] --> Total2
+        B6[Groq: $6/mo] --> Total2
+        Total2[Total: $0 upfront<br/>+ $18/month]
+    end
+
+    Total1 -.->|After 20 vendors<br/>Migrate| Total2
+
+    style Total1 fill:#FFE5E5,stroke:#CC0000
+    style Total2 fill:#E8FFE8,stroke:#00AA00

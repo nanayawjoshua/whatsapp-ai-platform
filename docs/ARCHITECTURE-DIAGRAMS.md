@@ -65,25 +65,27 @@ graph TB
 ```mermaid
 graph TB
     subgraph Onboarding["🆕 VENDOR ONBOARDING"]
-        A1[Web UI:<br/>beeline.works/signup]
-        A2[Vendor Scans QR<br/>in Browser]
+        A1[Web UI: beeline.works/signup]
+        A2[Vendor Scans QR in Browser]
         A3[Session → PostgreSQL]
     end
 
     subgraph CloudBridge["☁️ CLOUD BRIDGE<br/>(Railway/Render)"]
         B1[Docker: beeline-bridge]
+        %% Baileys is a WhatsApp Web API library for Node.js
         B2[Baileys Multi-Session<br/>1000+ Capacity]
-        B3[PostgreSQL<br/>Session Storage]
-        B4[Redis<br/>Conversation Cache]
+        B3[PostgreSQL Session Storage]
+        B4[Redis Conversation Cache]
     end
 
-    subgraph N8N["☁️ N8N + GROQ"]
-        C1[AI Processing<br/>Same as Current]
+        C1[AI Processing (Same as Web UI)]
+        C1[AI Processing Same as Current]
     end
 
     subgraph Backup["🔄 FAILOVER (Optional)"]
-        D1[Raspberry Pi<br/>Home Backup]
-        D2[Monitors Cloud Health<br/>Takes Over if Down]
+        D1[Raspberry Pi Home Backup]
+        %% D2 monitors the cloud health and automatically takes over operations if the cloud service is down, ensuring seamless failover.
+        D2[Monitors Cloud Health Takes Over if Down]
     end
 
     A1 --> A2
@@ -309,31 +311,36 @@ mindmap
 ## 7. COST BREAKDOWN COMPARISON
 
 ```mermaid
+%% title Cost Comparison: Current vs Cloud
 graph LR
     subgraph Current["💰 CURRENT (Pi Setup)"]
-        A1[Hardware: $75] --> Total1
-        A2[Power: $5/mo] --> Total1
-        A3[Internet: $20/mo] --> Total1
-        A4[UPS: $50] --> Total1
-        A5[n8n: $7/mo] --> Total1
-        A6[Groq: $6/mo] --> Total1
-        Total1[Total: $150 upfront<br/>+ $38/month]
+        A1["Hardware: $75"] --> Total1
+        A2["Power: $5/mo"] --> Total1
+        A3["Internet: $20/mo"] --> Total1
+        A4["UPS: $50"] --> Total1
+        A5["n8n: $7/mo"] --> Total1
+        Total1["Total: $150 upfront<br/>+ $38/month"]
     end
 
     subgraph Cloud["☁️ CLOUD (Future)"]
-        B1[Hardware: $0] --> Total2
-        B2[Railway: $5/mo] --> Total2
-        B3[PostgreSQL: $0] --> Total2
-        B4[Redis: $0] --> Total2
-        B5[n8n: $7/mo] --> Total2
-        B6[Groq: $6/mo] --> Total2
-        Total2[Total: $0 upfront<br/>+ $18/month]
+        B1["Hardware: $0"] --> Total2
+        B2["Railway: $5/mo"] --> Total2
+        B3["PostgreSQL: $0"] --> Total2
+        B4["Redis: $0"] --> Total2
+        B5["n8n: $7/mo"] --> Total2
+        Total2["Total: $0 upfront<br/>+ $18/month"]
     end
 
-    Total1 -.->|After 20 vendors<br/>Migrate| Total2
-
-    style Total1 fill:#FFE5E5,stroke:#CC0000
-    style Total2 fill:#E8FFE8,stroke:#00AA00
+    Total1 -.->|"After 20 vendors<br/>Migrate"| Total2
+    %% Migration occurs after onboarding 20 vendors.
+    
+    subgraph Legend["Legend"]
+        L1["🔴 Red: Current setup cost"]
+        L2["🟢 Green: Cloud setup cost"]
+    end
+    
+    style Total1 fill:#FFD6D6,stroke:#B22222
+    style Total2 fill:#D6FFD6,stroke:#228B22
 ```
 
 ---
@@ -381,20 +388,20 @@ graph TD
 ```mermaid
 graph LR
     A[Vendor Uses<br/>Beeline AI] --> B[Customer Orders<br/>via WhatsApp]
-    B --> C[AI Includes Footer:<br/>'Want your own AI?<br/>Say YES']
-    C --> D{Customer<br/>Says YES?}
-    D -->|5% conversion| E[New Vendor Signup]
-    D -->|95% ignore| B
-    E --> F[Referrer Gets<br/>30 Days Free]
+    B --> C[AI Includes Footer:<br/>'Want your own AI?<br/>Reply BUZZ 🐝']
+    C --> D{Customer<br/>Says BUZZ?}
+    D -->|2% conversion| E[New Vendor Signup]
+    D -->|98% ignore| B
+    E --> F[Referrer Gets<br/>7 Days Free]
     E --> A
 
-    B -.->|100 customers/mo<br/>per vendor| C
+    B -.->|Only shown after<br/>payment detected| C
 
     style C fill:#FFD700
     style E fill:#90EE90
     style F fill:#00FF00,color:#000
 
-    Note1[Viral Coefficient:<br/>50 vendors × 100 customers × 5%<br/>= 250 new vendors/month<br/>= 5.0x growth 🚀]
+    Note1[Conservative Growth:<br/>50 vendors × 250 paid orders × 2%<br/>= 5 new vendors/month<br/>= 10% monthly growth 🐝]
 
     Note1 -.-> E
 ```
@@ -442,7 +449,7 @@ flowchart TD
     Check -->|No| NoPayment[Regular Message]
 
     Payment --> Flag[Set: orderComplete = true]
-    Flag --> Footer[Add Virality Footer:<br/>'Powered by Beeline...<br/>Say YES for your own AI']
+    Flag --> Footer[Add Virality Footer:<br/>'Powered by Beeline 🐝<br/>Reply BUZZ for your own AI']
 
     NoPayment --> NoFooter[No Footer]
 

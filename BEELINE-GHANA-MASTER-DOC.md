@@ -383,14 +383,16 @@ return {
      ```
    - **But AI still greets:** System prompt not being followed properly
 
-2. **Virality Footer** (80%)
-   - **Current:** Shows every 3rd message (based on history length)
-   - **Needed:** Only show after payment detected (MoMo/GHS mention)
-   - **Location:** `pi/index.js:228` - hardcoded footer
+2. **Virality Footer** (100%) ✅ FIXED
+   - **Status:** Now only shows after payment detected
+   - **Trigger:** Customer says "BUZZ" (not generic "YES")
+   - **Reward:** Referring vendor gets 7 days free (was 30 days)
+   - **Location:** `pi/index.js:259-268` - payment detection + footer
+   - **Cost:** $2.25 per referral (7 days × $0.32/day)
 
 ### ❌ Not Yet Implemented
 
-1. **Payment Detection** - Need n8n node to check for "MoMo"/"GHS"
+1. **Payment Detection** - ✅ IMPLEMENTED in pi/index.js (MoMo/GHS regex)
 2. **Agent Creation Engine** - Vendor onboarding workflow
 3. **Personality Picker** - 3 styles (casual, formal, Twi-heavy)
 4. **Product Catalog Integration** - 708 products from CSV

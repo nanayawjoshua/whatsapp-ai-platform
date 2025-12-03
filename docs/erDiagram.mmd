@@ -1,0 +1,55 @@
+erDiagram
+    VENDOR ||--o{ SESSION : has
+    VENDOR ||--o{ CONVERSATION : handles
+    CONVERSATION ||--|{ MESSAGE : contains
+    VENDOR ||--o{ PRODUCT : sells
+
+    VENDOR {
+        string vendor_id PK
+        string name
+        string phone
+        string business_type
+        json persona_config
+        string personality_style
+        timestamp created_at
+        boolean is_active
+    }
+
+    SESSION {
+        string vendor_id FK
+        string session_id PK
+        json whatsapp_creds
+        json auth_state
+        timestamp last_active
+        string status
+    }
+
+    CONVERSATION {
+        string conversation_id PK
+        string vendor_id FK
+        string customer_id
+        timestamp started_at
+        timestamp last_message_at
+        int message_count
+        boolean order_completed
+    }
+
+    MESSAGE {
+        string message_id PK
+        string conversation_id FK
+        string role "user|assistant"
+        text content
+        timestamp sent_at
+        json metadata
+    }
+
+    PRODUCT {
+        int product_id PK
+        string vendor_id FK
+        string name
+        string category
+        decimal price
+        int quantity
+        string sku
+        int low_stock_warning
+    }

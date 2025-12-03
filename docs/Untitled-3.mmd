@@ -1,0 +1,30 @@
+%% title Cost Comparison: Current vs Cloud
+graph LR
+    subgraph Current["💰 CURRENT (Pi Setup)"]
+        A1["Hardware: $75"] --> Total1
+        A2["Power: $5/mo"] --> Total1
+        A3["Internet: $20/mo"] --> Total1
+        A4["UPS: $50"] --> Total1
+        A5["n8n: $7/mo"] --> Total1
+        Total1["Total: $150 upfront<br/>+ $38/month"]
+    end
+
+    subgraph Cloud["☁️ CLOUD (Future)"]
+        B1["Hardware: $0"] --> Total2
+        B2["Railway: $5/mo"] --> Total2
+        B3["PostgreSQL: $0"] --> Total2
+        B4["Redis: $0"] --> Total2
+        B5["n8n: $7/mo"] --> Total2
+        Total2["Total: $0 upfront<br/>+ $18/month"]
+    end
+
+    Total1 -.->|"After 20 vendors<br/>Migrate"| Total2
+    %% Migration occurs after onboarding 20 vendors.
+    
+    subgraph Legend["Legend"]
+        L1["🔴 Red: Current setup cost"]
+        L2["🟢 Green: Cloud setup cost"]
+    end
+    
+    style Total1 fill:#FFD6D6,stroke:#B22222
+    style Total2 fill:#D6FFD6,stroke:#228B22

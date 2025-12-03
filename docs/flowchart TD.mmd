@@ -1,0 +1,21 @@
+flowchart TD
+    Start[Customer Message<br/>Received] --> Process[AI Generates<br/>Response]
+
+    Process --> Check{Response Contains<br/>'MoMo' or 'GHS'?}
+
+    Check -->|Yes| Payment[Payment Mentioned!]
+    Check -->|No| NoPayment[Regular Message]
+
+    Payment --> Flag[Set: orderComplete = true]
+    Flag --> Footer[Add Virality Footer:<br/>'Powered by Beeline 🐝<br/>Reply BUZZ for your own AI']
+
+    NoPayment --> NoFooter[No Footer]
+
+    Footer --> Send[Send to Customer]
+    NoFooter --> Send
+
+    Send --> End([Message Sent])
+
+    style Payment fill:#90EE90
+    style Flag fill:#FFD700
+    style Footer fill:#00FF00,color:#000

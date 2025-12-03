@@ -1,0 +1,29 @@
+sequenceDiagram
+    participant C as 👤 Customer<br/>(WhatsApp)
+    participant P as 🥧 Pi Bridge
+    participant M as 📝 Memory<br/>(Map)
+    participant N as ☁️ n8n
+    participant G as 🤖 Groq AI
+
+    C->>P: "I want oranges"
+    P->>M: Load conversation history<br/>(last 10 messages)
+    M-->>P: [{user: "Hello"}, {ai: "Akwaaba"}]
+
+    P->>N: POST /webhook/whatsapp<br/>{message, conversationHistory}
+
+    N->>N: Code Node:<br/>isFirstMessage = false
+    N->>N: Build system prompt<br/>"DO NOT greet again"
+
+    N->>G: POST /chat/completions<br/>{model, messages[]}
+    G->>G: Generate contextual response
+    G-->>N: "We have fresh oranges!<br/>GHS 20 for 10 pieces"
+
+    N-->>P: {reply: "We have..."}
+
+    P->>M: Save AI response to history
+    M-->>P: ✓ Saved
+
+    P->>C: Send via WhatsApp
+    C->>C: Receives AI reply ✅
+
+    Note over C,G: ⚠️ CURRENT BUG:<br/>AI ignores "DO NOT greet"<br/>and says "Akwaaba" again

@@ -1,0 +1,59 @@
+mindmap
+  root((BEELINE<br/>DOWNTIME<br/>SCENARIOS))
+    Power Outage
+      Impact
+        All vendors offline
+        No messages processed
+      Solutions
+        UPS backup 2-4hrs
+        Auto-restart on boot
+        Sessions persist
+    Internet Outage
+      Impact
+        Can't reach WhatsApp
+        Can't reach n8n
+      Solutions
+        4G LTE failover
+        Message queue retry
+        SMS alerts
+    n8n Cloud Down
+      Impact
+        No AI responses
+        Customers see typing
+      Solutions
+        Backup n8n instance
+        Direct Groq fallback
+        Error message to customer
+    Groq API Limit
+      Impact
+        Rate limit 30/min
+        Temporary downtime
+      Solutions
+        Fallback to OpenAI
+        Queue requests
+        Upgrade to paid tier
+    WhatsApp Ban
+      Impact
+        One vendor loses access
+        Number banned
+      Solutions
+        Use Business accounts
+        Human-like delays
+        Backup SIM ready
+        Meta Cloud API
+    Pi Hardware Fail
+      Impact
+        All sessions lost
+        Complete downtime
+      Solutions
+        Daily backups to cloud
+        Hot spare Pi ready
+        Boot from SSD not SD
+    Docker Crash
+      Impact
+        WhatsApp disconnects
+        10s downtime
+      Solutions
+        Auto-restart policy
+        Health checks
+        Monitoring alerts

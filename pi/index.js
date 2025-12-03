@@ -219,6 +219,27 @@ async function connectVendor(vendorId) {
         continue;
       }
 
+      // Handle BUZZ referral trigger
+      if (messageContent.toLowerCase().trim() === 'buzz') {
+        const referralLink = `https://beeline.works/signup?ref=${vendorId}`;
+
+        await sock.sendMessage(customerId, {
+          text: `🐝 *Awesome! Let's get you your own AI employee!*\n\n` +
+                `Click here to start: ${referralLink}\n\n` +
+                `✨ Your vendor will get *7 days free* as a thank you!\n\n` +
+                `Join hundreds of vendors already using Beeline to grow their business 24/7.`
+        });
+
+        logger.info({
+          vendorId,
+          customerId: customerId.substring(0, 10) + '...',
+          referralInitiated: true,
+          referralLink
+        }, '🐝 BUZZ detected - Referral started');
+
+        continue; // Don't process through AI
+      }
+
       // Add user message to history
       addToHistory(vendorId, customerId, 'user', messageContent);
 
@@ -229,8 +250,22 @@ async function connectVendor(vendorId) {
       const aiResponse = await processWithAI(vendorId, customerId, messageContent);
 
       if (aiResponse) {
-        // Add "Powered by Beeline" to every response
-        const fullResponse = `${aiResponse}\n\n---\n_Powered by Beeline. Want your own AI employee? Say YES._`;
+        // Check if payment is mentioned (MoMo or GHS)
+        const paymentDetected = aiResponse.match(/(momo|ghs\s*\d+)/i);
+
+        let fullResponse = aiResponse;
+
+        // Only add virality footer if payment was detected
+        if (paymentDetected) {
+          fullResponse += `\n\n━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                          `_Powered by Beeline 🐝_\n\n` +
+                          `Need your own AI employee?\n` +
+                          `Reply *BUZZ* and get started!\n\n` +
+                          `_(Your vendor gets 7 days free!)_` +
+                          `\n━━━━━━━━━━━━━━━━━━━━━━━━━`;
+
+          logger.info({ vendorId, paymentDetected: true }, 'Payment detected - showing virality footer');
+        }
 
         await sock.sendMessage(customerId, { text: fullResponse });
 

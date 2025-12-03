@@ -1,0 +1,45 @@
+graph TB
+    subgraph Customer["👤 CUSTOMER (Ghana)"]
+        A[WhatsApp Message:<br/>'I want to buy oranges']
+    end
+
+    subgraph PiHouse["🏠 JOSHUA'S HOUSE - 192.168.8.28"]
+        subgraph Pi["🥧 RASPBERRY PI 4"]
+            B[Docker Container<br/>beeline-pi:latest]
+            C[Baileys Multi-Session<br/>50 Vendor Capacity]
+            D[Session Storage<br/>/beeline-sessions/]
+            E[Conversation Memory<br/>Last 10 messages]
+        end
+    end
+
+    subgraph Cloud1["☁️ N8N (Render Cloud)"]
+        F[Webhook Endpoint<br/>/webhook/whatsapp]
+        G[Code Node<br/>Extract History]
+        H[HTTP Request<br/>Call Groq API]
+        I[Respond to Webhook<br/>Return AI Reply]
+    end
+
+    subgraph Cloud2["☁️ GROQ AI"]
+        J[Llama-3.3-70B<br/>Generate Response]
+    end
+
+    A -->|WhatsApp Web Protocol| B
+    B --> C
+    C --> D
+    C --> E
+    C -->|HTTPS POST| F
+    F --> G
+    G --> H
+    H --> J
+    J -->|AI Response| H
+    H --> I
+    I -->|JSON Reply| C
+    C -->|WhatsApp| A
+
+    style A fill:#25D366,color:#fff
+    style B fill:#C51A4A,color:#fff
+    style F fill:#EA4B71,color:#fff
+    style J fill:#F55036,color:#fff
+    style PiHouse fill:#FFE5E5,stroke:#C51A4A
+    style Cloud1 fill:#E8F5F8,stroke:#EA4B71
+    style Cloud2 fill:#FFF4E6,stroke:#F55036
