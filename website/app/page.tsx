@@ -319,7 +319,7 @@ export default function Home() {
               <span className="text-xl font-bold text-white">Beeline</span>
             </div>
             <div className="text-center md:text-right">
-              <p>&copy; 2025 Beeline Ghana. Built with 🐝 in Accra.</p>
+              <p>© 2025 Beeline Ghana. Built with Honey in Accra.</p>
               <p className="text-sm mt-2">
                 Making African vendors unstoppable.
               </p>

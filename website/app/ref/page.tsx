@@ -158,7 +158,7 @@ function ReferralContent() {
           <div className="flex items-center justify-center gap-4 text-sm">
             <span>🐝 Built in Accra</span>
             <span>•</span>
-            <span>⚡ <4s Response Time</span>
+            <span>⚡ &lt;4s Response Time</span>
             <span>•</span>
             <span>🔒 Secure & Private</span>
           </div>
