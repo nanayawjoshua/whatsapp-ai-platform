@@ -9,12 +9,26 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        'beeline-yellow': '#FFD700',
+        'beeline-yellow': '#FFC107',
+        'beeline-yellow-dark': '#FFB300',
+        'beeline-yellow-light': '#FFF9E6',
+        'beeline-cream': '#FFFBF0',
         'beeline-black': '#1a1a1a',
-        'beeline-gray': '#f5f5f5',
+        'beeline-gray': '#F0F3F5',
+        'beeline-gray-light': '#F8FAFB',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      backgroundImage: {
+        'gradient-warm': 'linear-gradient(135deg, #FFF9E6 0%, #FFE8B3 50%, #FFD6A1 100%)',
+        'gradient-soft': 'linear-gradient(135deg, #FFF9E6 0%, #FFFFFF 100%)',
+        'gradient-card': 'linear-gradient(to bottom, #FFFFFF 0%, #F8FAFB 100%)',
+      },
+      boxShadow: {
+        'soft': '0 2px 8px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.05)',
+        'medium': '0 4px 12px rgba(0, 0, 0, 0.12), 0 12px 32px rgba(0, 0, 0, 0.08)',
+        'hover': '0 8px 20px rgba(255, 193, 7, 0.25), 0 16px 40px rgba(0, 0, 0, 0.1)',
       },
     },
   },

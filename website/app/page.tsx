@@ -21,21 +21,21 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-to-b from-beeline-gray to-white">
+      <section className="pt-32 pb-20 bg-gradient-warm">
         <div className="section-container">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center space-x-2 bg-beeline-yellow/20 px-4 py-2 rounded-full mb-6">
+            <div className="inline-flex items-center space-x-2 bg-white/90 backdrop-blur-sm shadow-soft px-5 py-2.5 rounded-full mb-6 transition-all duration-300 hover:shadow-medium">
               <GiHoneypot className="text-xl text-beeline-yellow" />
               <span className="text-sm font-semibold text-beeline-black">
                 Your AI Employee Lives in Your Phone Number
               </span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-beeline-black mb-6 text-balance">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-beeline-black mb-6 text-balance leading-tight">
               Never Miss a Sale Again
             </h1>
 
-            <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg sm:text-xl text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed">
               Turn your WhatsApp into a 24/7 AI employee. Answer customers, take orders,
               and close deals while you sleep. For just <span className="font-bold text-beeline-black">GHS 99/month</span>.
             </p>
@@ -50,18 +50,18 @@ export default function Home() {
               </a>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-600">
-              <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-700">
+              <div className="flex items-center space-x-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full shadow-soft">
                 <FaClock className="text-beeline-yellow" />
-                <span>Setup in 2 minutes</span>
+                <span className="font-medium">Setup in 2 minutes</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full shadow-soft">
                 <FaMoneyBillWave className="text-beeline-yellow" />
-                <span>No credit card required</span>
+                <span className="font-medium">No credit card required</span>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full shadow-soft">
                 <FaRocket className="text-beeline-yellow" />
-                <span>Cancel anytime</span>
+                <span className="font-medium">Cancel anytime</span>
               </div>
             </div>
           </div>
@@ -69,27 +69,34 @@ export default function Home() {
       </section>
 
       {/* Problem Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gradient-soft">
         <div className="section-container">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-beeline-black mb-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold text-beeline-black mb-4">
               The Problem Every Vendor Faces
             </h2>
-            <div className="grid sm:grid-cols-3 gap-8 mt-12">
-              <div className="text-center">
-                <div className="text-5xl mb-4">😴</div>
-                <h3 className="font-semibold text-lg mb-2">You Sleep</h3>
-                <p className="text-gray-600">Customer messages at 2am. No response until morning.</p>
+            <p className="text-lg text-gray-600 mb-12">Why you're losing sales without even knowing it</p>
+            <div className="grid sm:grid-cols-3 gap-6">
+              <div className="card p-8 text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-beeline-yellow-light to-beeline-cream rounded-2xl flex items-center justify-center text-3xl mb-4 mx-auto">
+                  😴
+                </div>
+                <h3 className="font-bold text-lg mb-3">You Sleep</h3>
+                <p className="text-gray-600 leading-relaxed">Customer messages at 2am. No response until morning.</p>
               </div>
-              <div className="text-center">
-                <div className="text-5xl mb-4">💸</div>
-                <h3 className="font-semibold text-lg mb-2">Sales Lost</h3>
-                <p className="text-gray-600">By morning, they bought from your competitor.</p>
+              <div className="card p-8 text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-beeline-yellow-light to-beeline-cream rounded-2xl flex items-center justify-center text-3xl mb-4 mx-auto">
+                  💸
+                </div>
+                <h3 className="font-bold text-lg mb-3">Sales Lost</h3>
+                <p className="text-gray-600 leading-relaxed">By morning, they bought from your competitor.</p>
               </div>
-              <div className="text-center">
-                <div className="text-5xl mb-4">🔁</div>
-                <h3 className="font-semibold text-lg mb-2">Repeat Daily</h3>
-                <p className="text-gray-600">Lose 20-30% of potential sales every month.</p>
+              <div className="card p-8 text-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-beeline-yellow-light to-beeline-cream rounded-2xl flex items-center justify-center text-3xl mb-4 mx-auto">
+                  🔁
+                </div>
+                <h3 className="font-bold text-lg mb-3">Repeat Daily</h3>
+                <p className="text-gray-600 leading-relaxed">Lose 20-30% of potential sales every month.</p>
               </div>
             </div>
           </div>
@@ -97,58 +104,58 @@ export default function Home() {
       </section>
 
       {/* Solution Section */}
-      <section id="how-it-works" className="py-20 bg-beeline-gray">
+      <section id="how-it-works" className="py-20 bg-white">
         <div className="section-container">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-beeline-black mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold text-beeline-black mb-4">
               Meet Your AI Employee
             </h2>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-600 leading-relaxed">
               Beeline connects to your WhatsApp number. When customers message you,
               our AI responds instantly - day or night, in English or Twi.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-            <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <div className="bg-beeline-yellow/20 w-14 h-14 rounded-full flex items-center justify-center mb-4">
-                <FaWhatsapp className="text-2xl text-beeline-black" />
+          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <div className="card p-8">
+              <div className="bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-medium">
+                <FaWhatsapp className="text-2xl text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Use Your Own Number</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-bold mb-3 text-beeline-black">Use Your Own Number</h3>
+              <p className="text-gray-600 leading-relaxed">
                 Keep your trusted WhatsApp number. No new SIM, no app to download.
                 Your customers message the same number they always have.
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <div className="bg-beeline-yellow/20 w-14 h-14 rounded-full flex items-center justify-center mb-4">
-                <FaClock className="text-2xl text-beeline-black" />
+            <div className="card p-8">
+              <div className="bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-medium">
+                <FaClock className="text-2xl text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-3">24/7 Availability</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-bold mb-3 text-beeline-black">24/7 Availability</h3>
+              <p className="text-gray-600 leading-relaxed">
                 AI responds in under 4 seconds. Answers questions, checks stock,
                 takes orders, and processes payments - even at 3am.
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <div className="bg-beeline-yellow/20 w-14 h-14 rounded-full flex items-center justify-center mb-4">
-                <FaChartLine className="text-2xl text-beeline-black" />
+            <div className="card p-8">
+              <div className="bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-medium">
+                <FaChartLine className="text-2xl text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Smart & Personalized</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-bold mb-3 text-beeline-black">Smart & Personalized</h3>
+              <p className="text-gray-600 leading-relaxed">
                 Learns your products, your prices, your style. Speaks Twi and English.
                 Remembers customer conversations.
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-2xl shadow-lg">
-              <div className="bg-beeline-yellow/20 w-14 h-14 rounded-full flex items-center justify-center mb-4">
-                <FaMoneyBillWave className="text-2xl text-beeline-black" />
+            <div className="card p-8">
+              <div className="bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-medium">
+                <FaMoneyBillWave className="text-2xl text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Dirt Cheap</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-bold mb-3 text-beeline-black">Dirt Cheap</h3>
+              <p className="text-gray-600 leading-relaxed">
                 GHS 99/month flat. No per-message fees. Cheaper than hiring anyone.
                 Pay for itself with just 5-10 extra sales.
               </p>
@@ -158,47 +165,48 @@ export default function Home() {
       </section>
 
       {/* How It Works Steps */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gradient-soft">
         <div className="section-container">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-beeline-black mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold text-beeline-black mb-4">
               Get Started in 2 Minutes
             </h2>
+            <p className="text-lg text-gray-600">Three simple steps to your AI employee</p>
           </div>
 
-          <div className="max-w-4xl mx-auto">
-            <div className="space-y-8">
-              <div className="flex gap-6">
-                <div className="flex-shrink-0 w-12 h-12 bg-beeline-yellow rounded-full flex items-center justify-center font-bold text-xl">
+          <div className="max-w-3xl mx-auto">
+            <div className="space-y-6">
+              <div className="card p-8 flex gap-6">
+                <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-xl flex items-center justify-center font-bold text-2xl text-white shadow-medium">
                   1
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Sign Up</h3>
-                  <p className="text-gray-600">
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold mb-2 text-beeline-black">Sign Up</h3>
+                  <p className="text-gray-600 leading-relaxed">
                     Enter your name, phone number, and what you sell. Takes 30 seconds.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-6">
-                <div className="flex-shrink-0 w-12 h-12 bg-beeline-yellow rounded-full flex items-center justify-center font-bold text-xl">
+              <div className="card p-8 flex gap-6">
+                <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-xl flex items-center justify-center font-bold text-2xl text-white shadow-medium">
                   2
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">Scan QR Code</h3>
-                  <p className="text-gray-600">
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold mb-2 text-beeline-black">Scan QR Code</h3>
+                  <p className="text-gray-600 leading-relaxed">
                     Open WhatsApp, scan the QR code we show you. Your AI employee connects to your number.
                   </p>
                 </div>
               </div>
 
-              <div className="flex gap-6">
-                <div className="flex-shrink-0 w-12 h-12 bg-beeline-yellow rounded-full flex items-center justify-center font-bold text-xl">
+              <div className="card p-8 flex gap-6">
+                <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-xl flex items-center justify-center font-bold text-2xl text-white shadow-medium">
                   3
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold mb-2">You're Live!</h3>
-                  <p className="text-gray-600">
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold mb-2 text-beeline-black">You're Live!</h3>
+                  <p className="text-gray-600 leading-relaxed">
                     That's it. Your AI employee is now handling customers 24/7.
                     You'll get notifications for important stuff.
                   </p>
@@ -210,10 +218,10 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 bg-beeline-gray">
+      <section className="py-20 bg-white">
         <div className="section-container">
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-beeline-black mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold text-beeline-black mb-4">
               Simple, Honest Pricing
             </h2>
             <p className="text-lg text-gray-600">
@@ -222,39 +230,54 @@ export default function Home() {
           </div>
 
           <div className="max-w-md mx-auto">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 border-4 border-beeline-yellow">
+            <div className="card p-10 border-2 border-beeline-yellow relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark text-white text-xs font-bold px-4 py-1.5 rounded-bl-lg shadow-medium">
+                POPULAR
+              </div>
               <div className="text-center">
-                <h3 className="text-2xl font-bold mb-2">AI Employee</h3>
+                <h3 className="text-2xl font-bold mb-2 text-beeline-black">AI Employee</h3>
                 <div className="flex items-baseline justify-center gap-2 mb-6">
-                  <span className="text-5xl font-bold">GHS 99</span>
-                  <span className="text-gray-600">/month</span>
+                  <span className="text-5xl font-bold bg-gradient-to-r from-beeline-yellow to-beeline-yellow-dark bg-clip-text text-transparent">GHS 99</span>
+                  <span className="text-gray-600 font-medium">/month</span>
                 </div>
                 <p className="text-gray-600 mb-8">or $9 USD</p>
 
                 <ul className="text-left space-y-4 mb-8">
-                  <li className="flex items-start gap-3">
-                    <span className="text-beeline-yellow text-xl">✓</span>
-                    <span>Unlimited messages & conversations</span>
+                  <li className="flex items-start gap-3 group">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 leading-relaxed">Unlimited messages & conversations</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-beeline-yellow text-xl">✓</span>
-                    <span>24/7 availability, no breaks</span>
+                  <li className="flex items-start gap-3 group">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 leading-relaxed">24/7 availability, no breaks</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-beeline-yellow text-xl">✓</span>
-                    <span>English & Twi support</span>
+                  <li className="flex items-start gap-3 group">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 leading-relaxed">English & Twi support</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-beeline-yellow text-xl">✓</span>
-                    <span>Your own WhatsApp number</span>
+                  <li className="flex items-start gap-3 group">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 leading-relaxed">Your own WhatsApp number</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-beeline-yellow text-xl">✓</span>
-                    <span>7-day free trial</span>
+                  <li className="flex items-start gap-3 group">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 leading-relaxed">7-day free trial</span>
                   </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-beeline-yellow text-xl">✓</span>
-                    <span>Cancel anytime</span>
+                  <li className="flex items-start gap-3 group">
+                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 leading-relaxed">Cancel anytime</span>
                   </li>
                 </ul>
 

@@ -3,9 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --beeline-yellow: #FFD700;
+  --beeline-yellow: #FFC107;
+  --beeline-yellow-dark: #FFB300;
+  --beeline-yellow-light: #FFF9E6;
+  --beeline-cream: #FFFBF0;
   --beeline-black: #1a1a1a;
-  --beeline-gray: #f5f5f5;
+  --beeline-gray: #F0F3F5;
+  --beeline-gray-light: #F8FAFB;
 }
 
 body {
@@ -22,14 +26,18 @@ body {
 
 @layer components {
   .btn-primary {
-    @apply bg-beeline-yellow text-beeline-black font-semibold px-8 py-4 rounded-lg hover:bg-yellow-400 transition-all duration-200 shadow-lg hover:shadow-xl;
+    @apply bg-beeline-yellow text-beeline-black font-bold px-8 py-4 rounded-lg hover:bg-beeline-yellow-dark transition-all duration-300 shadow-soft hover:shadow-hover transform hover:scale-105;
   }
 
   .btn-secondary {
-    @apply bg-beeline-black text-white font-semibold px-8 py-4 rounded-lg hover:bg-gray-800 transition-all duration-200;
+    @apply bg-beeline-black text-white font-semibold px-8 py-4 rounded-lg hover:bg-gray-800 transition-all duration-300 shadow-soft hover:shadow-medium;
   }
 
   .section-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24;
+  }
+
+  .card {
+    @apply bg-white rounded-2xl shadow-soft hover:shadow-hover transition-all duration-300 transform hover:-translate-y-1;
   }
 }
