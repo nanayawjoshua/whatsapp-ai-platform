@@ -104,6 +104,11 @@ async function processWithAI(vendorId, customerId, message, vendorConfig = {}) {
       historyLength: history.length
     }, 'Processing message through AI');
 
+    // DEBUG: Log the exact payload being sent
+    console.log('\n=== PAYLOAD TO N8N ===');
+    console.log(JSON.stringify(payload, null, 2));
+    console.log('======================\n');
+
     const response = await axios.post(config.n8nWebhookUrl, payload, {
       headers: { 'Content-Type': 'application/json' },
       timeout: 30000
