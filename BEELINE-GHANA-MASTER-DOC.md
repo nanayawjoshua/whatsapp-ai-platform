@@ -507,7 +507,8 @@ if (history.length > 2 && aiReply.includes('Akwaaba')) {
 | Internet | ISP | $20 |
 | **Total** | | **$38/mo** |
 
-**Per-Vendor Cost:** $38 ÷ 50 = $0.76/vendor
+**Per-Vendor Cost (Current Pi-only):** $38 ÷ 50 = $0.76/vendor
+**Per-Vendor Cost (Hybrid Cloud):** $45 ÷ 75 = $0.60/vendor (21% cheaper!)
 
 ### Revenue Model
 
@@ -529,13 +530,30 @@ if (history.length > 2 && aiReply.includes('Akwaaba')) {
 
 ### Growth Projections
 
-| Milestone | Vendors | MRR | Timeline |
-|-----------|---------|-----|----------|
-| Break-even | 5 | $45 | Week 1 |
-| First Pi full | 50 | $450 | Week 2 |
-| Second Pi | 100 | $900 | Month 1 |
-| Profitable | 250 | $2,250 | Month 2 |
-| Scale | 1,000 | $9,000 | Q1 2026 |
+**Current Pi-Only Setup:**
+| Milestone | Vendors | MRR | Timeline | Pi Count |
+|-----------|---------|-----|----------|----------|
+| Break-even | 5 | $45 | Week 1 | 1 |
+| First Pi full | 50 | $450 | Week 2 | 1 |
+| Need Pi #2 | 51-100 | $459-$900 | Month 1 | 2 |
+| Profitable | 250 | $2,250 | Month 2 | 5 Pis |
+| Scale | 1,000 | $9,000 | Q1 2026 | 20 Pis |
+
+**Hybrid Cloud Setup (Recommended):**
+| Milestone | Vendors | MRR | Monthly Cost | Profit | Pi Count |
+|-----------|---------|-----|--------------|--------|----------|
+| Break-even | 5 | $45 | $45 | $0 | 1 |
+| Deploy hybrid | 20 | $180 | $45 | $135 | 1 |
+| First Pi full | 75 | $675 | $45 | $630 | 1 |
+| Need Pi #2 | 76-150 | $684-$1,350 | $90 | $594-$1,260 | 2 |
+| Profitable | 250 | $2,250 | $135 | $2,115 | 4 Pis |
+| Scale | 1,000 | $9,000 | $540 | $8,460 | 14 Pis |
+
+**Cost Savings with Hybrid:**
+- Vendor 250: Save 1 Pi ($125 hardware)
+- Vendor 1,000: Save 6 Pis ($750 hardware)
+- Improved margins: $0.60 vs $0.76 per vendor
+- Remote access: Priceless when lights go out!
 
 **Virality Mechanism (Updated):**
 - Footer: "Powered by Beeline 🐝 Need your own AI? Reply BUZZ!"
@@ -634,9 +652,10 @@ Vendor Flow:
 - ⚠️ Single point of failure (Pi in Joshua's house)
 - ⚠️ Power outage = downtime
 - ⚠️ Hardware failure = lost sessions
-- ⚠️ Limited to 50 vendors per Pi
+- ⚠️ Limited to 50 vendors per Pi (current fat setup)
+- ⚠️ Each Baileys session = ~40MB RAM (physical constraint)
 
-**Proposed Cloud Architecture:**
+**Proposed Hybrid Cloud Architecture:**
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -650,10 +669,10 @@ Vendor Flow:
                   │
                   ↓ (Sessions stored in PostgreSQL)
 ┌─────────────────────────────────────────────────────────┐
-│  CLOUD BRIDGE (Railway.app / Render)                    │
+│  CLOUD BRIDGE (Render.com - Preferred)                  │
 │  Docker: beeline-bridge:latest                          │
-│  • Baileys multi-session                                │
-│  • 1000+ vendor capacity                                │
+│  • Baileys multi-session (WhatsApp gateway ONLY)        │
+│  • 75-80 vendors per instance (thin gateway)            │
 │  • Session storage: PostgreSQL                          │
 │  • Conversation history: Redis (Upstash)                │
 │  • Auto-scaling enabled                                 │
@@ -661,25 +680,92 @@ Vendor Flow:
 │  • Multi-region failover                                │
 └─────────────────┬───────────────────────────────────────┘
                   │
-                  ↓ (Same n8n workflow)
+                  ↓ (HTTPS POST with conversation history)
 ┌─────────────────────────────────────────────────────────┐
-│  N8N + GROQ (Unchanged)                                 │
+│  N8N + GROQ (Business Logic)                            │
+│  • Persona loading                                      │
+│  • Product lookups                                      │
+│  • AI response generation                               │
+│  • Payment detection                                    │
+└─────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────┐
+│  BACKUP: Pi at pi.beeline.works (CloudFlare Tunnel)     │
+│  • Monitors cloud health                                │
+│  • Takes over if cloud down                             │
+│  • 50 vendors capacity (fat setup)                      │
 └─────────────────────────────────────────────────────────┘
 ```
 
-**Migration Plan:**
+**Why Hybrid Architecture (Pi as Gateway → Cloud Logic)?**
 
-1. **Deploy Bridge to Railway** ($5/month)
+CRITICAL CLARIFICATION on vendor capacity:
+
+**Current Pi Setup (Fat - All Logic on Pi):**
+- Baileys sessions: 50 × 40MB = 2GB RAM
+- Business logic: ~2GB RAM (n8n processing, memory maps)
+- Total: 4GB RAM (Pi maxed out)
+- **Capacity: 50 vendors per Pi**
+
+**Hybrid Setup (Thin Gateway - Pi for WhatsApp Only):**
+- Baileys sessions: 75 × 40MB = 3GB RAM
+- Business logic: MOVED TO CLOUD (0 MB on Pi)
+- Overhead: ~1GB (OS, Docker, networking)
+- Total: 4GB RAM (optimized)
+- **Capacity: 75-80 vendors per Pi** (50% improvement!)
+
+**Why Still Need Multiple Pis?**
+Each Baileys WhatsApp session consumes ~40MB RAM regardless of where business logic runs. This is a physical constraint of the Baileys library maintaining WebSocket connections.
+
+**Scaling Math:**
+- Pi 4GB RAM ÷ 40MB per session = ~100 theoretical max
+- Minus OS overhead (~1GB) = 75-80 realistic max
+- **Pi #1:** Vendors 1-75
+- **Pi #2:** Vendors 76-150 (needed at vendor 76, not 51!)
+- **Pi #3:** Vendors 151-225
+
+**Benefits of Hybrid vs Current:**
+- 50% more vendors per Pi (75 vs 50)
+- Cloud handles all business logic (faster, more reliable)
+- Pi accessible from anywhere (CloudFlare Tunnel: pi.beeline.works)
+- If Pi loses power, cloud stays up (n8n, database, Redis)
+- If cloud goes down, Pi can failover to local processing
+- Zero downtime deployments (update cloud without touching Pi)
+
+**Migration Plan (cloud-hybrid branch):**
+
+1. **Create cloud-hybrid branch** (keep beeline-main as fallback)
+   ```bash
+   git checkout -b cloud-hybrid
+   # All cloud work happens here
+   # If it fails, fallback to beeline-main
+   ```
+
+2. **Deploy Bridge to Render** (Preferred - $7/month for 512MB RAM)
    ```yaml
-   # railway.toml
-   [build]
-   builder = "DOCKERFILE"
-   dockerfilePath = "pi/Dockerfile"
+   # render.yaml
+   services:
+     - type: web
+       name: beeline-bridge
+       env: docker
+       plan: starter
+       dockerfilePath: ./cloud/Dockerfile
+       envVars:
+         - key: N8N_WEBHOOK_URL
+           sync: false
+         - key: DATABASE_URL
+           fromDatabase:
+             name: beeline-postgres
+             property: connectionString
+         - key: REDIS_URL
+           sync: false
+       healthCheckPath: /health
 
-   [deploy]
-   startCommand = "node index.js"
-   healthcheckPath = "/health"
-   restartPolicyType = "ON_FAILURE"
+   databases:
+     - name: beeline-postgres
+       plan: free
+       databaseName: beeline
+       user: beeline
    ```
 
 2. **PostgreSQL Session Storage**
@@ -712,12 +798,23 @@ Vendor Flow:
 
 **Cost Comparison:**
 
-| Setup | Hardware | Monthly | Uptime | Scalability |
-|-------|----------|---------|--------|-------------|
-| Pi | $75 + $50 UPS | $25 | 95% | 50 vendors |
-| Cloud | $0 | $10 | 99.9% | 1000s |
+| Setup | Hardware | Monthly | Uptime | Vendor Capacity | Pi Needed At |
+|-------|----------|---------|--------|-----------------|--------------|
+| Current (Pi-only fat) | $75 + $50 UPS | $38 | 95% | 50 per Pi | Vendor 51 |
+| Hybrid (Pi gateway + Cloud) | $75 + $50 UPS | $45 | 99% | 75-80 per Pi | Vendor 76 |
+| Full Cloud (no Pi) | $0 | $18 | 99.9% | 1000s | Never |
 
-**Recommendation:** Migrate to cloud after 20 vendors (risk mitigation).
+**Current Strategy:**
+1. Stay on Pi-only until 20 vendors (validate product-market fit)
+2. Deploy cloud-hybrid at 20-50 vendors (resilience + remote access)
+3. Full cloud migration at 100+ vendors (scale + cost efficiency)
+
+**Why Hybrid First?**
+- You JUST experienced the pain: lights out = can't work on Pi
+- CloudFlare Tunnel (pi.beeline.works) = access from anywhere
+- Cloud handles business logic (faster deploys, no Pi downtime)
+- If Pi loses power, vendors still get responses (cloud failover)
+- Build resilient network that "takes over like a virus"
 
 ### Phase 4: Advanced Features (Month 2-3)
 
@@ -753,15 +850,24 @@ Vendor Flow:
 
 #### 1. Power Outage (Pi goes offline)
 
-**Impact:** All 50 vendors offline
-**Probability:** High (ECG load shedding)
+**Impact:** All vendors offline (50 current, 75-80 in hybrid)
+**Probability:** High (ECG load shedding) - Joshua experienced this during development!
 **Duration:** 1-4 hours
 
+**Real-World Pain:**
+- Lights out = can't SSH to Pi
+- Can't deploy updates
+- Can't monitor logs
+- Vendors offline during peak hours
+
 **Current Mitigation:** None
-**Proposed Solution:**
-- ✅ UPS backup ($50) - 2-4 hours runtime
+**Proposed Solution (Hybrid Architecture):**
+- ✅ CloudFlare Tunnel: pi.beeline.works (access from ANYWHERE)
+- ✅ Cloud handles business logic (Pi power loss = cloud keeps running)
+- ✅ UPS backup ($50) - 2-4 hours runtime for Pi
 - ✅ Auto-restart on boot (Docker restart policy)
-- ✅ Sessions persist (no QR re-scan)
+- ✅ Sessions persist in PostgreSQL (no QR re-scan)
+- ✅ Mobile SSH via Termius app (manage from phone)
 
 **Implementation:**
 ```bash

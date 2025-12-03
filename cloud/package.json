@@ -1,0 +1,40 @@
+{
+  "name": "beeline-cloud-bridge",
+  "version": "1.0.0",
+  "description": "Beeline Ghana - WhatsApp Cloud Bridge (Thin Gateway)",
+  "main": "bridge-server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node bridge-server.js",
+    "dev": "NODE_ENV=development node --watch bridge-server.js",
+    "migrate": "node -e \"import('pg').then(({default:pkg})=>new pkg.Pool({connectionString:process.env.DATABASE_URL}).query(require('fs').readFileSync('./migrations/001_initial_schema.sql','utf8')).then(()=>console.log('✅ Migration complete')).catch(console.error))\"",
+    "lint": "eslint .",
+    "test": "echo 'No tests yet' && exit 0"
+  },
+  "keywords": [
+    "whatsapp",
+    "baileys",
+    "ai",
+    "ghana",
+    "beeline"
+  ],
+  "author": "Joshua (Beeline Ghana)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "@whiskeysockets/baileys": "^6.7.9",
+    "axios": "^1.7.9",
+    "express": "^4.21.2",
+    "ioredis": "^5.4.2",
+    "pg": "^8.13.1",
+    "pino": "^9.5.0",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "devDependencies": {
+    "pino-pretty": "^13.0.0"
+  }
+}

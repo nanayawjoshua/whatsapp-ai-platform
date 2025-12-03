@@ -70,12 +70,13 @@ graph TB
         A3[Session → PostgreSQL]
     end
 
-    subgraph CloudBridge["☁️ CLOUD BRIDGE<br/>(Railway/Render)"]
+    subgraph CloudBridge["☁️ CLOUD BRIDGE<br/>(Render.com - Preferred)"]
         B1[Docker: beeline-bridge]
         %% Baileys is a WhatsApp Web API library for Node.js
-        B2[Baileys Multi-Session<br/>1000+ Capacity]
+        B2[Baileys Multi-Session<br/>75-80 per instance]
         B3[PostgreSQL Session Storage]
         B4[Redis Conversation Cache]
+        B5[Note: Each Baileys session = ~40MB RAM<br/>512MB Render instance = 75 vendors max<br/>Horizontal scaling for more capacity]
     end
 
         C1[AI Processing (Same as Web UI)]
@@ -345,28 +346,28 @@ graph LR
 
 ---
 
-## 8. GROWTH PROJECTIONS
+## 8. GROWTH PROJECTIONS (CORRECTED CAPACITY)
 
 ```mermaid
 graph TD
-    subgraph Week1["📅 WEEK 1"]
-        W1[5 Vendors<br/>$45 MRR<br/>Break-even ✅]
+    subgraph Week1["📅 WEEK 1 - Pi Only"]
+        W1[5 Vendors<br/>$45 MRR<br/>Break-even ✅<br/>Pi: 50 capacity]
     end
 
-    subgraph Week2["📅 WEEK 2"]
-        W2[50 Vendors<br/>$450 MRR<br/>First Pi Full 🎉]
+    subgraph Week2["📅 WEEK 2 - Deploy Hybrid"]
+        W2[20 Vendors<br/>$180 MRR<br/>Hybrid Architecture Live 🚀<br/>Pi: 75-80 capacity now!]
     end
 
-    subgraph Month1["📅 MONTH 1"]
-        M1[100 Vendors<br/>$900 MRR<br/>Second Pi Added]
+    subgraph Month1["📅 MONTH 1 - First Pi Full"]
+        M1[75 Vendors<br/>$675 MRR<br/>Pi maxed, add Pi #2 at 76<br/>NOT at 51!]
     end
 
-    subgraph Month2["📅 MONTH 2"]
-        M2[250 Vendors<br/>$2,250 MRR<br/>Profitable Scale 💰]
+    subgraph Month2["📅 MONTH 2 - Profitable"]
+        M2[150 Vendors<br/>$1,350 MRR<br/>2 Pis, 2 Cloud Instances 💰]
     end
 
-    subgraph Q1_2026["📅 Q1 2026"]
-        Q1[1,000 Vendors<br/>$9,000 MRR<br/>Cloud Migration ☁️]
+    subgraph Q1_2026["📅 Q1 2026 - Full Cloud"]
+        Q1[1,000 Vendors<br/>$9,000 MRR<br/>Migrate to Full Cloud<br/>14 instances, NO Pis needed ☁️]
     end
 
     W1 --> W2
@@ -380,6 +381,49 @@ graph TD
     style M2 fill:#E8FFE8
     style Q1 fill:#FFD700,stroke:#FF6600,stroke-width:3px
 ```
+
+---
+
+## 8.5. CAPACITY ANALYSIS (Why 75 vs 50?)
+
+```mermaid
+graph LR
+    subgraph Current["💻 CURRENT SETUP<br/>(Pi-Only Fat)"]
+        A1["4GB RAM Total"] --> A2["Baileys Sessions<br/>50 × 40MB = 2GB"]
+        A1 --> A3["Business Logic<br/>Maps, Processing = 2GB"]
+        A2 --> A4["Total: 4GB MAXED OUT"]
+        A3 --> A4
+        A4 --> A5["Capacity: 50 vendors<br/>Need Pi #2 at vendor 51"]
+    end
+
+    subgraph Hybrid["☁️ HYBRID SETUP<br/>(Thin Gateway)"]
+        B1["4GB RAM Total"] --> B2["Baileys Sessions<br/>75 × 40MB = 3GB"]
+        B1 --> B3["Business Logic<br/>MOVED TO CLOUD = 0MB"]
+        B1 --> B4["OS + Overhead = 1GB"]
+        B2 --> B5["Total: 4GB Optimized"]
+        B4 --> B5
+        B5 --> B6["Capacity: 75-80 vendors<br/>Need Pi #2 at vendor 76<br/>50% IMPROVEMENT!"]
+    end
+
+    Current -.->|"Why still need<br/>multiple Pis?"| Hybrid
+
+    subgraph Constraint["⚠️ PHYSICAL CONSTRAINT"]
+        C1["Each Baileys WhatsApp session<br/>= ~40MB RAM<br/>(WebSocket connections)"]
+        C2["This doesn't change<br/>regardless of where<br/>business logic runs"]
+    end
+
+    Hybrid -.-> Constraint
+
+    style A5 fill:#FFD6D6,stroke:#B22222
+    style B6 fill:#D6FFD6,stroke:#228B22
+    style Constraint fill:#FFF4E6,stroke:#FFA500
+```
+
+**Key Insight:**
+- Cloud removes business logic bottleneck (2GB freed)
+- But Baileys session RAM remains (~40MB each)
+- Result: 50% more capacity, but still limited by RAM
+- Solution: Horizontal scaling (more Pis or cloud instances)
 
 ---
 
