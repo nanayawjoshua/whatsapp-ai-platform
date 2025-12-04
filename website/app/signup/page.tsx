@@ -1,23 +1,30 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { GiHoneypot } from 'react-icons/gi';
 import { FaWhatsapp, FaPhone, FaUser, FaStore, FaMicrophone } from 'react-icons/fa';
 import ThemeToggle from '../components/ThemeToggle';
+import { openPaystackPopup, verifyPayment } from '../../lib/paystack';
 
 type PersonalityStyle = 'casual' | 'formal' | 'twi-heavy';
 
 export default function SignupPage() {
+  const searchParams = useSearchParams();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
+    email: '',
     businessType: '',
     voiceNote: '',
   });
   const [selectedPersonality, setSelectedPersonality] = useState<PersonalityStyle | null>(null);
   const [isRecording, setIsRecording] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [paymentReference, setPaymentReference] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
@@ -40,10 +47,78 @@ export default function SignupPage() {
     alert('Voice recording will be implemented with Web Audio API');
   };
 
+  // Check for payment callback on mount
+  useEffect(() => {
+    const paymentStatus = searchParams.get('payment');
+    const reference = searchParams.get('reference');
+
+    if (paymentStatus === 'success' && reference) {
+      // Payment successful, verify and show QR code
+      handlePaymentSuccess(reference);
+    } else if (paymentStatus === 'failed') {
+      setPaymentError('Payment failed. Please try again.');
+      setStep(3); // Go back to personality selection
+    } else if (paymentStatus === 'error') {
+      setPaymentError('An error occurred during payment. Please try again.');
+      setStep(3);
+    }
+  }, [searchParams]);
+
+  const handlePaymentSuccess = async (reference: string) => {
+    try {
+      setIsProcessingPayment(true);
+      // Verify payment
+      const verifyResponse = await verifyPayment(reference);
+
+      if (verifyResponse.status) {
+        setPaymentReference(reference);
+        setStep(4); // Go to QR code step
+      } else {
+        setPaymentError('Payment verification failed. Please contact support.');
+      }
+    } catch (error) {
+      console.error('Payment verification error:', error);
+      setPaymentError('Failed to verify payment. Please contact support.');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
   const handleSubmit = async () => {
-    // TODO: Send data to backend API
-    console.log('Submitting:', { ...formData, personality: selectedPersonality });
-    setStep(4); // Go to QR code step
+    try {
+      setIsProcessingPayment(true);
+      setPaymentError(null);
+
+      // Get referrer ID from URL if exists
+      const referrerId = searchParams.get('ref') || undefined;
+
+      // Open Paystack payment popup
+      await openPaystackPopup(
+        {
+          email: formData.email,
+          amount: 99, // GHS 99
+          metadata: {
+            name: formData.name,
+            phone: formData.phone,
+            businessType: formData.businessType,
+            personality: selectedPersonality || 'casual',
+            referrerId,
+          },
+        },
+        // On success
+        (reference) => {
+          handlePaymentSuccess(reference);
+        },
+        // On close
+        () => {
+          setIsProcessingPayment(false);
+        }
+      );
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      setPaymentError(error.message || 'Failed to initialize payment. Please try again.');
+      setIsProcessingPayment(false);
+    }
   };
 
   const personalities = [
@@ -173,6 +248,25 @@ export default function SignupPage() {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-2">
+                  <FaUser className="inline mr-2" />
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="e.g., kwame@example.com"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-beeline-yellow focus:border-beeline-yellow transition-all duration-200"
+                  required
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  For payment confirmation and account updates
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-2">
                   <FaStore className="inline mr-2" />
                   What Do You Sell?
                 </label>
@@ -196,7 +290,7 @@ export default function SignupPage() {
 
               <button
                 onClick={handleNextStep}
-                disabled={!formData.name || !formData.phone || !formData.businessType}
+                disabled={!formData.name || !formData.phone || !formData.email || !formData.businessType}
                 className="btn-primary w-full text-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continue
@@ -302,16 +396,28 @@ export default function SignupPage() {
               ))}
             </div>
 
+            {paymentError && (
+              <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+                <p className="text-sm text-red-900">
+                  <strong>Payment Error:</strong> {paymentError}
+                </p>
+              </div>
+            )}
+
             <div className="flex gap-4">
-              <button onClick={handlePrevStep} className="btn-secondary flex-1">
+              <button
+                onClick={handlePrevStep}
+                className="btn-secondary flex-1"
+                disabled={isProcessingPayment}
+              >
                 Back
               </button>
               <button
                 onClick={handleSubmit}
-                disabled={!selectedPersonality}
+                disabled={!selectedPersonality || isProcessingPayment}
                 className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Create My AI Employee
+                {isProcessingPayment ? 'Processing Payment...' : 'Pay GHS 99 & Continue'}
               </button>
             </div>
           </div>
@@ -364,10 +470,21 @@ export default function SignupPage() {
               </ol>
             </div>
 
-            <div className="bg-green-50 border-l-4 border-green-500 p-4">
+            <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-4">
               <p className="text-sm text-green-900">
-                <strong>Your 7-day free trial starts now!</strong> You won't be charged until
-                the trial ends. Cancel anytime.
+                <strong>Payment Confirmed!</strong> Your payment of GHS 99 was successful.
+                {paymentReference && (
+                  <span className="block mt-1 text-xs font-mono">
+                    Reference: {paymentReference}
+                  </span>
+                )}
+              </p>
+            </div>
+
+            <div className="bg-blue-50 border-l-4 border-blue-500 p-4">
+              <p className="text-sm text-blue-900">
+                <strong>Your subscription includes:</strong> Unlimited messages, 24/7 support,
+                English & Twi languages, and free updates. Cancel anytime via WhatsApp.
               </p>
             </div>
           </div>
