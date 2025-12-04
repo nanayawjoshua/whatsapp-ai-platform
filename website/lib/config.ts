@@ -7,7 +7,7 @@
 
 export const config = {
   paystack: {
-    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || '',
+    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC || '',
   },
   site: {
     url: process.env.NEXT_PUBLIC_SITE_URL || 'https://beeline.works',

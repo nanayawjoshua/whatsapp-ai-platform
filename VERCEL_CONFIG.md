@@ -10,13 +10,13 @@ Go to: https://vercel.com/dashboard → Select your project → Settings → Env
 
 Add these **3 variables** for **Production, Preview, and Development**:
 
-#### Variable 1: NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY
+#### Variable 1: NEXT_PUBLIC_PAYSTACK_PUBLIC
 ```
 pk_test_cf6359045b18e7c7141a67ca3fd4c6837cc7d6f1
 ```
 **Environments:** ✅ Production ✅ Preview ✅ Development
 
-#### Variable 2: PAYSTACK_SECRET_KEY
+#### Variable 2: PAYSTACK_SECRET
 ```
 sk_test_f6a1c8d88643475abdbf16f3c6249278554e8e87
 ```
@@ -24,9 +24,11 @@ sk_test_f6a1c8d88643475abdbf16f3c6249278554e8e87
 
 #### Variable 3: PAYSTACK_WEBHOOK_SECRET
 ```
-(Get this from Paystack dashboard - see step 2 below)
+test_webhook_secret_pending_activation
 ```
 **Environments:** ✅ Production ✅ Preview ✅ Development
+
+**Note:** The webhook secret will be updated once Paystack business activation is complete.
 
 ### 2. Set Up Paystack Webhook
 
@@ -85,8 +87,8 @@ Once deployed, test the payment:
 
 | Variable | Type | Description |
 |----------|------|-------------|
-| `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | Public | Used in browser for Paystack Popup |
-| `PAYSTACK_SECRET_KEY` | Secret | Used server-side for API calls |
+| `NEXT_PUBLIC_PAYSTACK_PUBLIC` | Public | Used in browser for Paystack Popup |
+| `PAYSTACK_SECRET` | Secret | Used server-side for API calls |
 | `PAYSTACK_WEBHOOK_SECRET` | Secret | Used to verify webhook signatures |
 | `NEXT_PUBLIC_N8N_WEBHOOK_URL` | Public | Already configured |
 | `NEXT_PUBLIC_SITE_URL` | Public | Already configured |
@@ -95,11 +97,11 @@ Once deployed, test the payment:
 
 ### Payment popup not opening?
 - Check browser console for errors
-- Verify `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` is set in Vercel
+- Verify `NEXT_PUBLIC_PAYSTACK_PUBLIC` is set in Vercel
 - Ensure you redeployed after adding env vars
 
 ### Payment verification fails?
-- Check `PAYSTACK_SECRET_KEY` is correct
+- Check `PAYSTACK_SECRET` is correct
 - Look at Vercel function logs for errors
 
 ### Webhook not working?

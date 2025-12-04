@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
       {
         method: 'GET',
         headers: {
-          'Authorization': `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          'Authorization': `Bearer ${process.env.PAYSTACK_SECRET}`,
           'Content-Type': 'application/json',
         },
       }
