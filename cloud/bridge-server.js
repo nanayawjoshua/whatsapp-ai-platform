@@ -166,6 +166,192 @@ async function saveConversationHistory(vendorId, customerId, history) {
 }
 
 // ============================================================================
+// HUMAN-IN-THE-LOOP SESSION MANAGEMENT
+// ============================================================================
+
+/**
+ * Track vendor activity for a specific customer conversation
+ */
+async function updateVendorActivity(vendorId, customerId, activityType = 'message') {
+  const key = `activity:${vendorId}:${customerId}`;
+  const now = Date.now();
+
+  try {
+    const activityData = {
+      lastHumanActivity: now,
+      lastHumanReply: activityType === 'message' ? now : undefined,
+      activityType,
+      timestamp: now
+    };
+
+    await redis.setex(key, 3600, JSON.stringify(activityData)); // 1hr TTL
+    logger.debug({ vendorId, customerId, activityType }, 'Vendor activity updated');
+  } catch (error) {
+    logger.error({ vendorId, customerId, error }, 'Failed to update vendor activity');
+  }
+}
+
+/**
+ * Get vendor activity status for a customer
+ */
+async function getVendorActivity(vendorId, customerId) {
+  const key = `activity:${vendorId}:${customerId}`;
+
+  try {
+    const data = await redis.get(key);
+    if (!data) {
+      return {
+        lastHumanActivity: 0,
+        lastHumanReply: 0,
+        activityType: null
+      };
+    }
+
+    const activity = JSON.parse(data);
+    return {
+      lastHumanActivity: activity.lastHumanActivity || 0,
+      lastHumanReply: activity.lastHumanReply || 0,
+      activityType: activity.activityType || null
+    };
+  } catch (error) {
+    logger.error({ vendorId, customerId, error }, 'Failed to get vendor activity');
+    return {
+      lastHumanActivity: 0,
+      lastHumanReply: 0,
+      activityType: null
+    };
+  }
+}
+
+/**
+ * Get VIP contacts list for a vendor
+ */
+async function getVIPContacts(vendorId) {
+  try {
+    const result = await db.query(
+      'SELECT vip_contacts FROM vendor_settings WHERE vendor_id = $1',
+      [vendorId]
+    );
+
+    if (result.rows.length === 0 || !result.rows[0].vip_contacts) {
+      return [];
+    }
+
+    return result.rows[0].vip_contacts; // Array of phone numbers
+  } catch (error) {
+    logger.error({ vendorId, error }, 'Failed to get VIP contacts');
+    return [];
+  }
+}
+
+/**
+ * Get vendor AI settings (silence timeout, etc.)
+ */
+async function getVendorSettings(vendorId) {
+  try {
+    const result = await db.query(
+      'SELECT ai_silence_timeout, ai_enabled FROM vendor_settings WHERE vendor_id = $1',
+      [vendorId]
+    );
+
+    if (result.rows.length === 0) {
+      // Default settings
+      return {
+        silenceTimeout: 5, // minutes
+        aiEnabled: true
+      };
+    }
+
+    return {
+      silenceTimeout: result.rows[0].ai_silence_timeout || 5,
+      aiEnabled: result.rows[0].ai_enabled !== false
+    };
+  } catch (error) {
+    logger.error({ vendorId, error }, 'Failed to get vendor settings');
+    return {
+      silenceTimeout: 5,
+      aiEnabled: true
+    };
+  }
+}
+
+/**
+ * CORE LOGIC: Decide if AI should respond based on priority rules
+ *
+ * Priority Rules (in order):
+ * 1. Vendor typing or active in last 60 seconds → AI silent
+ * 2. Message starts with /ai or ! → Force AI response
+ * 3. Customer is VIP/pinned → Forward to vendor only, AI silent
+ * 4. Long silence (> X minutes) → AI responds
+ * 5. Message is media/voice/location → Vendor only
+ * 6. Default → AI responds
+ */
+async function shouldAIRespond(message, vendorId, customerId) {
+  const now = Date.now();
+
+  // Get vendor activity status
+  const activity = await getVendorActivity(vendorId, customerId);
+  const vendorSettings = await getVendorSettings(vendorId);
+
+  // Check if AI is globally disabled for this vendor
+  if (!vendorSettings.aiEnabled) {
+    logger.info({ vendorId, customerId }, 'AI disabled for vendor - forwarding to human');
+    return { shouldRespond: false, reason: 'ai_disabled' };
+  }
+
+  // PRIORITY 1: Human typing or active in last 60 seconds
+  if (now - activity.lastHumanActivity < 60_000) {
+    logger.info({
+      vendorId,
+      customerId,
+      timeSinceActivity: (now - activity.lastHumanActivity) / 1000
+    }, 'Vendor recently active - AI stays silent');
+    return { shouldRespond: false, reason: 'vendor_active' };
+  }
+
+  const messageText = message.message?.conversation ||
+                      message.message?.extendedTextMessage?.text ||
+                      '';
+
+  // PRIORITY 2: Force AI with command prefix
+  if (messageText.startsWith('/ai ') || messageText.startsWith('!')) {
+    logger.info({ vendorId, customerId }, 'Force AI command detected');
+    return { shouldRespond: true, reason: 'force_command', message: messageText.replace(/^(\/ai |!)/, '') };
+  }
+
+  // PRIORITY 3: VIP contacts → never AI
+  const vipContacts = await getVIPContacts(vendorId);
+  if (vipContacts.includes(customerId)) {
+    logger.info({ vendorId, customerId }, 'VIP contact - forwarding to vendor only');
+    return { shouldRespond: false, reason: 'vip_contact' };
+  }
+
+  // PRIORITY 4: Long silence → AI takes over
+  const silenceMs = vendorSettings.silenceTimeout * 60_000;
+  if (activity.lastHumanReply === 0 || (now - activity.lastHumanReply > silenceMs)) {
+    logger.info({
+      vendorId,
+      customerId,
+      silenceMinutes: vendorSettings.silenceTimeout
+    }, 'Silence timeout exceeded - AI responding');
+    return { shouldRespond: true, reason: 'silence_timeout' };
+  }
+
+  // PRIORITY 5: Media/voice/location → human only
+  const messageType = Object.keys(message.message || {})[0];
+  const humanOnlyTypes = ['imageMessage', 'videoMessage', 'audioMessage', 'documentMessage', 'locationMessage', 'stickerMessage'];
+
+  if (humanOnlyTypes.includes(messageType)) {
+    logger.info({ vendorId, customerId, messageType }, 'Media message - forwarding to vendor only');
+    return { shouldRespond: false, reason: 'media_message', messageType };
+  }
+
+  // PRIORITY 6: Default - AI responds
+  logger.info({ vendorId, customerId }, 'Default rule - AI responding');
+  return { shouldRespond: true, reason: 'default' };
+}
+
+// ============================================================================
 // WHATSAPP CONNECTION (per vendor)
 // ============================================================================
 
@@ -236,7 +422,14 @@ async function connectVendor(vendorId) {
   // Incoming messages
   sock.ev.on('messages.upsert', async ({ messages }) => {
     for (const msg of messages) {
-      if (!msg.message || msg.key.fromMe) continue;
+      if (!msg.message || msg.key.fromMe) {
+        // Track vendor's own messages as human activity
+        if (msg.key.fromMe && msg.key.remoteJid) {
+          await updateVendorActivity(vendorId, msg.key.remoteJid, 'message');
+          logger.debug({ vendorId, customerId: msg.key.remoteJid }, 'Vendor sent message - activity tracked');
+        }
+        continue;
+      }
 
       const customerId = msg.key.remoteJid;
       const messageContent = msg.message.conversation ||
@@ -268,23 +461,62 @@ async function connectVendor(vendorId) {
         continue;
       }
 
+      // HUMAN-IN-THE-LOOP: Check if AI should respond
+      const aiDecision = await shouldAIRespond(msg, vendorId, customerId);
+
+      if (!aiDecision.shouldRespond) {
+        logger.info({
+          vendorId,
+          customerId,
+          reason: aiDecision.reason,
+          messageType: aiDecision.messageType
+        }, '🧑 Human mode - AI staying silent');
+
+        // Forward to n8n for vendor notification (dashboard, WhatsApp forward, etc.)
+        try {
+          await axios.post(config.n8nWebhookUrl, {
+            event: 'vendor_notification',
+            vendorId,
+            customerId,
+            message: messageContent,
+            reason: aiDecision.reason,
+            messageType: aiDecision.messageType || 'text',
+            timestamp: Date.now(),
+            rawMessage: msg.message
+          }, {
+            timeout: 5000,
+            headers: { 'Content-Type': 'application/json' }
+          });
+
+          logger.info({ vendorId, customerId }, 'Message forwarded to vendor for manual handling');
+        } catch (error) {
+          logger.error({ vendorId, customerId, error }, 'Failed to notify vendor');
+        }
+
+        continue;
+      }
+
       // Load conversation history from Redis
       const history = await getConversationHistory(vendorId, customerId);
 
-      // Forward to n8n for AI processing
+      // AI MODE: Forward to n8n for AI processing
       try {
         await sock.sendPresenceUpdate('composing', customerId);
+
+        // Use overridden message if force command was used
+        const finalMessage = aiDecision.message || messageContent;
 
         const payload = {
           vendorId,
           customerId,
-          message: messageContent,
+          message: finalMessage,
           channel: 'whatsapp',
           conversationHistory: history,
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          aiReason: aiDecision.reason
         };
 
-        logger.debug({ payload }, 'Forwarding to n8n');
+        logger.debug({ payload }, 'Forwarding to n8n for AI response');
 
         const response = await axios.post(config.n8nWebhookUrl, payload, {
           timeout: 30000,
@@ -315,7 +547,7 @@ async function connectVendor(vendorId) {
         history.push({ role: 'assistant', content: aiResponse });
         await saveConversationHistory(vendorId, customerId, history);
 
-        logger.info({ vendorId, customerId }, '✅ AI response sent');
+        logger.info({ vendorId, customerId, reason: aiDecision.reason }, '✅ AI response sent');
 
       } catch (error) {
         logger.error({ vendorId, customerId, error }, 'Failed to process message with AI');
@@ -454,6 +686,187 @@ app.post('/vendor/disconnect', async (req, res) => {
     res.json({ success: true, vendorId });
   } catch (error) {
     logger.error({ vendorId, error }, 'Failed to disconnect vendor');
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============================================================================
+// HUMAN-IN-THE-LOOP API ENDPOINTS
+// ============================================================================
+
+// Update vendor AI settings
+app.post('/vendor/settings', async (req, res) => {
+  const { vendorId, aiEnabled, silenceTimeout } = req.body;
+
+  if (!vendorId) {
+    return res.status(400).json({ error: 'vendorId required' });
+  }
+
+  try {
+    await db.query(
+      `INSERT INTO vendor_settings (vendor_id, ai_enabled, ai_silence_timeout)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (vendor_id)
+       DO UPDATE SET ai_enabled = $2, ai_silence_timeout = $3`,
+      [vendorId, aiEnabled !== undefined ? aiEnabled : true, silenceTimeout || 5]
+    );
+
+    logger.info({ vendorId, aiEnabled, silenceTimeout }, 'Vendor settings updated');
+
+    res.json({
+      success: true,
+      settings: {
+        aiEnabled: aiEnabled !== undefined ? aiEnabled : true,
+        silenceTimeout: silenceTimeout || 5
+      }
+    });
+  } catch (error) {
+    logger.error({ vendorId, error }, 'Failed to update vendor settings');
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get vendor settings
+app.get('/vendor/settings/:vendorId', async (req, res) => {
+  const { vendorId } = req.params;
+
+  try {
+    const settings = await getVendorSettings(vendorId);
+    const vipContacts = await getVIPContacts(vendorId);
+
+    res.json({
+      success: true,
+      settings: {
+        aiEnabled: settings.aiEnabled,
+        silenceTimeout: settings.silenceTimeout,
+        vipContacts: vipContacts || []
+      }
+    });
+  } catch (error) {
+    logger.error({ vendorId, error }, 'Failed to get vendor settings');
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Add VIP contact
+app.post('/vendor/vip/add', async (req, res) => {
+  const { vendorId, contactId } = req.body;
+
+  if (!vendorId || !contactId) {
+    return res.status(400).json({ error: 'vendorId and contactId required' });
+  }
+
+  try {
+    // Get current VIP contacts
+    const currentVIPs = await getVIPContacts(vendorId);
+
+    // Add new contact if not already VIP
+    if (!currentVIPs.includes(contactId)) {
+      currentVIPs.push(contactId);
+    }
+
+    await db.query(
+      `INSERT INTO vendor_settings (vendor_id, vip_contacts)
+       VALUES ($1, $2)
+       ON CONFLICT (vendor_id)
+       DO UPDATE SET vip_contacts = $2`,
+      [vendorId, currentVIPs]
+    );
+
+    logger.info({ vendorId, contactId }, 'VIP contact added');
+
+    res.json({
+      success: true,
+      vipContacts: currentVIPs
+    });
+  } catch (error) {
+    logger.error({ vendorId, contactId, error }, 'Failed to add VIP contact');
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Remove VIP contact
+app.post('/vendor/vip/remove', async (req, res) => {
+  const { vendorId, contactId } = req.body;
+
+  if (!vendorId || !contactId) {
+    return res.status(400).json({ error: 'vendorId and contactId required' });
+  }
+
+  try {
+    // Get current VIP contacts
+    const currentVIPs = await getVIPContacts(vendorId);
+
+    // Remove contact
+    const updatedVIPs = currentVIPs.filter(c => c !== contactId);
+
+    await db.query(
+      `UPDATE vendor_settings SET vip_contacts = $1 WHERE vendor_id = $2`,
+      [updatedVIPs, vendorId]
+    );
+
+    logger.info({ vendorId, contactId }, 'VIP contact removed');
+
+    res.json({
+      success: true,
+      vipContacts: updatedVIPs
+    });
+  } catch (error) {
+    logger.error({ vendorId, contactId, error }, 'Failed to remove VIP contact');
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Manually trigger AI response for a specific conversation
+app.post('/vendor/force-ai', async (req, res) => {
+  const { vendorId, customerId } = req.body;
+
+  if (!vendorId || !customerId) {
+    return res.status(400).json({ error: 'vendorId and customerId required' });
+  }
+
+  try {
+    // Clear recent activity to allow AI
+    await redis.del(`activity:${vendorId}:${customerId}`);
+
+    logger.info({ vendorId, customerId }, 'AI force-enabled for conversation');
+
+    res.json({
+      success: true,
+      message: 'AI will respond to next customer message'
+    });
+  } catch (error) {
+    logger.error({ vendorId, customerId, error }, 'Failed to force AI');
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Pause AI for a conversation (vendor taking over)
+app.post('/vendor/pause-ai', async (req, res) => {
+  const { vendorId, customerId, durationMinutes } = req.body;
+
+  if (!vendorId || !customerId) {
+    return res.status(400).json({ error: 'vendorId and customerId required' });
+  }
+
+  try {
+    // Update activity to mark vendor as active
+    await updateVendorActivity(vendorId, customerId, 'manual_pause');
+
+    // If duration specified, set expiry
+    if (durationMinutes && durationMinutes > 0) {
+      const key = `activity:${vendorId}:${customerId}`;
+      await redis.expire(key, durationMinutes * 60);
+    }
+
+    logger.info({ vendorId, customerId, durationMinutes }, 'AI paused for conversation');
+
+    res.json({
+      success: true,
+      message: `AI paused${durationMinutes ? ` for ${durationMinutes} minutes` : ''}`
+    });
+  } catch (error) {
+    logger.error({ vendorId, customerId, error }, 'Failed to pause AI');
     res.status(500).json({ error: error.message });
   }
 });
