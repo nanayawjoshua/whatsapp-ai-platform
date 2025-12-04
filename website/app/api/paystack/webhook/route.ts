@@ -119,6 +119,163 @@ async function handleChargeSuccess(data: any) {
   } catch (error) {
     console.error('Error notifying n8n:', error);
   }
+
+  // Auto-subscribe customer to recurring plan after first payment
+  await autoSubscribeCustomer(data);
+}
+
+/**
+ * Automatically subscribe customer to monthly plan with 7-day trial
+ */
+async function autoSubscribeCustomer(paymentData: any) {
+  try {
+    console.log('Auto-subscribing customer:', paymentData.customer.email);
+
+    // Calculate start date (7 days from now for free trial)
+    const trialEndDate = new Date();
+    trialEndDate.setDate(trialEndDate.getDate() + 7);
+    const startDate = trialEndDate.toISOString();
+
+    // Get the authorization code from the payment
+    const authorizationCode = paymentData.authorization?.authorization_code;
+
+    if (!authorizationCode) {
+      console.error('No authorization code found in payment data');
+      return;
+    }
+
+    // Subscribe to monthly plan
+    // Note: You need to create a plan first via Paystack dashboard or API
+    // Plan code should be stored in environment variable
+    const planCode = process.env.PAYSTACK_MONTHLY_PLAN_CODE || 'PLN_beeline_monthly_99';
+
+    const subscriptionPayload = {
+      customer: paymentData.customer.email,
+      plan: planCode,
+      authorization: authorizationCode,
+      start_date: startDate,
+    };
+
+    console.log('Creating subscription with 7-day trial:', {
+      customer: paymentData.customer.email,
+      plan: planCode,
+      trial_ends: startDate,
+    });
+
+    const paystackResponse = await fetch('https://api.paystack.co/subscription', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.PAYSTACK_SECRET}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(subscriptionPayload),
+    });
+
+    const result = await paystackResponse.json();
+
+    if (!paystackResponse.ok) {
+      console.error('Failed to create subscription:', result);
+
+      // If plan doesn't exist, try to create it
+      if (result.message?.includes('Plan') || result.message?.includes('plan')) {
+        console.log('Creating monthly plan...');
+        await createMonthlyPlan();
+
+        // Retry subscription after plan creation
+        const retryResponse = await fetch('https://api.paystack.co/subscription', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${process.env.PAYSTACK_SECRET}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(subscriptionPayload),
+        });
+
+        const retryResult = await retryResponse.json();
+        if (retryResponse.ok) {
+          console.log('Subscription created successfully on retry:', retryResult.data.subscription_code);
+          await notifyN8nOfSubscription(retryResult.data, paymentData);
+        } else {
+          console.error('Subscription retry failed:', retryResult);
+        }
+      }
+      return;
+    }
+
+    console.log('Subscription created successfully:', {
+      subscription_code: result.data.subscription_code,
+      next_payment: result.data.next_payment_date,
+    });
+
+    // Notify n8n of subscription creation
+    await notifyN8nOfSubscription(result.data, paymentData);
+
+  } catch (error) {
+    console.error('Error auto-subscribing customer:', error);
+  }
+}
+
+/**
+ * Create the monthly subscription plan if it doesn't exist
+ */
+async function createMonthlyPlan() {
+  try {
+    const planResponse = await fetch('https://api.paystack.co/plan', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.PAYSTACK_SECRET}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: 'Beeline Monthly Subscription',
+        amount: 9900, // GHS 99 in pesewas
+        interval: 'monthly',
+        currency: 'GHS',
+        description: 'Monthly AI WhatsApp Assistant subscription',
+        send_invoices: true,
+        send_sms: false,
+      }),
+    });
+
+    const planData = await planResponse.json();
+
+    if (planResponse.ok) {
+      console.log('Monthly plan created:', planData.data.plan_code);
+      console.log('⚠️ IMPORTANT: Add this to your .env.local and Vercel:');
+      console.log(`PAYSTACK_MONTHLY_PLAN_CODE=${planData.data.plan_code}`);
+    } else {
+      console.error('Failed to create plan:', planData);
+    }
+  } catch (error) {
+    console.error('Error creating monthly plan:', error);
+  }
+}
+
+/**
+ * Notify n8n of subscription creation
+ */
+async function notifyN8nOfSubscription(subscriptionData: any, paymentData: any) {
+  try {
+    await fetch(process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || '', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: 'subscription_auto_created',
+        subscription_code: subscriptionData.subscription_code,
+        customer: subscriptionData.customer,
+        plan: subscriptionData.plan,
+        next_payment_date: subscriptionData.next_payment_date,
+        status: subscriptionData.status,
+        initial_payment: {
+          reference: paymentData.reference,
+          amount: paymentData.amount / 100,
+        },
+      }),
+    });
+    console.log('Notified n8n of subscription creation');
+  } catch (error) {
+    console.error('Error notifying n8n of subscription:', error);
+  }
 }
 
 /**

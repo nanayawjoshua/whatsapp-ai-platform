@@ -8,7 +8,7 @@ Your Paystack API keys are ready. Follow these steps to configure Vercel:
 
 Go to: https://vercel.com/dashboard → Select your project → Settings → Environment Variables
 
-Add these **3 variables** for **Production, Preview, and Development**:
+Add these **4 variables** for **Production, Preview, and Development**:
 
 #### Variable 1: NEXT_PUBLIC_PAYSTACK_PUBLIC
 ```
@@ -29,6 +29,14 @@ sk_live_cedbde60a9e5d578f81ac33bc6a01e91c055ddf9
 **Environments:** ✅ Production ✅ Preview ✅ Development
 
 **Note:** For Paystack, the webhook secret is the same as your Live Secret Key.
+
+#### Variable 4: PAYSTACK_MONTHLY_PLAN_CODE
+```
+PLN_beeline_monthly_99
+```
+**Environments:** ✅ Production ✅ Preview ✅ Development
+
+**Note:** This plan code will be auto-created on the first payment if it doesn't exist. You can also create it manually in Paystack dashboard.
 
 **⚠️ IMPORTANT:** These are LIVE keys. Real payments will be processed!
 
