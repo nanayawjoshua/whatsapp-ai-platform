@@ -24,9 +24,11 @@ sk_live_cedbde60a9e5d578f81ac33bc6a01e91c055ddf9
 
 #### Variable 3: PAYSTACK_WEBHOOK_SECRET
 ```
-(Get this from Paystack dashboard after setting up live webhook - see step 2 below)
+sk_live_cedbde60a9e5d578f81ac33bc6a01e91c055ddf9
 ```
 **Environments:** ✅ Production ✅ Preview ✅ Development
+
+**Note:** For Paystack, the webhook secret is the same as your Live Secret Key.
 
 **⚠️ IMPORTANT:** These are LIVE keys. Real payments will be processed!
 
