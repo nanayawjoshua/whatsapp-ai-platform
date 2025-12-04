@@ -12,23 +12,23 @@ Add these **3 variables** for **Production, Preview, and Development**:
 
 #### Variable 1: NEXT_PUBLIC_PAYSTACK_PUBLIC
 ```
-pk_test_cf6359045b18e7c7141a67ca3fd4c6837cc7d6f1
+pk_live_f2697bf774330cae809ca0a9135f680b13d95f9e
 ```
 **Environments:** ✅ Production ✅ Preview ✅ Development
 
 #### Variable 2: PAYSTACK_SECRET
 ```
-sk_test_f6a1c8d88643475abdbf16f3c6249278554e8e87
+sk_live_cedbde60a9e5d578f81ac33bc6a01e91c055ddf9
 ```
 **Environments:** ✅ Production ✅ Preview ✅ Development
 
 #### Variable 3: PAYSTACK_WEBHOOK_SECRET
 ```
-test_webhook_secret_pending_activation
+(Get this from Paystack dashboard after setting up live webhook - see step 2 below)
 ```
 **Environments:** ✅ Production ✅ Preview ✅ Development
 
-**Note:** The webhook secret will be updated once Paystack business activation is complete.
+**⚠️ IMPORTANT:** These are LIVE keys. Real payments will be processed!
 
 ### 2. Set Up Paystack Webhook
 
@@ -67,21 +67,23 @@ git push
 
 ### 4. Test Payment Flow
 
-Once deployed, test the payment:
+Once deployed, you're in **LIVE MODE** - real payments will be processed!
 
+#### For Testing (Use Real Card):
 1. Go to: https://beeline.works/signup
 2. Fill in the signup form (steps 1-3)
 3. Click "Pay GHS 99 & Continue"
-4. Use Paystack test card:
-   - **Card Number:** 5060666666666666666
-   - **CVV:** 123
-   - **Expiry:** 12/25 (any future date)
-   - **PIN:** 1234 (if prompted)
+4. **Use a real card** (charges will be real):
+   - Enter your actual card details
+   - Complete 3D Secure verification if prompted
 
 5. After successful payment:
    - You should see the QR code (step 4)
-   - Check webhook was received in Paystack dashboard
+   - Check transaction in Paystack dashboard (Transactions → Live)
+   - Verify webhook was received
    - Verify n8n received the vendor data
+
+**⚠️ WARNING:** You are now in LIVE mode. All payments are REAL. Only test with amounts you're willing to charge.
 
 ## Environment Variables Reference
 

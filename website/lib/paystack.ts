@@ -123,8 +123,8 @@ export async function openPaystackPopup(
     // Initialize payment
     const initResponse = await initializePayment(params);
 
-    // Use hardcoded public key for now (will be replaced with env var)
-    const publicKey = 'pk_test_cf6359045b18e7c7141a67ca3fd4c6837cc7d6f1';
+    // Use live public key (PRODUCTION)
+    const publicKey = 'pk_live_f2697bf774330cae809ca0a9135f680b13d95f9e';
 
     console.log('Initializing Paystack with key:', publicKey.substring(0, 15) + '...');
 
