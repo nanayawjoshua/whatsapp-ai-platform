@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { GiHoneypot } from 'react-icons/gi';
 import { FaWhatsapp, FaPhone, FaUser, FaStore, FaMicrophone } from 'react-icons/fa';
+import ThemeToggle from '../components/ThemeToggle';
 
 type PersonalityStyle = 'casual' | 'formal' | 'twi-heavy';
 
@@ -67,18 +68,21 @@ export default function SignupPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-soft">
+    <div className="min-h-screen bg-gradient-soft dark:bg-dark-bg">
       {/* Header */}
-      <nav className="bg-white/90 backdrop-blur-sm border-b border-gray-200 shadow-soft">
+      <nav className="bg-white/90 dark:bg-dark-bg/90 backdrop-blur-sm border-b border-gray-200 dark:border-dark-border shadow-soft">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2">
               <GiHoneypot className="text-4xl text-beeline-yellow" />
-              <span className="text-2xl font-bold text-beeline-black">Beeline</span>
+              <span className="text-2xl font-bold text-beeline-black dark:text-dark-text">Beeline</span>
             </Link>
-            <Link href="/" className="text-gray-600 hover:text-beeline-black transition-colors duration-200">
-              Back to Home
-            </Link>
+            <div className="flex items-center gap-4">
+              <ThemeToggle />
+              <Link href="/" className="text-gray-600 dark:text-dark-text-secondary hover:text-beeline-black dark:hover:text-dark-text transition-colors duration-200">
+                Back to Home
+              </Link>
+            </div>
           </div>
         </div>
       </nav>
@@ -126,14 +130,14 @@ export default function SignupPage() {
         {/* Step 1: Basic Info */}
         {step === 1 && (
           <div className="card p-8 sm:p-10">
-            <h2 className="text-3xl font-bold text-beeline-black mb-2">
+            <h2 className="text-3xl font-bold text-beeline-black dark:text-dark-text mb-2">
               Tell Us About Your Business
             </h2>
             <p className="text-gray-600 mb-8 leading-relaxed">This helps us create your perfect AI employee</p>
 
             <div className="space-y-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-2">
                   <FaUser className="inline mr-2" />
                   Your Name
                 </label>
@@ -149,7 +153,7 @@ export default function SignupPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-2">
                   <FaPhone className="inline mr-2" />
                   WhatsApp Phone Number
                 </label>
@@ -168,7 +172,7 @@ export default function SignupPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-2">
                   <FaStore className="inline mr-2" />
                   What Do You Sell?
                 </label>
@@ -204,7 +208,7 @@ export default function SignupPage() {
         {/* Step 2: Voice Note */}
         {step === 2 && (
           <div className="card p-8 sm:p-10">
-            <h2 className="text-3xl font-bold text-beeline-black mb-2">
+            <h2 className="text-3xl font-bold text-beeline-black dark:text-dark-text mb-2">
               Tell Us What You Sell
             </h2>
             <p className="text-gray-600 mb-8 leading-relaxed">
@@ -258,7 +262,7 @@ export default function SignupPage() {
         {/* Step 3: Personality Selection */}
         {step === 3 && (
           <div className="card p-8 sm:p-10">
-            <h2 className="text-3xl font-bold text-beeline-black mb-2">
+            <h2 className="text-3xl font-bold text-beeline-black dark:text-dark-text mb-2">
               Choose Your AI's Personality
             </h2>
             <p className="text-gray-600 mb-8 leading-relaxed">
@@ -273,11 +277,11 @@ export default function SignupPage() {
                   className={`border-2 rounded-xl p-6 cursor-pointer transition-all duration-300 transform hover:-translate-y-1 ${
                     selectedPersonality === personality.id
                       ? 'border-beeline-yellow bg-gradient-to-br from-beeline-yellow-light to-beeline-cream shadow-hover'
-                      : 'border-gray-200 hover:border-beeline-yellow/50 hover:shadow-medium bg-white'
+                      : 'border-gray-200 dark:border-dark-border hover:border-beeline-yellow/50 hover:shadow-medium bg-white'
                   }`}
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <h3 className="text-xl font-bold text-beeline-black">{personality.name}</h3>
+                    <h3 className="text-xl font-bold text-beeline-black dark:text-dark-text">{personality.name}</h3>
                     <div
                       className={`w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                         selectedPersonality === personality.id
@@ -320,10 +324,10 @@ export default function SignupPage() {
               <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-medium">
                 <span className="text-4xl text-white">✓</span>
               </div>
-              <h2 className="text-3xl font-bold text-beeline-black mb-2">
+              <h2 className="text-3xl font-bold text-beeline-black dark:text-dark-text mb-2">
                 Almost There!
               </h2>
-              <p className="text-gray-600 leading-relaxed">
+              <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">
                 Scan this QR code with your WhatsApp to connect your AI employee
               </p>
             </div>

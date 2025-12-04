@@ -10,12 +10,28 @@
   --beeline-black: #1a1a1a;
   --beeline-gray: #F0F3F5;
   --beeline-gray-light: #F8FAFB;
+
+  /* Light mode */
+  --bg-primary: white;
+  --bg-secondary: #F8FAFB;
+  --text-primary: #1a1a1a;
+  --text-secondary: #4b5563;
+  --border-color: #e5e7eb;
+}
+
+.dark {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #1a1a1a;
+  --text-primary: #e5e5e5;
+  --text-secondary: #a3a3a3;
+  --border-color: #333333;
 }
 
 body {
-  color: var(--beeline-black);
-  background: white;
+  color: var(--text-primary);
+  background: var(--bg-primary);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 @layer utilities {
@@ -30,7 +46,7 @@ body {
   }
 
   .btn-secondary {
-    @apply bg-beeline-black text-white font-semibold px-8 py-4 rounded-lg hover:bg-gray-800 transition-all duration-300 shadow-soft hover:shadow-medium;
+    @apply bg-beeline-black text-white font-semibold px-8 py-4 rounded-lg hover:bg-gray-800 transition-all duration-300 shadow-soft hover:shadow-medium dark:bg-dark-bg-tertiary dark:hover:bg-gray-700;
   }
 
   .section-container {
@@ -38,6 +54,6 @@ body {
   }
 
   .card {
-    @apply bg-white rounded-2xl shadow-soft hover:shadow-hover transition-all duration-300 transform hover:-translate-y-1;
+    @apply bg-white rounded-2xl shadow-soft hover:shadow-hover transition-all duration-300 transform hover:-translate-y-1 dark:bg-dark-bg-secondary dark:shadow-lg dark:border dark:border-dark-border;
   }
 }

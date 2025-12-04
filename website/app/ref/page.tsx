@@ -5,21 +5,23 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { GiHoneypot } from 'react-icons/gi';
 import { FaWhatsapp, FaGift } from 'react-icons/fa';
+import ThemeToggle from '../components/ThemeToggle';
 
 function ReferralContent() {
   const searchParams = useSearchParams();
   const referrerId = searchParams.get('ref') || 'vendor';
 
   return (
-    <div className="min-h-screen bg-gradient-warm">
+    <div className="min-h-screen bg-gradient-warm dark:bg-gradient-to-b dark:from-dark-bg dark:to-dark-bg-secondary">
       {/* Header */}
-      <nav className="bg-white/90 backdrop-blur-sm border-b border-gray-200 shadow-soft">
+      <nav className="bg-white/90 dark:bg-dark-bg/90 backdrop-blur-sm border-b border-gray-200 dark:border-dark-border shadow-soft">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex items-center space-x-2">
               <GiHoneypot className="text-4xl text-beeline-yellow" />
-              <span className="text-2xl font-bold text-beeline-black">Beeline</span>
+              <span className="text-2xl font-bold text-beeline-black dark:text-dark-text">Beeline</span>
             </Link>
+            <ThemeToggle />
           </div>
         </div>
       </nav>
@@ -32,15 +34,15 @@ function ReferralContent() {
         </div>
 
         {/* Headline */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-beeline-black mb-6 leading-tight">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-beeline-black dark:text-dark-text mb-6 leading-tight">
           You've Been Invited! 🎉
         </h1>
 
-        <p className="text-xl sm:text-2xl text-gray-800 mb-4 font-semibold">
+        <p className="text-xl sm:text-2xl text-gray-800 dark:text-dark-text mb-4 font-semibold">
           A fellow vendor thinks you'd love Beeline
         </p>
 
-        <p className="text-lg text-gray-700 mb-12 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-lg text-gray-700 dark:text-dark-text-secondary mb-12 max-w-2xl mx-auto leading-relaxed">
           They're using Beeline to handle customers 24/7 with an AI employee on WhatsApp.
           Now it's your turn!
         </p>
@@ -50,7 +52,7 @@ function ReferralContent() {
           <div className="absolute top-0 right-0 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark text-white text-xs font-bold px-4 py-1.5 rounded-bl-lg shadow-medium">
             SPECIAL INVITE
           </div>
-          <h2 className="text-2xl font-bold text-beeline-black mb-6">
+          <h2 className="text-2xl font-bold text-beeline-black dark:text-dark-text mb-6">
             Your Special Offer
           </h2>
 
@@ -60,8 +62,8 @@ function ReferralContent() {
                 <span className="text-2xl text-white font-bold">✓</span>
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-1 text-beeline-black">7 Days Completely Free</h3>
-                <p className="text-gray-600 leading-relaxed">
+                <h3 className="font-bold text-lg mb-1 text-beeline-black dark:text-dark-text">7 Days Completely Free</h3>
+                <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">
                   Full access to everything. No credit card needed.
                 </p>
               </div>
@@ -72,8 +74,8 @@ function ReferralContent() {
                 <span className="text-2xl text-white font-bold">✓</span>
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-1 text-beeline-black">Setup in 2 Minutes</h3>
-                <p className="text-gray-600 leading-relaxed">
+                <h3 className="font-bold text-lg mb-1 text-beeline-black dark:text-dark-text">Setup in 2 Minutes</h3>
+                <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">
                   Scan a QR code with WhatsApp and you're live.
                 </p>
               </div>
@@ -84,8 +86,8 @@ function ReferralContent() {
                 <span className="text-2xl text-white font-bold">✓</span>
               </div>
               <div>
-                <h3 className="font-bold text-lg mb-1 text-beeline-black">Your Referrer Gets 7 Days Free</h3>
-                <p className="text-gray-600 leading-relaxed">
+                <h3 className="font-bold text-lg mb-1 text-beeline-black dark:text-dark-text">Your Referrer Gets 7 Days Free</h3>
+                <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">
                   When you sign up, vendor <span className="font-mono bg-beeline-yellow px-2 py-1 rounded shadow-soft">{referrerId}</span> gets 7 extra days free!
                 </p>
               </div>
@@ -103,49 +105,49 @@ function ReferralContent() {
 
         {/* What You Get */}
         <div className="bg-white rounded-2xl p-8 max-w-2xl mx-auto shadow-soft">
-          <h3 className="text-2xl font-bold text-beeline-black mb-8">
+          <h3 className="text-2xl font-bold text-beeline-black dark:text-dark-text mb-8">
             What You Get with Beeline
           </h3>
 
           <div className="grid sm:grid-cols-2 gap-5 text-left">
             <div className="p-4 bg-gradient-to-br from-beeline-cream to-white rounded-xl border border-beeline-yellow/20 hover:shadow-medium transition-all duration-300">
-              <h4 className="font-bold text-lg mb-2 text-beeline-black">🤖 24/7 AI Employee</h4>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <h4 className="font-bold text-lg mb-2 text-beeline-black dark:text-dark-text">🤖 24/7 AI Employee</h4>
+              <p className="text-gray-600 dark:text-dark-text-secondary text-sm leading-relaxed">
                 Answers customers instantly, even at 3am
               </p>
             </div>
 
             <div className="p-4 bg-gradient-to-br from-beeline-cream to-white rounded-xl border border-beeline-yellow/20 hover:shadow-medium transition-all duration-300">
-              <h4 className="font-bold text-lg mb-2 text-beeline-black">💬 English & Twi</h4>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <h4 className="font-bold text-lg mb-2 text-beeline-black dark:text-dark-text">💬 English & Twi</h4>
+              <p className="text-gray-600 dark:text-dark-text-secondary text-sm leading-relaxed">
                 Speaks naturally with your customers
               </p>
             </div>
 
             <div className="p-4 bg-gradient-to-br from-beeline-cream to-white rounded-xl border border-beeline-yellow/20 hover:shadow-medium transition-all duration-300">
-              <h4 className="font-bold text-lg mb-2 text-beeline-black">📱 Your WhatsApp Number</h4>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <h4 className="font-bold text-lg mb-2 text-beeline-black dark:text-dark-text">📱 Your WhatsApp Number</h4>
+              <p className="text-gray-600 dark:text-dark-text-secondary text-sm leading-relaxed">
                 No new number needed - use what you have
               </p>
             </div>
 
             <div className="p-4 bg-gradient-to-br from-beeline-cream to-white rounded-xl border border-beeline-yellow/20 hover:shadow-medium transition-all duration-300">
-              <h4 className="font-bold text-lg mb-2 text-beeline-black">💰 Just GHS 99/month</h4>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <h4 className="font-bold text-lg mb-2 text-beeline-black dark:text-dark-text">💰 Just GHS 99/month</h4>
+              <p className="text-gray-600 dark:text-dark-text-secondary text-sm leading-relaxed">
                 Cheaper than hiring anyone
               </p>
             </div>
 
             <div className="p-4 bg-gradient-to-br from-beeline-cream to-white rounded-xl border border-beeline-yellow/20 hover:shadow-medium transition-all duration-300">
-              <h4 className="font-bold text-lg mb-2 text-beeline-black">🛒 Takes Orders</h4>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <h4 className="font-bold text-lg mb-2 text-beeline-black dark:text-dark-text">🛒 Takes Orders</h4>
+              <p className="text-gray-600 dark:text-dark-text-secondary text-sm leading-relaxed">
                 Handles product questions & orders
               </p>
             </div>
 
             <div className="p-4 bg-gradient-to-br from-beeline-cream to-white rounded-xl border border-beeline-yellow/20 hover:shadow-medium transition-all duration-300">
-              <h4 className="font-bold text-lg mb-2 text-beeline-black">🚫 Cancel Anytime</h4>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <h4 className="font-bold text-lg mb-2 text-beeline-black dark:text-dark-text">🚫 Cancel Anytime</h4>
+              <p className="text-gray-600 dark:text-dark-text-secondary text-sm leading-relaxed">
                 No long-term commitment required
               </p>
             </div>
@@ -166,7 +168,7 @@ function ReferralContent() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-beeline-black text-white py-12 mt-16">
+      <footer className="bg-beeline-black dark:bg-dark-bg text-white py-12 mt-16">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="flex items-center justify-center space-x-2 mb-4">
             <GiHoneypot className="text-3xl text-beeline-yellow" />
