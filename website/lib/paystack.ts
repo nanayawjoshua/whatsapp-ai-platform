@@ -123,9 +123,14 @@ export async function openPaystackPopup(
     // Initialize payment
     const initResponse = await initializePayment(params);
 
+    // Use hardcoded public key for now (will be replaced with env var)
+    const publicKey = 'pk_test_cf6359045b18e7c7141a67ca3fd4c6837cc7d6f1';
+
+    console.log('Initializing Paystack with key:', publicKey.substring(0, 15) + '...');
+
     // Open popup
     const handler = (window as any).PaystackPop.setup({
-      key: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY,
+      key: publicKey,
       email: params.email,
       amount: params.amount * 100, // Convert to pesewas
       currency: 'GHS',
