@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Mark route as dynamic
+export const dynamic = 'force-dynamic';
+
 /**
  * Initialize Paystack Payment
  *
@@ -41,9 +44,9 @@ export async function POST(request: NextRequest) {
         currency: 'GHS',
         metadata: {
           ...metadata,
-          cancel_action: `${process.env.NEXT_PUBLIC_SITE_URL}/signup`,
+          cancel_action: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://beeline.works'}/signup`,
         },
-        callback_url: `${process.env.NEXT_PUBLIC_SITE_URL}/api/paystack/callback`,
+        callback_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://beeline.works'}/api/paystack/callback`,
       }),
     });
 

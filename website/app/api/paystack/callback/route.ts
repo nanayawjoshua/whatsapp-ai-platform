@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Mark route as dynamic
+export const dynamic = 'force-dynamic';
+
 /**
  * Paystack Payment Callback
  *
@@ -14,16 +17,18 @@ export async function GET(request: NextRequest) {
 
     const paymentReference = reference || trxref;
 
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://beeline.works';
+
     if (!paymentReference) {
       // Payment failed or cancelled
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_SITE_URL}/signup?payment=failed`
+        new URL('/signup?payment=failed', siteUrl)
       );
     }
 
     // Verify the payment with our API
     const verifyResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_SITE_URL}/api/paystack/verify?reference=${paymentReference}`,
+      `${siteUrl}/api/paystack/verify?reference=${paymentReference}`,
       {
         method: 'GET',
         headers: {
@@ -37,19 +42,20 @@ export async function GET(request: NextRequest) {
     if (verifyData.status && verifyData.data.status === 'success') {
       // Payment successful - redirect to signup with success status
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_SITE_URL}/signup?payment=success&reference=${paymentReference}`
+        new URL(`/signup?payment=success&reference=${paymentReference}`, siteUrl)
       );
     } else {
       // Payment failed
       return NextResponse.redirect(
-        `${process.env.NEXT_PUBLIC_SITE_URL}/signup?payment=failed`
+        new URL('/signup?payment=failed', siteUrl)
       );
     }
 
   } catch (error) {
     console.error('Callback error:', error);
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://beeline.works';
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_SITE_URL}/signup?payment=error`
+      new URL('/signup?payment=error', siteUrl)
     );
   }
 }

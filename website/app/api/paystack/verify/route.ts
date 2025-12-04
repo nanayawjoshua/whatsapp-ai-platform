@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Mark route as dynamic
+export const dynamic = 'force-dynamic';
+
 /**
  * Verify Paystack Payment
  *

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 
+// Mark route as dynamic
+export const dynamic = 'force-dynamic';
+
 /**
  * Paystack Webhook Handler
  *
