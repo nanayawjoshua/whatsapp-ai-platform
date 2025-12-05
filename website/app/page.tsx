@@ -41,7 +41,7 @@ export default function Home() {
 
             <p className="text-lg sm:text-xl text-gray-700 dark:text-dark-text-secondary mb-8 max-w-2xl mx-auto leading-relaxed">
               Turn your WhatsApp into a 24/7 AI employee. Answer customers, take orders,
-              and close deals while you sleep. For just <span className="font-bold text-beeline-black dark:text-beeline-yellow">GHS 99/month</span>.
+              and close deals while you sleep. Starting from <span className="font-bold text-beeline-black dark:text-beeline-yellow">GHS 49/month</span>.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
@@ -160,8 +160,8 @@ export default function Home() {
               </div>
               <h3 className="text-xl font-bold mb-3 text-beeline-black">Dirt Cheap</h3>
               <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">
-                GHS 99/month flat. No per-message fees. Cheaper than hiring anyone.
-                Pay for itself with just 5-10 extra sales.
+                From GHS 49/month flat. No per-message fees. Cheaper than hiring anyone.
+                Pays for itself with just 5-10 extra sales.
               </p>
             </div>
           </div>
@@ -233,67 +233,159 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="max-w-md mx-auto">
-            <div className="card p-10 border-2 border-beeline-yellow relative overflow-hidden">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {/* Personal Tier */}
+            <div className="card p-8 hover:shadow-hover transition-all duration-300">
+              <div className="text-center">
+                <h3 className="text-2xl font-bold mb-2 text-beeline-black dark:text-dark-text">Personal</h3>
+                <div className="flex items-baseline justify-center gap-2 mb-4">
+                  <span className="text-4xl font-bold text-beeline-yellow">GHS 49</span>
+                  <span className="text-gray-600 dark:text-dark-text-secondary font-medium">/month</span>
+                </div>
+                <p className="text-gray-600 dark:text-dark-text-secondary mb-6 text-sm">Your AI Assistant</p>
+
+                <ul className="text-left space-y-3 mb-8">
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Proactive reminders</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Message drafting</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Schedule management</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Context-aware responses</span>
+                  </li>
+                </ul>
+
+                <Link href="/signup" className="btn-secondary w-full text-center block">
+                  Get Started
+                </Link>
+              </div>
+            </div>
+
+            {/* Business Tier */}
+            <div className="card p-8 border-2 border-beeline-yellow relative overflow-hidden hover:shadow-hover transition-all duration-300 transform md:scale-105">
               <div className="absolute top-0 right-0 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark text-white text-xs font-bold px-4 py-1.5 rounded-bl-lg shadow-medium">
                 POPULAR
               </div>
               <div className="text-center">
-                <h3 className="text-2xl font-bold mb-2 text-beeline-black">AI Employee</h3>
-                <div className="flex items-baseline justify-center gap-2 mb-6">
-                  <span className="text-5xl font-bold bg-gradient-to-r from-beeline-yellow to-beeline-yellow-dark bg-clip-text text-transparent">GHS 99</span>
-                  <span className="text-gray-600 font-medium">/month</span>
+                <h3 className="text-2xl font-bold mb-2 text-beeline-black dark:text-dark-text">Business</h3>
+                <div className="flex items-baseline justify-center gap-2 mb-4">
+                  <span className="text-4xl font-bold bg-gradient-to-r from-beeline-yellow to-beeline-yellow-dark bg-clip-text text-transparent">GHS 99</span>
+                  <span className="text-gray-600 dark:text-dark-text-secondary font-medium">/month</span>
                 </div>
-                <p className="text-gray-600 mb-8">or $9 USD</p>
+                <p className="text-gray-600 dark:text-dark-text-secondary mb-6 text-sm">Your AI Employee</p>
 
-                <ul className="text-left space-y-4 mb-8">
-                  <li className="flex items-start gap-3 group">
-                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">✓</span>
+                <ul className="text-left space-y-3 mb-8">
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
                     </div>
-                    <span className="text-gray-700 leading-relaxed">Unlimited messages & conversations</span>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">24/7 customer service</span>
                   </li>
-                  <li className="flex items-start gap-3 group">
-                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">✓</span>
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
                     </div>
-                    <span className="text-gray-700 leading-relaxed">24/7 availability, no breaks</span>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Product catalog</span>
                   </li>
-                  <li className="flex items-start gap-3 group">
-                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">✓</span>
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
                     </div>
-                    <span className="text-gray-700 leading-relaxed">English & Twi support</span>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Order handling</span>
                   </li>
-                  <li className="flex items-start gap-3 group">
-                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">✓</span>
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
                     </div>
-                    <span className="text-gray-700 leading-relaxed">Your own WhatsApp number</span>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Voice-trained personality</span>
                   </li>
-                  <li className="flex items-start gap-3 group">
-                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">✓</span>
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
                     </div>
-                    <span className="text-gray-700 leading-relaxed">7-day free trial</span>
-                  </li>
-                  <li className="flex items-start gap-3 group">
-                    <div className="flex-shrink-0 w-6 h-6 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center">
-                      <span className="text-white text-sm font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 leading-relaxed">Cancel anytime</span>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">English & Twi support</span>
                   </li>
                 </ul>
 
-                <Link href="/signup" className="btn-primary w-full text-center block text-lg">
+                <Link href="/signup" className="btn-primary w-full text-center block">
                   Start Free Trial
                 </Link>
-
-                <p className="text-sm text-gray-500 mt-4">
-                  No credit card required for trial
-                </p>
               </div>
             </div>
+
+            {/* Enterprise Tier */}
+            <div className="card p-8 hover:shadow-hover transition-all duration-300">
+              <div className="text-center">
+                <h3 className="text-2xl font-bold mb-2 text-beeline-black dark:text-dark-text">Enterprise</h3>
+                <div className="flex items-baseline justify-center gap-2 mb-4">
+                  <span className="text-4xl font-bold text-beeline-yellow">GHS 599+</span>
+                  <span className="text-gray-600 dark:text-dark-text-secondary font-medium">/month</span>
+                </div>
+                <p className="text-gray-600 dark:text-dark-text-secondary mb-6 text-sm">Scale Without Limits</p>
+
+                <ul className="text-left space-y-3 mb-8">
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Everything in Business</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Multi-location dashboard</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Unlimited team members</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Advanced analytics</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-xs font-bold">✓</span>
+                    </div>
+                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Priority support</span>
+                  </li>
+                </ul>
+
+                <Link href="/signup" className="btn-secondary w-full text-center block">
+                  Contact Sales
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="text-gray-600 dark:text-dark-text-secondary mb-4">
+              <strong>Enterprise Tiers:</strong> Up to 5 locations (GHS 599) • Up to 12 locations (GHS 999) • Up to 25 locations (GHS 1,499) • Up to 60 locations (GHS 2,999)
+            </p>
+            <p className="text-sm text-gray-500 dark:text-dark-text-secondary">
+              Add unlimited locations within your tier - no extra charges!
+            </p>
           </div>
         </div>
       </section>
@@ -325,7 +417,10 @@ export default function Home() {
             <div className="text-center md:text-right">
               <p>© 2025 Beeline Ghana. Built with Honey in Accra.</p>
               <p className="text-sm mt-2">
-                Making African vendors unstoppable.
+                Powered by Beeline 🐝
+              </p>
+              <p className="text-sm mt-1 text-gray-500">
+                Building Africa's commerce graph — one message at a time
               </p>
             </div>
           </div>

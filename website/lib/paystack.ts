@@ -8,6 +8,10 @@ export interface PaymentMetadata {
   businessType: string;
   personality: string;
   referrerId?: string;
+  accountType?: string;
+  locations?: number;
+  planCode?: string;
+  planName?: string;
 }
 
 export interface InitializePaymentParams {

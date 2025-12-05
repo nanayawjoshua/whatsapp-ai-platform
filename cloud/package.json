@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node bridge-server.js",
     "dev": "NODE_ENV=development node --watch bridge-server.js",
-    "migrate": "node -e \"import('pg').then(({default:pkg})=>new pkg.Pool({connectionString:process.env.DATABASE_URL}).query(require('fs').readFileSync('./migrations/001_initial_schema.sql','utf8')).then(()=>console.log('✅ Migration complete')).catch(console.error))\"",
+    "migrate": "node run-migration.js",
     "lint": "eslint .",
     "test": "echo 'No tests yet' && exit 0"
   },
@@ -28,6 +28,7 @@
     "@hapi/boom": "^10.0.1",
     "@whiskeysockets/baileys": "^6.7.9",
     "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "ioredis": "^5.4.2",
     "pg": "^8.13.1",

@@ -403,7 +403,7 @@ async function connectVendor(vendorId) {
     }
 
     if (connection === 'close') {
-      const shouldReconnect = (lastDisconnect?.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
+      const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
       logger.warn({ vendorId, shouldReconnect }, 'WhatsApp disconnected');
 
       if (shouldReconnect) {

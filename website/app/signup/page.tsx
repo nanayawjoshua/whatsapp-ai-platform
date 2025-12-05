@@ -20,6 +20,8 @@ function SignupContent() {
     email: '',
     businessType: '',
     voiceNote: '',
+    locations: 1,
+    accountType: 'business' as 'personal' | 'business' | 'enterprise',
   });
   const [selectedPersonality, setSelectedPersonality] = useState<PersonalityStyle | null>(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -138,10 +140,70 @@ function SignupContent() {
     setTimeout(() => clearInterval(pollInterval), 300000);
   };
 
+  const getPlanDetails = () => {
+    const { accountType, locations } = formData;
+
+    if (accountType === 'personal') {
+      return {
+        planCode: 'personal-monthly',
+        amount: 49,
+        planName: 'Personal',
+      };
+    }
+
+    if (accountType === 'business') {
+      return {
+        planCode: 'business-monthly',
+        amount: 99,
+        planName: 'Business',
+      };
+    }
+
+    // Enterprise tiers
+    const numLocations = parseInt(String(locations));
+
+    if (numLocations >= 61) {
+      // Custom pricing - redirect to sales
+      alert('For 61+ locations, please contact our sales team at sales@beeline.works');
+      return null;
+    } else if (numLocations >= 26) {
+      return {
+        planCode: 'enterprise-60',
+        amount: 2999,
+        planName: 'Enterprise (Up to 60 Locations)',
+      };
+    } else if (numLocations >= 13) {
+      return {
+        planCode: 'enterprise-25',
+        amount: 1499,
+        planName: 'Enterprise (Up to 25 Locations)',
+      };
+    } else if (numLocations >= 6) {
+      return {
+        planCode: 'enterprise-12',
+        amount: 999,
+        planName: 'Enterprise (Up to 12 Locations)',
+      };
+    } else {
+      return {
+        planCode: 'enterprise-5',
+        amount: 599,
+        planName: 'Enterprise (Up to 5 Locations)',
+      };
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       setIsProcessingPayment(true);
       setPaymentError(null);
+
+      const planDetails = getPlanDetails();
+
+      if (!planDetails) {
+        setIsProcessingPayment(false);
+        return;
+      }
 
       // Get referrer ID from URL if exists
       const referrerId = searchParams.get('ref') || undefined;
@@ -150,13 +212,17 @@ function SignupContent() {
       await openPaystackPopup(
         {
           email: formData.email,
-          amount: 99, // GHS 99
+          amount: planDetails.amount,
           metadata: {
             name: formData.name,
             phone: formData.phone,
             businessType: formData.businessType,
             personality: selectedPersonality || 'casual',
             referrerId,
+            accountType: formData.accountType,
+            locations: formData.locations,
+            planCode: planDetails.planCode,
+            planName: planDetails.planName,
           },
         },
         // On success
@@ -321,6 +387,56 @@ function SignupContent() {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-2">
+                  <FaUser className="inline mr-2" />
+                  Account Type
+                </label>
+                <select
+                  name="accountType"
+                  value={formData.accountType}
+                  onChange={(e) => {
+                    const accountType = e.target.value as 'personal' | 'business' | 'enterprise';
+                    setFormData({
+                      ...formData,
+                      accountType,
+                      locations: accountType === 'enterprise' ? 3 : 1,
+                    });
+                  }}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-beeline-yellow focus:border-beeline-yellow transition-all duration-200"
+                  required
+                >
+                  <option value="personal">Personal - GHS 49/month (AI assistant for individuals)</option>
+                  <option value="business">Business - GHS 99/month (Single-location vendor)</option>
+                  <option value="enterprise">Enterprise - Starting GHS 599/month (Multi-location business)</option>
+                </select>
+              </div>
+
+              {formData.accountType === 'enterprise' && (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-2">
+                    <FaStore className="inline mr-2" />
+                    How Many Locations?
+                  </label>
+                  <select
+                    name="locations"
+                    value={formData.locations}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-beeline-yellow focus:border-beeline-yellow transition-all duration-200"
+                    required
+                  >
+                    <option value="3">3-5 locations - GHS 599/month</option>
+                    <option value="8">6-12 locations - GHS 999/month</option>
+                    <option value="15">13-25 locations - GHS 1,499/month</option>
+                    <option value="30">26-60 locations - GHS 2,999/month</option>
+                    <option value="61">61+ locations - Contact sales</option>
+                  </select>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Flat fee - add unlimited locations within your tier!
+                  </p>
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-dark-text-secondary mb-2">
                   <FaStore className="inline mr-2" />
                   What Do You Sell?
                 </label>
@@ -471,7 +587,7 @@ function SignupContent() {
                 disabled={!selectedPersonality || isProcessingPayment}
                 className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isProcessingPayment ? 'Processing Payment...' : 'Pay GHS 99 & Continue'}
+                {isProcessingPayment ? 'Processing Payment...' : `Pay GHS ${getPlanDetails()?.amount || 99} & Continue`}
               </button>
             </div>
           </div>
