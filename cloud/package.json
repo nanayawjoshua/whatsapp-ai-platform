@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node bridge-server.js",
+    "build": "echo 'No build step required' && exit 0",
     "dev": "NODE_ENV=development node --watch bridge-server.js",
     "migrate": "node run-migration.js",
     "lint": "eslint .",
