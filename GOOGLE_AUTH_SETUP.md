@@ -38,31 +38,38 @@ We've implemented Google Sign-In using NextAuth.js. Vendors can now login with:
 ### Step 3: Configure OAuth Consent Screen
 
 #### Basic Info
-- User Type: **External** (for public users)
+- User Type: **External** (for all users - Personal, Business, and Enterprise)
 - Click **CREATE**
 
-#### App Information
-- App name: `Beeline Ghana`
-- User support email: `your@email.com`
-- App logo: (optional, upload Beeline logo)
-- Application home page: `https://beeline.works`
-- Application privacy policy: `https://beeline.works/privacy` (create this)
-- Application terms of service: `https://beeline.works/terms` (create this)
+#### App Information (Actual fields you'll see)
+- **App name**: `Beeline Ghana`
+- **User support email**: your@email.com (select from dropdown)
+- **App logo**: (optional - skip for now, not required)
+- **App domain** (optional fields - may not appear):
+  - Application home page: `https://beeline.works` (add if field exists)
+  - Privacy policy: (skip - not required)
+  - Terms of service: (skip - not required)
 
-#### Developer Contact
-- Email: `your@email.com`
+**Note:** Privacy and Terms URLs are **NOT required** for OAuth to work. Only needed for public app verification.
 
-#### Scopes
-- Click **ADD OR REMOVE SCOPES**
-- Select:
-  - `userinfo.email`
-  - `userinfo.profile`
-- Click **UPDATE**
+#### Developer Contact Information
+- **Email addresses**: your@email.com
 - Click **SAVE AND CONTINUE**
 
-#### Test Users (Optional for development)
-- Add your Gmail address for testing
+#### Scopes (Next screen)
+- If prompted, click **ADD OR REMOVE SCOPES**
+- Select these (or skip if not shown - they're added automatically):
+  - `.../auth/userinfo.email` - See your email address
+  - `.../auth/userinfo.profile` - See your basic profile info
+- Click **UPDATE** then **SAVE AND CONTINUE**
+
+#### Test Users (Next screen)
+- **Skip this step** - Not needed for External apps
 - Click **SAVE AND CONTINUE**
+
+#### Summary
+- Review your settings
+- Click **BACK TO DASHBOARD**
 
 ### Step 4: Create OAuth Client ID
 
