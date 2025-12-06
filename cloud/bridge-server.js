@@ -64,19 +64,45 @@ const db = new Pool({
   connectionTimeoutMillis: 10000
 });
 
-// Redis client (conversation history cache)
-const redis = new Redis(config.redisUrl, {
-  maxRetriesPerRequest: null, // No limit on retries per request
-  enableReadyCheck: false,
-  retryStrategy(times) {
-    const delay = Math.min(times * 50, 2000);
-    return delay;
-  },
-  family: 4 // Force IPv4
-});
+// Redis client (conversation history cache) - with graceful degradation
+let redis = null;
+let redisAvailable = false;
 
-redis.on('error', (err) => logger.error({ err }, 'Redis connection error'));
-redis.on('connect', () => logger.info('✅ Redis connected'));
+try {
+  redis = new Redis(config.redisUrl, {
+    maxRetriesPerRequest: 3, // Limit retries to prevent hanging
+    enableReadyCheck: false,
+    connectTimeout: 5000, // 5 second connection timeout
+    retryStrategy(times) {
+      if (times > 3) {
+        logger.warn('Redis connection failed after 3 retries, disabling Redis');
+        return null; // Stop retrying
+      }
+      const delay = Math.min(times * 50, 2000);
+      return delay;
+    },
+    family: 4 // Force IPv4
+  });
+
+  redis.on('error', (err) => {
+    logger.error({ err }, 'Redis connection error');
+    redisAvailable = false;
+  });
+
+  redis.on('connect', () => {
+    logger.info('✅ Redis connected');
+    redisAvailable = true;
+  });
+
+  redis.on('ready', () => {
+    logger.info('✅ Redis ready');
+    redisAvailable = true;
+  });
+} catch (err) {
+  logger.error({ err }, 'Failed to initialize Redis, continuing without cache');
+  redis = null;
+  redisAvailable = false;
+}
 
 // Express app (health checks, webhooks)
 const app = express();
@@ -599,11 +625,27 @@ async function connectAllVendors() {
 // Health check (used by Render)
 app.get('/health', async (req, res) => {
   try {
+    // Check database
     await db.query('SELECT 1');
-    await redis.ping();
+
+    // Check Redis with timeout (optional, don't fail if unavailable)
+    let redisStatus = 'unavailable';
+    if (redis && redisAvailable) {
+      try {
+        await Promise.race([
+          redis.ping(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 2000))
+        ]);
+        redisStatus = 'connected';
+      } catch (err) {
+        redisStatus = 'timeout';
+        logger.warn('Redis ping timeout in health check');
+      }
+    }
 
     res.json({
       status: 'healthy',
+      redis: redisStatus,
       vendors: vendorSockets.size,
       maxVendors: config.maxVendors,
       uptime: process.uptime(),
