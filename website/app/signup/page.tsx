@@ -18,6 +18,8 @@ function SignupContent() {
     name: '',
     phone: '',
     email: '',
+    password: '',
+    confirmPassword: '',
     businessType: '',
     voiceNote: '',
     locations: 1,
