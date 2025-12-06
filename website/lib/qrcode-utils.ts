@@ -72,6 +72,7 @@ export async function fetchVendorQRCode(
     email: string;
     businessType: string;
     personality: string;
+    accountType?: string; // 'personal', 'business', or 'enterprise'
   }
 ): Promise<{
   qrCodeImage: string;

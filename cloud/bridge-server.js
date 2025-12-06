@@ -14,6 +14,7 @@
  * Scaling: Horizontal via Render auto-scaling
  */
 
+import dotenv from 'dotenv';
 import makeWASocket, {
   DisconnectReason,
   useMultiFileAuthState,
@@ -27,6 +28,9 @@ import express from 'express';
 import Redis from 'ioredis';
 import pkg from 'pg';
 const { Pool } = pkg;
+
+// Load environment variables
+dotenv.config();
 
 // ============================================================================
 // CONFIGURATION
@@ -62,11 +66,13 @@ const db = new Pool({
 
 // Redis client (conversation history cache)
 const redis = new Redis(config.redisUrl, {
-  maxRetriesPerRequest: 3,
+  maxRetriesPerRequest: null, // No limit on retries per request
+  enableReadyCheck: false,
   retryStrategy(times) {
     const delay = Math.min(times * 50, 2000);
     return delay;
-  }
+  },
+  family: 4 // Force IPv4
 });
 
 redis.on('error', (err) => logger.error({ err }, 'Redis connection error'));
@@ -612,7 +618,7 @@ app.get('/health', async (req, res) => {
 
 // Generate QR code for new vendor onboarding
 app.post('/vendor/generate-qr', async (req, res) => {
-  const { vendorId } = req.body;
+  const { vendorId, vendorData } = req.body;
 
   if (!vendorId) {
     return res.status(400).json({ error: 'vendorId required' });
@@ -623,7 +629,27 @@ app.post('/vendor/generate-qr', async (req, res) => {
   }
 
   try {
-    logger.info({ vendorId }, 'Generating QR code for new vendor');
+    logger.info({ vendorId, vendorData }, 'Generating QR code for new vendor');
+
+    // Extract vendor data from request (sent from website after payment)
+    const name = vendorData?.name || 'New Vendor';
+    const phone = vendorData?.phone || vendorId;
+    const email = vendorData?.email || null;
+    const businessType = vendorData?.businessType || null;
+    const accountType = vendorData?.accountType || 'business'; // personal, business, or enterprise
+
+    // Create vendor record first (required for foreign key)
+    await db.query(
+      `INSERT INTO vendors (vendor_id, name, phone, email, business_type, account_type, subscription_status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (vendor_id) DO UPDATE SET
+         name = EXCLUDED.name,
+         phone = EXCLUDED.phone,
+         email = EXCLUDED.email,
+         business_type = EXCLUDED.business_type,
+         account_type = EXCLUDED.account_type`,
+      [vendorId, name, phone, email, businessType, accountType, 'trial']
+    );
 
     // Create initial session record
     await db.query(

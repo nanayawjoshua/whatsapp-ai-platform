@@ -1,22 +1,34 @@
-# BEELINE GHANA - MASTER DOCUMENTATION
-**AI Employee Platform for Ghanaian Vendors**
-**December 2, 2025**
-**Version 1.0**
+# BEELINE - MASTER DOCUMENTATION
+**Multi-Platform AI Operating System for African Commerce**
+**December 6, 2025**
+**Version 2.1 - Enterprise Edition with Full Multi-Tier Support**
+
+---
+
+## 🐝 VISION STATEMENT
+
+**"Beeline is becoming the messaging Operating System for African commerce and personal life."**
+
+**We are not building a bot.**
+
+**We are building the real-time, permissioned commerce + personal-assistant graph for 200 million Africans.**
+
+**The AI is the hook. The graph is the moat.**
 
 ---
 
 ## TABLE OF CONTENTS
 
 1. [Executive Summary](#executive-summary)
-2. [Product Vision & First Principles](#product-vision--first-principles)
-3. [Current System Architecture](#current-system-architecture)
-4. [Technical Implementation](#technical-implementation)
-5. [What's Working Now](#whats-working-now)
-6. [Known Issues & Solutions](#known-issues--solutions)
-7. [Business Model & Pricing](#business-model--pricing)
-8. [Roadmap & Future Architecture](#roadmap--future-architecture)
-9. [Downtime Scenarios & Safeguards](#downtime-scenarios--safeguards)
-10. [Product Inventory Integration](#product-inventory-integration)
+2. [Product Vision & Multi-Platform Strategy](#product-vision--multi-platform-strategy)
+3. [Current System Status (December 5, 2025)](#current-system-status)
+4. [Three-Tier Pricing Strategy](#three-tier-pricing-strategy)
+5. [Technical Architecture](#technical-architecture)
+6. [What's Live Now](#whats-live-now)
+7. [Pending Implementation](#pending-implementation)
+8. [Multi-Platform Expansion Roadmap](#multi-platform-expansion-roadmap)
+9. [Commerce Graph End-Game](#commerce-graph-end-game)
+10. [Business Model & Economics](#business-model--economics)
 11. [Deployment Guide](#deployment-guide)
 12. [Appendix](#appendix)
 
@@ -24,49 +36,230 @@
 
 ## EXECUTIVE SUMMARY
 
-**Beeline Ghana** is a production-ready AI employee platform that transforms any Ghanaian vendor's existing WhatsApp number into a 24/7 sales machine. After 48 hours of intensive development, we have:
+**Beeline** is a production-ready, multi-platform AI operating system that transforms any messaging number (WhatsApp, Telegram, TikTok, iMessage, SMS) into a 24/7 AI employee. As of December 6, 2025, we have:
 
-- ✅ **Raspberry Pi 4 Bridge** - Running at 192.168.8.28 with native ARM64 Docker
-- ✅ **Multi-Session WhatsApp** - 50 vendor capacity using Baileys
-- ✅ **Cloud AI Processing** - n8n on Render + Groq LLM (Llama-3.3-70B)
-- ✅ **Conversation Memory** - Last 10 messages per customer tracked
-- ✅ **First Vendor Connected** - QR scanned, sessions persistent
-- ✅ **Message Flow Working** - Customer → Pi → n8n → Groq → Customer
-- ⚠️ **One Bug to Fix** - AI greeting repetition (debug in progress)
+### 🚀 LIVE NOW (beeline.works):
+- ✅ **Complete Website** - Next.js 14 with dark mode, 3-tier pricing page
+- ✅ **Enterprise Flat-Fee Pricing** - GHS 49 (Personal) / 99 (Business) / 395-2,940 (Enterprise)
+- ✅ **6 Paystack Subscription Plans** - All plans created and live
+- ✅ **Live Payment System** - Real payments processing with auto-subscriptions
+- ✅ **Full Enterprise Database Schema** - Multi-location support, team management, analytics
+- ✅ **Account Type Differentiation** - Personal, Business, Enterprise tracked in database
+- ✅ **Volume-Based Pricing** - Automatic discounts for 3-60 locations (20-50% off)
+- ✅ **Multi-Step Signup Flow** - Info → Voice note → Personality → Payment → QR
+- ✅ **Human-in-the-Loop Controls** - Industry-standard vendor takeover system
 
-**Business Metrics:**
-- Cost: $13/month (50 vendors)
-- Price: $9/month per vendor
-- Break-even: 4 vendors
-- Target: 50 vendors this week → 1,000 in Q1 2026
+### ⏳ READY TO DEPLOY:
+- ⏳ **Raspberry Pi 4 Bridge** - WhatsApp gateway (50-75 vendors per Pi)
+- ⏳ **Cloud AI Processing** - n8n + Groq Llama 3.3 70B
+- ⏳ **Multi-location Dashboard** - Enterprise accounts can manage all branches
+- ⏳ **Telegram Integration** - Already working, needs production deployment
 
----
-
-## PRODUCT VISION & FIRST PRINCIPLES
-
-### The 8 Locked Principles
-
-1. **We sell saved human minutes** for informal merchants
-2. **Phone number is the moat** - vendors use their own trusted number
-3. **One bridge, infinite channels** - WhatsApp, TikTok, Telegram, SMS
-4. **Only metric: WAS** (Weekly Active Shops - ≥1 paid order/week)
-5. **Cheapest loop** - Groq + messaging + MoMo/Yango
-6. **Viral coefficient >1.0** - 30 days free for referrers
-7. **Channel-death resistant** - One-click fallback to alternatives
-8. **Long-term: Commerce graph** - Inventory + pricing + trust for 200M+ merchants
-
-### Mission Statement
-
-Turn every Ghanaian vendor's phone number into an AI employee that:
-- Never sleeps
-- Never steals
-- Speaks Twi and English
-- Closes deals 24/7
-- Costs less than GHS 99/month
+### 🎯 BUSINESS METRICS (Updated December 5, 2025):
+- **Economics:** 90% profit margin at scale
+- **Revenue Model:** GHS 49-2,999/month (Personal to Enterprise)
+- **Break-even:** 5 users
+- **Month 1 Target:** 10 enterprise accounts = GHS 10,000 MRR
+- **Year 1 Target:** 200 Enterprise + 2,000 Personal + 3,000 Business = GHS 740,000 MRR (~$62,000)
+- **Year 5 Vision:** 200M Africans on Beeline Graph (data + financial infrastructure layer)
 
 ---
 
-## CURRENT SYSTEM ARCHITECTURE
+## PRODUCT VISION & MULTI-PLATFORM STRATEGY
+
+### The 10 Locked Principles (Updated December 5, 2025)
+
+1. **We sell saved human minutes** - for both commerce (vendors) and personal life (individuals)
+2. **Phone number is the moat** - users keep their own trusted number/username
+3. **Platform-agnostic architecture** - One bridge, infinite channels:
+   - ✅ **WhatsApp** (Primary - 75% of African messaging)
+   - ✅ **Telegram** (Already working - 15% market share)
+   - 🔜 **TikTok Shop DMs** (E-commerce integration)
+   - 🔜 **iMessage** (Premium iOS users)
+   - 🔜 **SMS** (Universal fallback - every phone)
+   - 🔜 **Instagram DMs** (Youth market)
+   - 🔜 **Facebook Messenger** (Still 30% in rural areas)
+4. **Flat-fee enterprise pricing** - Zero friction to scale within tiers
+5. **Only metric: WAS** (Weekly Active Shops/Subscribers - ≥1 active session/week)
+6. **Cheapest loop** - Groq ($0.50/1M tokens) + Render ($7/mo) + Paystack (1.5%)
+7. **Viral coefficient >1.0** - BUZZ referral system + 7 days free
+8. **Channel-death resistant** - If WhatsApp bans/blocks → instant migration to Telegram/SMS
+9. **Long-term: Commerce graph** - Data layer (Beeline Insights) + Financial layer (Beeline Credit)
+10. **Platform play (2028+)** - Become the Android of messaging in Africa
+
+### Multi-Platform Mission Statement
+
+Turn every African's messaging presence (WhatsApp/Telegram/TikTok/iMessage/SMS) into:
+
+**For Commerce (Business/Enterprise tiers):**
+- 24/7 AI employee that never sleeps, never steals
+- Speaks Twi, English, Pidgin, Swahili (multi-language)
+- Closes deals across all customer channels
+- Costs GHS 99-2,999/month (75-95% cheaper than competitors)
+
+**For Personal Life (Personal tier - GHS 49/month):**
+- Proactive AI assistant that reads your chat history (with consent)
+- Reminds you of birthdays, appointments, follow-ups
+- Drafts messages for you
+- Manages your schedule across all messaging apps
+- **This is what Meta AI can NEVER do** (privacy locked)
+
+### Why Multi-Platform Matters
+
+**Channel Death Risk:**
+- WhatsApp could ban automation (already happening to some bots)
+- TikTok could shut down Shop messaging
+- Any single platform = single point of failure
+
+**Beeline Solution:**
+- Users sign up once, connect all messaging channels
+- AI works across ALL platforms with same personality
+- If WhatsApp down/banned → seamlessly switch to Telegram
+- **One subscription, infinite channels** - true platform resilience
+
+**Market Expansion:**
+- WhatsApp: Street vendors, small shops
+- Telegram: Tech-savvy businesses, crypto merchants
+- TikTok: E-commerce sellers, influencers
+- iMessage: Premium customers (iPhone users)
+- SMS: Universal fallback (works on every phone, no internet needed)
+
+---
+
+## CURRENT SYSTEM STATUS (December 5, 2025)
+
+### What's LIVE Now (https://beeline.works)
+
+#### ✅ Frontend (Vercel - Next.js 14)
+- **Landing Page** - 3-tier pricing (Personal/Business/Enterprise)
+- **Multi-step Signup** - 4 steps: Info → Voice note → Personality → Payment/QR
+- **Dark Mode** - Complete theme toggle with system preference detection
+- **Account Type Selector** - Personal / Business / Enterprise with location counter
+- **Dynamic Pricing** - Shows correct price based on account type + locations
+- **Payment Flow** - Paystack popup → Auto-subscribe → QR code display
+- **Referral System** - `/signup?ref=vendor-id` tracking
+- **Footer Branding** - "Building Africa's commerce graph — one message at a time"
+
+#### ✅ Payment System (Paystack - LIVE)
+- **6 Subscription Plans Created:**
+  - personal-monthly: GHS 49 (4,900 pesewas)
+  - business-monthly: GHS 99 (9,900 pesewas)
+  - enterprise-5: GHS 599 (59,900 pesewas)
+  - enterprise-12: GHS 999 (99,900 pesewas)
+  - enterprise-25: GHS 1,499 (149,900 pesewas)
+  - enterprise-60: GHS 2,999 (299,900 pesewas)
+- **Auto-subscriptions** - 7-day trial, then monthly recurring
+- **Webhook Integration** - All events forwarded to n8n
+- **Plan Assignment Logic** - Auto-assigns correct tier based on locations
+
+#### ✅ Backend Infrastructure
+- **n8n Workflow** - Groq LLM integration (Llama 3.3 70B)
+- **Conversation Memory** - Redis for chat history
+- **HITL System** - 6 priority rules (vendor takeover logic)
+- **Database Schema** - PostgreSQL (vendor_sessions, vendor_settings)
+- **API Routes:**
+  - `/api/paystack/initialize` - Start payment
+  - `/api/paystack/verify` - Verify payment
+  - `/api/paystack/webhook` - Receive events
+  - `/api/paystack/setup-plans` - Create all 6 plans
+
+### ⏳ Ready to Deploy (Need to Execute)
+
+#### Pi Bridge (WhatsApp Gateway)
+- **Docker Container** - beeline-pi:latest (ARM64)
+- **Capacity** - 50-75 vendors per Pi
+- **Status** - Code ready, need to deploy and connect to live website
+- **Sessions** - Persistent across reboots
+- **Auto-reconnect** - 5s delay on disconnect
+
+#### Cloud Bridge (Render.com)
+- **Alternative to Pi** - 75-80 vendors per $7/mo instance
+- **PostgreSQL Sessions** - Store in Neon database
+- **Redis History** - Upstash for conversation tracking
+- **Status** - Architecture designed, need to deploy
+
+#### Multi-location Dashboard
+- **Enterprise Feature** - Manage all branches in one view
+- **Team Management** - Unlimited team members
+- **Analytics** - Compare performance across locations
+- **HITL Controls UI** - Pause AI, add VIP contacts, force AI mode
+
+### 🔜 Planned (Next 3 Months)
+
+#### Multi-Platform Integrations
+- **Telegram** - Bot API (code already working, needs production)
+- **TikTok Shop** - DM automation for e-commerce
+- **iMessage** - Via Beeper/Matrix bridge
+- **SMS** - Twilio integration (universal fallback)
+
+#### Advanced Features
+- **Product Catalog** - 708 products from CSV (already have data)
+- **Voice Note Handling** - STT for customer voice messages
+- **Image Recognition** - Product photos from customers
+- **Payment Detection** - MoMo/GHS regex (already implemented)
+- **Proactive Workflows** - Personal tier reminders/scheduling
+
+---
+
+## THREE-TIER PRICING STRATEGY
+
+### Overview
+
+Beeline operates on a **flat-fee per account** model, NOT per-location pricing:
+
+| Tier | Price (GHS/month) | Target Market | Locations Included |
+|------|------------------|---------------|-------------------|
+| **Personal** | **49** | Individuals | N/A (personal use) |
+| **Business** | **99** | Single-location vendors | 1 location |
+| **Enterprise** | **599 - 2,999** | Multi-location chains | 5 - 60 locations (flat fee) |
+
+### Enterprise Tier Breakdown
+
+| Locations | Monthly Price | Per-Location Cost | Value Proposition |
+|-----------|--------------|-------------------|-------------------|
+| **Up to 5** | **GHS 599** | GHS 120/location | Entry tier for small chains |
+| **Up to 12** | **GHS 999** | GHS 83/location | 16% cheaper per location |
+| **Up to 25** | **GHS 1,499** | GHS 60/location | 39% cheaper per location |
+| **Up to 60** | **GHS 2,999** | GHS 50/location | 50% cheaper per location |
+| **61+** | **Custom** | Negotiated | White-glove enterprise sales |
+
+### Why Flat-Fee Beats Per-Location
+
+**Customer Wins:**
+- ✅ Zero friction to scale (add locations within tier for free)
+- ✅ Predictable budgeting (no surprise bills when opening new branch)
+- ✅ Multi-location dashboard included (no extra cost)
+- ✅ Unlimited team members across all locations
+
+**Beeline Wins:**
+- ✅ 42% more revenue vs old per-location model
+- ✅ Higher perceived value (customers feel they're getting a deal)
+- ✅ Stickier accounts (enterprise chains don't churn easily)
+- ✅ Easier upsells (move from 5-location to 12-location tier)
+
+**Real-World Examples:**
+- **KFC Ghana (15 locations):** Old model GHS 885 → New model **GHS 1,499** (+69% revenue)
+- **Papa's Pizza (8 locations):** Old model GHS 552 → New model **GHS 999** (+81% revenue)
+- **Melcom (20 locations):** Old model GHS 1,180 → New model **GHS 1,499** (+27% revenue)
+
+### Features by Tier
+
+| Feature | Personal | Business | Enterprise |
+|---------|----------|----------|------------|
+| **Messaging Platforms** | All supported | All supported | All supported |
+| **AI Personality** | Custom (voice note) | Custom (voice note) | Custom per location |
+| **Conversation History** | Last 50 messages | Unlimited | Unlimited |
+| **HITL Controls** | Basic | Full vendor takeover | Advanced (VIP lists, team permissions) |
+| **Product Catalog** | N/A | Up to 1,000 products | Unlimited products |
+| **Analytics** | Basic usage stats | Full dashboard | Multi-location comparison |
+| **Team Members** | 1 (you) | Up to 3 | Unlimited |
+| **Priority Support** | Email (48h) | Email (24h) | Phone + Email (2h SLA) |
+| **Multi-location Dashboard** | N/A | N/A | ✅ Included |
+| **API Access** | ❌ | ❌ | ✅ Custom integrations |
+
+---
+
+## TECHNICAL ARCHITECTURE
 
 ### High-Level Overview
 

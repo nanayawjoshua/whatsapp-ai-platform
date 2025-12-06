@@ -38,7 +38,7 @@ async function runMigration() {
     console.log('✅ Database connected!\n');
 
     // Read migration file
-    const migrationPath = path.join(__dirname, 'migrations', '001_initial_schema.sql');
+    const migrationPath = path.join(__dirname, 'migrations', '003_add_enterprise_support.sql');
     console.log(`📄 Reading migration file: ${migrationPath}`);
     const sql = fs.readFileSync(migrationPath, 'utf8');
 
@@ -47,16 +47,14 @@ async function runMigration() {
     await pool.query(sql);
 
     console.log('✅ Migration completed successfully!\n');
-    console.log('📊 Tables created:');
-    console.log('   - vendors');
-    console.log('   - vendor_sessions');
-    console.log('   - vendor_personas');
-    console.log('   - products');
-    console.log('   - conversations');
-    console.log('   - messages');
-    console.log('   - analytics_events');
-    console.log('   - referral_rewards');
-    console.log('\n🎉 Database is ready!');
+    console.log('📊 Enterprise support added:');
+    console.log('   - enterprise_accounts table');
+    console.log('   - enterprise_users table');
+    console.log('   - enterprise_analytics table');
+    console.log('   - vendors table updated with account_type and enterprise fields');
+    console.log('   - Pricing calculation functions');
+    console.log('   - Auto-update triggers');
+    console.log('\n🎉 Enterprise support is ready!');
 
   } catch (error) {
     console.error('\n❌ Migration failed:', error.message);

@@ -107,6 +107,7 @@ function SignupContent() {
         email: formData.email,
         businessType: formData.businessType,
         personality: selectedPersonality || 'casual',
+        accountType: formData.accountType, // Pass account type to bridge server
       });
 
       setQrCodeImage(qrData.qrCodeImage);
