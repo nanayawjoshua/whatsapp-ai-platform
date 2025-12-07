@@ -171,3 +171,11 @@ console.log('Initializing Paystack with key:', publicKey.substring(0, 15) + '...
 **Ready for Monday's demo!** 🚀
 
 Preview deployments will use test mode automatically, so you can safely test the full payment flow without charging real money.
+
+
+
+redis://default:AVmXAAIncDIzMWYwZjk0NzI5MDc0NWJhYjE3ODdhNDMzODVjOWQ5NnAyMjI5MzU@just-urchin-22935.upstash.io:6379
+
+
+
+redis://default:AVmXAAIncDIzMWYwZjk0NzI5MDc0NWJhYjE3ODdhNDMzODVjOWQ5NnAyMjI5MzU@just-urchin-22935.upstash.io:6379

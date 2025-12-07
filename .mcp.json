@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "code-review": {
+      "command": "npx",
+      "args": ["-y", "code-review-mcp"],
+      "env": {
+        "CODE_REVIEW_PROVIDER": "anthropic",
+        "CODE_REVIEW_MODEL": "claude-3-5-sonnet-20241022"
+      }
+    },
+    "firecrawl": {
+      "command": "npx",
+      "args": ["-y", "firecrawl-mcp"],
+      "env": {
+        "FIRECRAWL_API_KEY": "fc-c9041a4a194144bdace2335bc131b218"
+      }
+    },
+    "superdesign": {
+      "command": "npx",
+      "args": ["-y", "superdesign-mcp-claude-code"]
+    }
+  }
+}

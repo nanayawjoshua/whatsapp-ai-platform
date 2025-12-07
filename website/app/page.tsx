@@ -1,220 +1,252 @@
 import Link from "next/link";
-import { FaWhatsapp, FaRocket, FaClock, FaMoneyBillWave, FaChartLine } from "react-icons/fa";
-import { GiHoneypot } from "react-icons/gi";
-import ThemeToggle from "./components/ThemeToggle";
+import { FaWhatsapp, FaRocket, FaClock, FaShieldAlt, FaLock, FaGlobe, FaCheckCircle } from "react-icons/fa";
+import { MdQrCode2, MdPsychology, MdFlashOn, MdBarChart, MdNightlight } from "react-icons/md";
+import BeelineLogo from "./components/BeelineLogo";
 
-export default function Home() {
+export default function HomeDark() {
   return (
-    <main className="min-h-screen">
-      {/* Navigation */}
-      <nav className="fixed w-full bg-white/90 dark:bg-dark-bg/90 backdrop-blur-sm z-50 border-b border-gray-200 dark:border-dark-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-dark-bg">
+      {/* Sticky Glass Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-dark-bg/80 backdrop-blur-xl border-b border-dark-border">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <GiHoneypot className="text-4xl text-beeline-yellow" />
-              <span className="text-2xl font-bold text-beeline-black dark:text-dark-text">Beeline</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <ThemeToggle />
-              <Link href="/signup" className="btn-primary text-sm sm:text-base py-2 sm:py-3 px-4 sm:px-6">
-                Start Free Trial
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+            {/* Logo */}
+            <BeelineLogo size="md" />
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 bg-gradient-warm dark:bg-gradient-to-b dark:from-dark-bg dark:to-dark-bg-secondary">
-        <div className="section-container">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center space-x-2 bg-white/90 dark:bg-dark-bg-tertiary/90 backdrop-blur-sm shadow-soft px-5 py-2.5 rounded-full mb-6 transition-all duration-300 hover:shadow-medium">
-              <GiHoneypot className="text-xl text-beeline-yellow" />
-              <span className="text-sm font-semibold text-beeline-black dark:text-dark-text">
-                Your AI Employee Lives in Your Phone Number
-              </span>
-            </div>
-
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-beeline-black dark:text-dark-text mb-6 text-balance leading-tight">
-              Never Miss a Sale Again
-            </h1>
-
-            <p className="text-lg sm:text-xl text-gray-700 dark:text-dark-text-secondary mb-8 max-w-2xl mx-auto leading-relaxed">
-              Turn your WhatsApp into a 24/7 AI employee. Answer customers, take orders,
-              and close deals while you sleep. Starting from <span className="font-bold text-beeline-black dark:text-beeline-yellow">GHS 49/month</span>.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <Link href="/signup" className="btn-primary text-lg w-full sm:w-auto">
-                <FaWhatsapp className="inline mr-2" />
-                Start 7-Day Free Trial
-              </Link>
-              <a href="#how-it-works" className="btn-secondary text-lg w-full sm:w-auto">
-                See How It Works
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center gap-8">
+              <a href="#pricing" className="text-dark-text-secondary hover:text-dark-text transition-colors">
+                Pricing
+              </a>
+              <a href="#enterprise" className="text-dark-text-secondary hover:text-dark-text transition-colors">
+                Enterprise
+              </a>
+              <a href="#business" className="text-dark-text-secondary hover:text-dark-text transition-colors">
+                Business
               </a>
             </div>
 
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-gray-700 dark:text-dark-text-secondary">
-              <div className="flex items-center space-x-2 bg-white/60 dark:bg-dark-bg-tertiary/60 backdrop-blur-sm px-4 py-2 rounded-full shadow-soft">
-                <FaClock className="text-beeline-yellow" />
-                <span className="font-medium">Setup in 2 minutes</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white/60 dark:bg-dark-bg-tertiary/60 backdrop-blur-sm px-4 py-2 rounded-full shadow-soft">
-                <FaMoneyBillWave className="text-beeline-yellow" />
-                <span className="font-medium">No credit card required</span>
-              </div>
-              <div className="flex items-center space-x-2 bg-white/60 dark:bg-dark-bg-tertiary/60 backdrop-blur-sm px-4 py-2 rounded-full shadow-soft">
-                <FaRocket className="text-beeline-yellow" />
-                <span className="font-medium">Cancel anytime</span>
+            {/* CTA Button */}
+            <div className="hidden lg:block">
+              <Link
+                href="/signup"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-glass-bg backdrop-blur-md border border-glass-border rounded-lg text-beeline-yellow hover:bg-dark-bg-tertiary/80 hover:border-beeline-yellow/30 transition-all"
+              >
+                Dashboard
+              </Link>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button className="lg:hidden text-dark-text">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="width" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </div>
+        </nav>
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center px-6 pt-32 pb-20">
+        {/* Gradient Glow Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-dark-bg pointer-events-none"></div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-96 bg-gradient-dark-glow blur-3xl pointer-events-none"></div>
+
+        <div className="max-w-6xl mx-auto text-center relative z-10">
+          {/* Hero Headline */}
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-light tracking-tight mb-6 bg-gradient-beeline bg-clip-text text-transparent">
+            AI-Powered WhatsApp<br />Assistant for Your Business
+          </h1>
+
+          {/* Subheadline */}
+          <p className="text-xl text-dark-text-secondary max-w-2xl mx-auto mb-10 leading-relaxed">
+            Automate conversations, boost sales 24/7, and deliver exceptional customer service with intelligent AI agents tailored to your business.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <Link
+              href="/signup"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-beeline text-black font-semibold rounded-xl shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all"
+            >
+              <MdFlashOn className="w-5 h-5" />
+              Get Started - Personal
+            </Link>
+            <Link
+              href="/signup"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-glass-bg backdrop-blur-md border border-glass-border rounded-xl text-beeline-yellow hover:bg-dark-bg-tertiary/80 hover:border-beeline-yellow/30 transition-all"
+            >
+              <FaWhatsapp className="w-5 h-5" />
+              Start Free Trial - Business
+            </Link>
+          </div>
+
+          {/* Demo Screenshot Card */}
+          <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-4 max-w-4xl mx-auto shadow-glass hover:border-beeline-yellow/30 hover:shadow-glow transition-all duration-300 animate-float">
+            <div className="aspect-video bg-gradient-to-br from-dark-bg-secondary to-dark-bg-tertiary rounded-lg overflow-hidden border border-dark-border flex items-center justify-center">
+              {/* Placeholder for WhatsApp Chat Screenshot */}
+              <div className="text-center">
+                <FaWhatsapp className="w-24 h-24 text-beeline-yellow/30 mx-auto mb-4" />
+                <p className="text-dark-text-tertiary">WhatsApp AI Chat Demo</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Problem Section */}
-      <section className="py-20 bg-gradient-soft dark:bg-dark-bg-secondary">
-        <div className="section-container">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-beeline-black dark:text-dark-text mb-4">
-              The Problem Every Vendor Faces
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-dark-text-secondary mb-12">Why you're losing sales without even knowing it</p>
-            <div className="grid sm:grid-cols-3 gap-6">
-              <div className="card p-8 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-beeline-yellow-light to-beeline-cream dark:from-beeline-yellow/20 dark:to-beeline-yellow/10 rounded-2xl flex items-center justify-center text-3xl mb-4 mx-auto">
-                  😴
-                </div>
-                <h3 className="font-bold text-lg mb-3 dark:text-dark-text">You Sleep</h3>
-                <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">Customer messages at 2am. No response until morning.</p>
-              </div>
-              <div className="card p-8 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-beeline-yellow-light to-beeline-cream dark:from-beeline-yellow/20 dark:to-beeline-yellow/10 rounded-2xl flex items-center justify-center text-3xl mb-4 mx-auto">
-                  💸
-                </div>
-                <h3 className="font-bold text-lg mb-3 dark:text-dark-text">Sales Lost</h3>
-                <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">By morning, they bought from your competitor.</p>
-              </div>
-              <div className="card p-8 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-beeline-yellow-light to-beeline-cream dark:from-beeline-yellow/20 dark:to-beeline-yellow/10 rounded-2xl flex items-center justify-center text-3xl mb-4 mx-auto">
-                  🔁
-                </div>
-                <h3 className="font-bold text-lg mb-3 dark:text-dark-text">Repeat Daily</h3>
-                <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">Lose 20-30% of potential sales every month.</p>
-              </div>
+      {/* Trust Signals Banner */}
+      <section className="py-12 px-6 border-y border-dark-border">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-wrap items-center justify-center gap-8">
+            {/* Trust Badges */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-beeline-yellow/5 border border-beeline-yellow/20 rounded-lg text-dark-text-secondary text-sm">
+              <FaShieldAlt className="w-4 h-4 text-beeline-yellow" />
+              <span>SOC 2 Compliant</span>
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-beeline-yellow/5 border border-beeline-yellow/20 rounded-lg text-dark-text-secondary text-sm">
+              <FaCheckCircle className="w-4 h-4 text-beeline-yellow" />
+              <span>WhatsApp Business API</span>
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-beeline-yellow/5 border border-beeline-yellow/20 rounded-lg text-dark-text-secondary text-sm">
+              <FaLock className="w-4 h-4 text-beeline-yellow" />
+              <span>End-to-End Encrypted</span>
+            </div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-beeline-yellow/5 border border-beeline-yellow/20 rounded-lg text-dark-text-secondary text-sm">
+              <FaGlobe className="w-4 h-4 text-beeline-yellow" />
+              <span>GDPR Compliant</span>
+            </div>
+
+            {/* Status Indicator */}
+            <div className="inline-flex items-center gap-2 text-green-400 text-sm">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span>All systems operational</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Solution Section */}
-      <section id="how-it-works" className="py-20 bg-white dark:bg-dark-bg">
-        <div className="section-container">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-beeline-black dark:text-dark-text mb-4">
-              Meet Your AI Employee
-            </h2>
-            <p className="text-lg text-gray-600 dark:text-dark-text-secondary leading-relaxed">
-              Beeline connects to your WhatsApp number. When customers message you,
-              our AI responds instantly - day or night, in English or Twi.
-            </p>
-          </div>
+      {/* 3-Step Process */}
+      <section className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-light text-center mb-4 text-dark-text">
+            Get Started in 3 Simple Steps
+          </h2>
+          <p className="text-center text-dark-text-secondary mb-16 max-w-2xl mx-auto">
+            Set up your AI assistant in minutes, not hours
+          </p>
 
-          <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-            <div className="card p-8">
-              <div className="bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-medium">
-                <FaWhatsapp className="text-2xl text-white" />
+          <div className="grid md:grid-cols-3 gap-12">
+            {/* Step 1 */}
+            <div className="text-center">
+              <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-8 mb-6 inline-flex items-center justify-center w-24 h-24 shadow-glass hover:border-beeline-yellow/30 hover:shadow-glow transition-all">
+                <MdQrCode2 className="w-12 h-12 text-beeline-yellow" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-beeline-black dark:text-dark-text">Use Your Own Number</h3>
-              <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">
-                Keep your trusted WhatsApp number. No new SIM, no app to download.
-                Your customers message the same number they always have.
+              <div className="text-beeline-yellow font-mono text-sm mb-2">STEP 01</div>
+              <h3 className="text-2xl font-semibold mb-3 text-dark-text">Connect WhatsApp</h3>
+              <p className="text-dark-text-secondary leading-relaxed">
+                Scan QR code to link your WhatsApp Business account securely in seconds.
               </p>
             </div>
 
-            <div className="card p-8">
-              <div className="bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-medium">
-                <FaClock className="text-2xl text-white" />
+            {/* Step 2 */}
+            <div className="text-center">
+              <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-8 mb-6 inline-flex items-center justify-center w-24 h-24 shadow-glass hover:border-beeline-yellow/30 hover:shadow-glow transition-all">
+                <MdPsychology className="w-12 h-12 text-beeline-yellow" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-beeline-black dark:text-dark-text">24/7 Availability</h3>
-              <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">
-                AI responds in under 4 seconds. Answers questions, checks stock,
-                takes orders, and processes payments - even at 3am.
+              <div className="text-beeline-yellow font-mono text-sm mb-2">STEP 02</div>
+              <h3 className="text-2xl font-semibold mb-3 text-dark-text">Choose AI Personality</h3>
+              <p className="text-dark-text-secondary leading-relaxed">
+                Customize your AI assistant's tone, expertise, and personality to match your brand.
               </p>
             </div>
 
-            <div className="card p-8">
-              <div className="bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-medium">
-                <FaChartLine className="text-2xl text-white" />
+            {/* Step 3 */}
+            <div className="text-center">
+              <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-8 mb-6 inline-flex items-center justify-center w-24 h-24 shadow-glass hover:border-beeline-yellow/30 hover:shadow-glow transition-all">
+                <FaRocket className="w-12 h-12 text-beeline-yellow" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-beeline-black dark:text-dark-text">Smart & Personalized</h3>
-              <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">
-                Learns your products, your prices, your style. Speaks Twi and English.
-                Remembers customer conversations.
-              </p>
-            </div>
-
-            <div className="card p-8">
-              <div className="bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark w-14 h-14 rounded-xl flex items-center justify-center mb-5 shadow-medium">
-                <FaMoneyBillWave className="text-2xl text-white" />
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-beeline-black">Dirt Cheap</h3>
-              <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">
-                From GHS 49/month flat. No per-message fees. Cheaper than hiring anyone.
-                Pays for itself with just 5-10 extra sales.
+              <div className="text-beeline-yellow font-mono text-sm mb-2">STEP 03</div>
+              <h3 className="text-2xl font-semibold mb-3 text-dark-text">Go Live</h3>
+              <p className="text-dark-text-secondary leading-relaxed">
+                Your AI assistant starts handling customer conversations 24/7 instantly.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works Steps */}
-      <section className="py-20 bg-gradient-soft">
-        <div className="section-container">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-beeline-black dark:text-dark-text mb-4">
-              Get Started in 2 Minutes
-            </h2>
-            <p className="text-lg text-gray-600">Three simple steps to your AI employee</p>
-          </div>
+      {/* Features Grid */}
+      <section className="py-24 px-6 bg-gradient-to-b from-transparent to-dark-bg-secondary/50">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-light text-center mb-4 text-dark-text">
+            Powerful Features for Modern Businesses
+          </h2>
+          <p className="text-center text-dark-text-secondary mb-16 max-w-2xl mx-auto">
+            Everything you need to automate customer conversations and scale your business on WhatsApp.
+          </p>
 
-          <div className="max-w-3xl mx-auto">
-            <div className="space-y-6">
-              <div className="card p-8 flex gap-6">
-                <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-xl flex items-center justify-center font-bold text-2xl text-white shadow-medium">
-                  1
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Feature 1 */}
+            <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-8 shadow-glass hover:border-beeline-yellow/30 hover:shadow-glow hover:-translate-y-1 transition-all">
+              <div className="mb-6">
+                <div className="w-16 h-16 rounded-xl bg-beeline-yellow/20 border border-beeline-yellow/20 flex items-center justify-center mb-4">
+                  <MdFlashOn className="w-8 h-8 text-beeline-yellow" />
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2 text-beeline-black">Sign Up</h3>
-                  <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">
-                    Enter your name, phone number, and what you sell. Takes 30 seconds.
-                  </p>
-                </div>
+                <h3 className="text-xl font-semibold mb-3 text-dark-text">Real-time AI Responses</h3>
+                <p className="text-dark-text-secondary leading-relaxed">
+                  Instant, intelligent replies to customer inquiries powered by advanced AI models.
+                </p>
               </div>
-
-              <div className="card p-8 flex gap-6">
-                <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-xl flex items-center justify-center font-bold text-2xl text-white shadow-medium">
-                  2
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2 text-beeline-black">Scan QR Code</h3>
-                  <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">
-                    Open WhatsApp, scan the QR code we show you. Your AI employee connects to your number.
-                  </p>
-                </div>
+              <div className="aspect-video bg-gradient-to-br from-dark-bg-secondary to-dark-bg-tertiary rounded-lg border border-dark-border flex items-center justify-center">
+                <FaWhatsapp className="w-12 h-12 text-beeline-yellow/30" />
               </div>
+            </div>
 
-              <div className="card p-8 flex gap-6">
-                <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-xl flex items-center justify-center font-bold text-2xl text-white shadow-medium">
-                  3
+            {/* Feature 2 */}
+            <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-8 shadow-glass hover:border-beeline-yellow/30 hover:shadow-glow hover:-translate-y-1 transition-all">
+              <div className="mb-6">
+                <div className="w-16 h-16 rounded-xl bg-beeline-yellow/20 border border-beeline-yellow/20 flex items-center justify-center mb-4">
+                  <FaClock className="w-8 h-8 text-beeline-yellow" />
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-2 text-beeline-black">You're Live!</h3>
-                  <p className="text-gray-600 dark:text-dark-text-secondary leading-relaxed">
-                    That's it. Your AI employee is now handling customers 24/7.
-                    You'll get notifications for important stuff.
-                  </p>
+                <h3 className="text-xl font-semibold mb-3 text-dark-text">24/7 Support</h3>
+                <p className="text-dark-text-secondary leading-relaxed">
+                  Never miss a customer. Your AI assistant works around the clock, every day.
+                </p>
+              </div>
+              <div className="aspect-video bg-gradient-to-br from-dark-bg-secondary to-dark-bg-tertiary rounded-lg border border-dark-border flex items-center justify-center">
+                <MdNightlight className="w-12 h-12 text-beeline-yellow/30" />
+              </div>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-8 shadow-glass hover:border-beeline-yellow/30 hover:shadow-glow hover:-translate-y-1 transition-all">
+              <div className="mb-6">
+                <div className="w-16 h-16 rounded-xl bg-beeline-yellow/20 border border-beeline-yellow/20 flex items-center justify-center mb-4">
+                  <MdPsychology className="w-8 h-8 text-beeline-yellow" />
                 </div>
+                <h3 className="text-xl font-semibold mb-3 text-dark-text">Custom Personalities</h3>
+                <p className="text-dark-text-secondary leading-relaxed">
+                  Create unique AI personalities that reflect your brand voice and values.
+                </p>
+              </div>
+              <div className="aspect-video bg-gradient-to-br from-dark-bg-secondary to-dark-bg-tertiary rounded-lg border border-dark-border flex items-center justify-center">
+                <MdPsychology className="w-12 h-12 text-beeline-yellow/30" />
+              </div>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-8 shadow-glass hover:border-beeline-yellow/30 hover:shadow-glow hover:-translate-y-1 transition-all">
+              <div className="mb-6">
+                <div className="w-16 h-16 rounded-xl bg-beeline-yellow/20 border border-beeline-yellow/20 flex items-center justify-center mb-4">
+                  <MdBarChart className="w-8 h-8 text-beeline-yellow" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3 text-dark-text">Analytics & Insights</h3>
+                <p className="text-dark-text-secondary leading-relaxed">
+                  Track conversations, customer satisfaction, and business metrics in real-time.
+                </p>
+              </div>
+              <div className="aspect-video bg-gradient-to-br from-dark-bg-secondary to-dark-bg-tertiary rounded-lg border border-dark-border flex items-center justify-center">
+                <MdBarChart className="w-12 h-12 text-beeline-yellow/30" />
               </div>
             </div>
           </div>
@@ -222,210 +254,200 @@ export default function Home() {
       </section>
 
       {/* Pricing Section */}
-      <section className="py-20 bg-white dark:bg-dark-bg">
-        <div className="section-container">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-beeline-black dark:text-dark-text mb-4">
-              Simple, Honest Pricing
-            </h2>
-            <p className="text-lg text-gray-600">
-              One price. Everything included. No surprises.
-            </p>
-          </div>
+      <section id="pricing" className="py-24 px-6">
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl md:text-5xl font-light text-center mb-4 text-dark-text">
+            Simple, Transparent Pricing
+          </h2>
+          <p className="text-center text-dark-text-secondary mb-16 max-w-2xl mx-auto">
+            Choose the perfect plan for your business needs. All plans include core AI features.
+          </p>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {/* Personal Tier */}
-            <div className="card p-8 hover:shadow-hover transition-all duration-300">
-              <div className="text-center">
-                <h3 className="text-2xl font-bold mb-2 text-beeline-black dark:text-dark-text">Personal</h3>
-                <div className="flex items-baseline justify-center gap-2 mb-4">
-                  <span className="text-4xl font-bold text-beeline-yellow">GHS 49</span>
-                  <span className="text-gray-600 dark:text-dark-text-secondary font-medium">/month</span>
-                </div>
-                <p className="text-gray-600 dark:text-dark-text-secondary mb-6 text-sm">Your AI Assistant</p>
+            <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-8 shadow-glass hover:border-beeline-yellow/30 hover:shadow-glow hover:scale-105 transition-all">
+              <div className="text-beeline-yellow font-mono text-sm mb-2">PERSONAL</div>
+              <h3 className="text-4xl font-bold mb-2 text-dark-text">GHS 49</h3>
+              <p className="text-dark-text-secondary mb-6">per month</p>
 
-                <ul className="text-left space-y-3 mb-8">
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Proactive reminders</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Message drafting</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Schedule management</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Context-aware responses</span>
-                  </li>
-                </ul>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>1 WhatsApp Number</span>
+                </li>
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>Basic AI Personality</span>
+                </li>
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>500 Messages/Month</span>
+                </li>
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>Email Support</span>
+                </li>
+              </ul>
 
-                <Link href="/signup" className="btn-secondary w-full text-center block">
-                  Get Started
-                </Link>
-              </div>
+              <Link
+                href="/signup"
+                className="block w-full text-center px-6 py-3 bg-glass-bg backdrop-blur-md border border-glass-border rounded-lg text-beeline-yellow hover:bg-dark-bg-tertiary/80 hover:border-beeline-yellow/30 transition-all"
+              >
+                Get Started
+              </Link>
             </div>
 
             {/* Business Tier */}
-            <div className="card p-8 border-2 border-beeline-yellow relative overflow-hidden hover:shadow-hover transition-all duration-300 transform md:scale-105">
-              <div className="absolute top-0 right-0 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark text-white text-xs font-bold px-4 py-1.5 rounded-bl-lg shadow-medium">
+            <div className="bg-glass-bg backdrop-blur-xl border-2 border-beeline-yellow/30 rounded-2xl p-8 shadow-glow relative overflow-hidden hover:shadow-glow-lg hover:scale-105 transition-all">
+              <div className="absolute top-4 right-4 bg-gradient-beeline text-black text-xs font-bold px-3 py-1 rounded-full">
                 POPULAR
               </div>
-              <div className="text-center">
-                <h3 className="text-2xl font-bold mb-2 text-beeline-black dark:text-dark-text">Business</h3>
-                <div className="flex items-baseline justify-center gap-2 mb-4">
-                  <span className="text-4xl font-bold bg-gradient-to-r from-beeline-yellow to-beeline-yellow-dark bg-clip-text text-transparent">GHS 99</span>
-                  <span className="text-gray-600 dark:text-dark-text-secondary font-medium">/month</span>
-                </div>
-                <p className="text-gray-600 dark:text-dark-text-secondary mb-6 text-sm">Your AI Employee</p>
+              <div className="text-beeline-yellow font-mono text-sm mb-2">BUSINESS</div>
+              <h3 className="text-4xl font-bold mb-2 text-dark-text">GHS 99</h3>
+              <p className="text-dark-text-secondary mb-6">per month</p>
 
-                <ul className="text-left space-y-3 mb-8">
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">24/7 customer service</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Product catalog</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Order handling</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Voice-trained personality</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">English & Twi support</span>
-                  </li>
-                </ul>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>3 WhatsApp Numbers</span>
+                </li>
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>Custom AI Personalities</span>
+                </li>
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>2,000 Messages/Month</span>
+                </li>
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>Analytics Dashboard</span>
+                </li>
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>Priority Support</span>
+                </li>
+              </ul>
 
-                <Link href="/signup" className="btn-primary w-full text-center block">
-                  Start Free Trial
-                </Link>
-              </div>
+              <Link
+                href="/signup"
+                className="block w-full text-center px-6 py-3 bg-gradient-beeline text-black font-semibold rounded-lg shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all"
+              >
+                Get Started
+              </Link>
             </div>
 
             {/* Enterprise Tier */}
-            <div className="card p-8 hover:shadow-hover transition-all duration-300">
-              <div className="text-center">
-                <h3 className="text-2xl font-bold mb-2 text-beeline-black dark:text-dark-text">Enterprise</h3>
-                <div className="flex items-baseline justify-center gap-2 mb-4">
-                  <span className="text-4xl font-bold text-beeline-yellow">GHS 599+</span>
-                  <span className="text-gray-600 dark:text-dark-text-secondary font-medium">/month</span>
-                </div>
-                <p className="text-gray-600 dark:text-dark-text-secondary mb-6 text-sm">Scale Without Limits</p>
+            <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-8 shadow-glass hover:border-beeline-yellow/30 hover:shadow-glow hover:scale-105 transition-all">
+              <div className="text-beeline-yellow font-mono text-sm mb-2">ENTERPRISE</div>
+              <h3 className="text-4xl font-bold mb-2 text-dark-text">GHS 299</h3>
+              <p className="text-dark-text-secondary mb-6">per month</p>
 
-                <ul className="text-left space-y-3 mb-8">
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Everything in Business</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Multi-location dashboard</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Unlimited team members</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Advanced analytics</span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <div className="flex-shrink-0 w-5 h-5 bg-gradient-to-br from-beeline-yellow to-beeline-yellow-dark rounded-full flex items-center justify-center mt-0.5">
-                      <span className="text-white text-xs font-bold">✓</span>
-                    </div>
-                    <span className="text-gray-700 dark:text-dark-text-secondary text-sm leading-relaxed">Priority support</span>
-                  </li>
-                </ul>
+              <ul className="space-y-3 mb-8">
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>Unlimited Numbers</span>
+                </li>
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>Advanced AI + Voice</span>
+                </li>
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>Unlimited Messages</span>
+                </li>
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>Advanced Analytics</span>
+                </li>
+                <li className="flex items-center gap-2 text-dark-text-secondary">
+                  <FaCheckCircle className="w-5 h-5 text-beeline-yellow flex-shrink-0" />
+                  <span>Dedicated Support</span>
+                </li>
+              </ul>
 
-                <Link href="/signup" className="btn-secondary w-full text-center block">
-                  Contact Sales
-                </Link>
-              </div>
+              <Link
+                href="/signup"
+                className="block w-full text-center px-6 py-3 bg-glass-bg backdrop-blur-md border border-glass-border rounded-lg text-beeline-yellow hover:bg-dark-bg-tertiary/80 hover:border-beeline-yellow/30 transition-all"
+              >
+                Contact Sales
+              </Link>
             </div>
           </div>
-
-          <div className="mt-12 text-center">
-            <p className="text-gray-600 dark:text-dark-text-secondary mb-4">
-              <strong>Enterprise Tiers:</strong> Up to 5 locations (GHS 599) • Up to 12 locations (GHS 999) • Up to 25 locations (GHS 1,499) • Up to 60 locations (GHS 2,999)
-            </p>
-            <p className="text-sm text-gray-500 dark:text-dark-text-secondary">
-              Add unlimited locations within your tier - no extra charges!
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-beeline-black dark:bg-dark-bg text-white">
-        <div className="section-container text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-6">
-            Ready to Stop Losing Sales?
-          </h2>
-          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-            Join hundreds of Ghanaian vendors already making more money with Beeline.
-          </p>
-          <Link href="/signup" className="btn-primary text-lg inline-block">
-            <FaWhatsapp className="inline mr-2" />
-            Get Your AI Employee Now
-          </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-gray-400 py-12">
-        <div className="section-container">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center space-x-2">
-              <GiHoneypot className="text-3xl text-beeline-yellow" />
-              <span className="text-xl font-bold text-white">Beeline</span>
+      <footer className="py-16 px-6 border-t border-dark-border">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-5 gap-8 mb-12">
+            {/* Product */}
+            <div>
+              <h4 className="font-semibold mb-4 text-dark-text">Product</h4>
+              <ul className="space-y-2 text-dark-text-secondary text-sm">
+                <li><a href="#" className="hover:text-dark-text transition-colors">Features</a></li>
+                <li><a href="#" className="hover:text-dark-text transition-colors">Pricing</a></li>
+                <li><a href="#" className="hover:text-dark-text transition-colors">API</a></li>
+              </ul>
             </div>
-            <div className="text-center md:text-right">
-              <p>© 2025 Beeline Ghana. Built with Honey in Accra.</p>
-              <p className="text-sm mt-2">
-                Powered by Beeline 🐝
-              </p>
-              <p className="text-sm mt-1 text-gray-500">
-                Building Africa's commerce graph — one message at a time
-              </p>
+
+            {/* Company */}
+            <div>
+              <h4 className="font-semibold mb-4 text-dark-text">Company</h4>
+              <ul className="space-y-2 text-dark-text-secondary text-sm">
+                <li><a href="#" className="hover:text-dark-text transition-colors">About</a></li>
+                <li><a href="#" className="hover:text-dark-text transition-colors">Blog</a></li>
+                <li><a href="#" className="hover:text-dark-text transition-colors">Careers</a></li>
+              </ul>
             </div>
+
+            {/* Resources */}
+            <div>
+              <h4 className="font-semibold mb-4 text-dark-text">Resources</h4>
+              <ul className="space-y-2 text-dark-text-secondary text-sm">
+                <li><a href="#" className="hover:text-dark-text transition-colors">Documentation</a></li>
+                <li><a href="#" className="hover:text-dark-text transition-colors">Help Center</a></li>
+                <li><a href="#" className="hover:text-dark-text transition-colors">Contact</a></li>
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h4 className="font-semibold mb-4 text-dark-text">Legal</h4>
+              <ul className="space-y-2 text-dark-text-secondary text-sm">
+                <li><a href="#" className="hover:text-dark-text transition-colors">Privacy</a></li>
+                <li><a href="#" className="hover:text-dark-text transition-colors">Terms</a></li>
+                <li><a href="#" className="hover:text-dark-text transition-colors">Security</a></li>
+              </ul>
+            </div>
+
+            {/* Social */}
+            <div>
+              <h4 className="font-semibold mb-4 text-dark-text">Social</h4>
+              <ul className="space-y-2 text-dark-text-secondary text-sm">
+                <li><a href="#" className="hover:text-dark-text transition-colors">Twitter</a></li>
+                <li><a href="#" className="hover:text-dark-text transition-colors">LinkedIn</a></li>
+                <li><a href="#" className="hover:text-dark-text transition-colors">GitHub</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-dark-border flex flex-col md:flex-row justify-between items-center gap-4">
+            <BeelineLogo size="sm" />
+            <p className="text-dark-text-tertiary text-sm">© 2025 Beeline. All rights reserved.</p>
           </div>
         </div>
       </footer>
+
+      <style jsx global>{`
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
+        }
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+      `}</style>
     </main>
   );
 }
