@@ -591,6 +591,11 @@ async function connectVendor(vendorId) {
   });
 
   vendorSockets.set(vendorId, sock);
+
+  // Give Baileys a moment to start connection and emit QR
+  // This is a workaround for the async nature of Baileys connection
+  await new Promise(resolve => setTimeout(resolve, 2000));
+
   return sock;
 }
 
