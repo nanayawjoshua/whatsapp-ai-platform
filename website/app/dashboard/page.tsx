@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import WhatsAppConnection from '@/components/WhatsAppConnection';
 
 interface Vendor {
   vendorId: string;
@@ -134,6 +135,13 @@ export default function DashboardPage() {
             </button>
           ))}
         </div>
+
+        {/* WhatsApp Connection Status */}
+        {session?.user?.vendorId && (
+          <div className="mb-6">
+            <WhatsAppConnection vendorId={session.user.vendorId} />
+          </div>
+        )}
 
         {/* Stats Grid */}
         {stats && (
