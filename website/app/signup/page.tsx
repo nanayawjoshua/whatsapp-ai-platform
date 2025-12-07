@@ -618,8 +618,45 @@ function SignupContent() {
               <div className="w-64 h-64 bg-white rounded-lg flex items-center justify-center shadow-soft">
                 {isLoadingQR && (
                   <div className="text-center">
-                    <div className="w-16 h-16 border-4 border-beeline-yellow border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p className="text-gray-600 text-sm">Generating QR Code...</p>
+                    {/* Animated QR placeholder */}
+                    <div className="relative w-64 h-64 mx-auto mb-6">
+                      <div className="absolute inset-0 bg-gradient-to-br from-beeline-yellow-light to-beeline-cream rounded-2xl animate-pulse"></div>
+                      <div className="absolute inset-4 bg-white rounded-xl opacity-50"></div>
+                      <div className="absolute inset-8 grid grid-cols-3 grid-rows-3 gap-2 p-4">
+                        {[...Array(9)].map((_, i) => (
+                          <div
+                            key={i}
+                            className="bg-gray-300 rounded animate-pulse"
+                            style={{ animationDelay: `${i * 100}ms` }}
+                          ></div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Progress steps */}
+                    <div className="space-y-3 mb-4">
+                      <div className="flex items-center justify-center gap-2 text-green-600">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                        </svg>
+                        <span className="font-medium">Payment confirmed</span>
+                      </div>
+                      <div className="flex items-center justify-center gap-2 text-beeline-yellow">
+                        <div className="w-5 h-5 border-2 border-beeline-yellow border-t-transparent rounded-full animate-spin"></div>
+                        <span className="font-medium">Generating your WhatsApp connection...</span>
+                      </div>
+                      <div className="flex items-center justify-center gap-2 text-gray-400">
+                        <div className="w-5 h-5 rounded-full border-2 border-gray-300"></div>
+                        <span>Almost there...</span>
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-gray-500 mt-4">
+                      ⏱️ This usually takes 3-5 seconds
+                    </p>
+                    <p className="text-xs text-gray-400 mt-2">
+                      💡 Tip: Keep WhatsApp open on your phone
+                    </p>
                   </div>
                 )}
 
