@@ -1,5 +1,3 @@
-'use client';
-
 interface BeelineLogoProps {
   size?: 'sm' | 'md' | 'lg';
   showText?: boolean;
@@ -52,16 +50,6 @@ export default function BeelineLogo({ size = 'md', showText = true, className = 
           Beeline
         </span>
       )}
-
-      <style jsx>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-4px); }
-        }
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-      `}</style>
     </div>
   );
 }

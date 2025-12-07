@@ -1,3 +1,5 @@
+'use client';
+
 import Link from "next/link";
 import { FaWhatsapp, FaRocket, FaClock, FaShieldAlt, FaLock, FaGlobe, FaCheckCircle } from "react-icons/fa";
 import { MdQrCode2, MdPsychology, MdFlashOn, MdBarChart, MdNightlight } from "react-icons/md";
@@ -39,7 +41,7 @@ export default function HomeDark() {
             {/* Mobile Menu Button */}
             <button className="lg:hidden text-dark-text">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="width" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
           </div>
