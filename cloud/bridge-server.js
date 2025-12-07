@@ -950,7 +950,9 @@ async function start() {
     logger.info('✅ PostgreSQL connected');
 
     // Connect all vendors from database
-    await connectAllVendors();
+    // DISABLED: Prevents auto-reconnect loop for old test sessions
+    // Vendors will connect when they request new QR codes
+    // await connectAllVendors();
 
     // Start Express server
     app.listen(config.port, () => {
