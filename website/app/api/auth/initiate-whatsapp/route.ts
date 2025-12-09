@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/auth/initiate-whatsapp
  * 
  * Initiates WhatsApp connection for phone-based signup.
  * Calls the cloud bridge service to generate a QR code.
+ * 
+ * Ensures bridge is awake before making request (handles Render sleep)
  * 
  * Request body:
  * {
@@ -100,7 +104,48 @@ export async function POST(request: NextRequest) {
 
     console.log('📤 Calling bridge service...');
 
-    // Call cloud bridge service to generate QR code
+    // STEP 1: Ensure bridge is awake (handles Render cold start)
+    console.log('🌐 Ensuring bridge is awake before request...');
+    let bridgeAwake = false;
+    let pingAttempt = 0;
+    const maxPingAttempts = 3;
+    let pingDelay = 2000; // Start with 2 second delay
+
+    while (pingAttempt < maxPingAttempts && !bridgeAwake) {
+      pingAttempt++;
+      try {
+        console.log(`  Ping attempt ${pingAttempt}/${maxPingAttempts}...`);
+        const healthResponse = await fetch(`${bridgeUrl}/health`, {
+          method: 'GET',
+          signal: AbortSignal.timeout(5000) // 5 second timeout per ping
+        });
+
+        if (healthResponse.ok) {
+          console.log('✅ Bridge is awake!');
+          bridgeAwake = true;
+          break;
+        }
+      } catch (pingError: any) {
+        console.log(`  Ping failed: ${pingError.message}`);
+
+        if (pingAttempt < maxPingAttempts) {
+          console.log(`  Waiting ${pingDelay}ms before retry...`);
+          await new Promise(r => setTimeout(r, pingDelay));
+          pingDelay = Math.min(pingDelay * 2, 10000); // Exponential backoff
+        }
+      }
+    }
+
+    if (!bridgeAwake) {
+      console.error('❌ Bridge did not wake up after retries');
+      return NextResponse.json(
+        { error: 'WhatsApp service is temporarily unavailable. Please try again in a few seconds.' },
+        { status: 503 }
+      );
+    }
+
+    // STEP 2: Call cloud bridge service to generate QR code
+    console.log('📤 Sending QR generation request to bridge...');
     let bridgeResponse;
     try {
       bridgeResponse = await fetch(`${bridgeUrl}/vendor/generate-qr`, {
