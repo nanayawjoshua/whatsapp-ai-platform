@@ -82,15 +82,51 @@ export default function HomeDark() {
             847 businesses using Beeline right now
           </p>
 
-          {/* Demo Screenshot Card */}
-          <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-4 max-w-4xl mx-auto shadow-glass hover:border-beeline-yellow/30 hover:shadow-glow transition-all duration-300 animate-float">
-            <div className="aspect-video bg-gradient-to-br from-dark-bg-secondary to-dark-bg-tertiary rounded-lg overflow-hidden border border-dark-border flex items-center justify-center">
-              {/* Placeholder for WhatsApp Chat Screenshot */}
-              <div className="text-center">
-                <FaWhatsapp className="w-24 h-24 text-beeline-yellow/30 mx-auto mb-4" />
-                <p className="text-dark-text-tertiary">WhatsApp AI Chat Demo</p>
+          {/* Demo Screenshot Card - Real WhatsApp Experience */}
+          <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-4 max-w-4xl mx-auto shadow-glow hover:shadow-glow hover:border-beeline-yellow/50 transition-all duration-300 animate-float">
+            <div className="aspect-video bg-gradient-to-br from-dark-bg-secondary to-dark-bg-tertiary rounded-lg overflow-hidden border border-dark-border flex items-center justify-center relative">
+              {/* WhatsApp Chat UI Mockup */}
+              <div className="w-full h-full flex flex-col bg-gradient-to-b from-dark-bg-secondary/80 to-dark-bg-tertiary/80 p-6">
+                {/* Chat Header */}
+                <div className="flex items-center gap-3 pb-4 border-b border-dark-border">
+                  <div className="w-10 h-10 rounded-full bg-gradient-beeline flex items-center justify-center">
+                    <span className="text-black font-bold">S</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-semibold text-dark-text">Sarah's Store</p>
+                    <p className="text-xs text-dark-text-tertiary">Active now</p>
+                  </div>
+                </div>
+                {/* Messages */}
+                <div className="flex-1 overflow-hidden py-4 space-y-4">
+                  {/* Customer Message */}
+                  <div className="flex justify-start">
+                    <div className="bg-dark-bg-tertiary/60 text-dark-text-secondary px-4 py-2 rounded-2xl rounded-tl text-sm max-w-xs">
+                      Hi, do you have the blue necklace in stock?
+                    </div>
+                  </div>
+                  {/* AI Response */}
+                  <div className="flex justify-end">
+                    <div className="bg-gradient-beeline text-black px-4 py-2 rounded-2xl rounded-tr text-sm max-w-xs">
+                      Yes! We have 3 in stock. Send you details? 💎
+                    </div>
+                  </div>
+                  {/* Customer */}
+                  <div className="flex justify-start">
+                    <div className="bg-dark-bg-tertiary/60 text-dark-text-secondary px-4 py-2 rounded-2xl rounded-tl text-sm max-w-xs">
+                      Perfect! How much?
+                    </div>
+                  </div>
+                  {/* AI */}
+                  <div className="flex justify-end">
+                    <div className="bg-gradient-beeline text-black px-4 py-2 rounded-2xl rounded-tr text-sm max-w-xs">
+                      GHS 89. Ready to order? 🛍
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+            <p className="text-center text-dark-text-tertiary text-sm mt-3">This happens while Sarah sleeps.</p>
           </div>
         </div>
       </section>
@@ -208,6 +244,41 @@ export default function HomeDark() {
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* One More Thing - Jobs-style */}
+      <section className="py-24 px-6 bg-gradient-to-b from-transparent via-dark-bg-secondary/30 to-dark-bg">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-block bg-glass-bg backdrop-blur-xl border border-glass-border rounded-full px-6 py-2 mb-8">
+            <p className="text-beeline-yellow text-sm font-semibold">One more thing...</p>
+          </div>
+          
+          <h2 className="text-5xl md:text-7xl font-light text-dark-text mb-8 leading-tight">
+            Beeline works in
+            <br />
+            <span className="bg-gradient-beeline bg-clip-text text-transparent">
+              any language.
+            </span>
+          </h2>
+          
+          <p className="text-xl text-dark-text-secondary mb-12 font-light max-w-2xl mx-auto">
+            Whether your customers speak English, Twi, Ga, or Ewe—Beeline understands them all. 
+            <br />It responds in their language. Naturally.
+          </p>
+          
+          <div className="flex justify-center gap-4 flex-wrap">
+            <span className="inline-block px-6 py-2 bg-glass-bg backdrop-blur-xl border border-glass-border rounded-full text-dark-text-secondary text-sm">🇬🇭 Twi</span>
+            <span className="inline-block px-6 py-2 bg-glass-bg backdrop-blur-xl border border-glass-border rounded-full text-dark-text-secondary text-sm">🇬🇭 Ga</span>
+            <span className="inline-block px-6 py-2 bg-glass-bg backdrop-blur-xl border border-glass-border rounded-full text-dark-text-secondary text-sm">🇬🇭 Ewe</span>
+            <span className="inline-block px-6 py-2 bg-glass-bg backdrop-blur-xl border border-glass-border rounded-full text-dark-text-secondary text-sm">🌍 50+ languages</span>
+          </div>
+          
+          <div className="mt-16">
+            <Link href="/signup" className="inline-block px-12 py-5 bg-gradient-beeline text-black text-lg font-semibold rounded-full hover:scale-105 transition-transform shadow-glow">
+              See the magic →
+            </Link>
           </div>
         </div>
       </section>
@@ -340,6 +411,12 @@ export default function HomeDark() {
         }
         .animate-float {
           animation: float 3s ease-in-out infinite;
+        }
+        .shadow-glow {
+          box-shadow: 0 0 40px rgba(249, 199, 79, 0.4), 0 0 20px rgba(243, 114, 44, 0.2);
+        }
+        .shadow-glow-lg {
+          box-shadow: 0 0 60px rgba(249, 199, 79, 0.5), 0 0 30px rgba(243, 114, 44, 0.3);
         }
       `}</style>
     </main>

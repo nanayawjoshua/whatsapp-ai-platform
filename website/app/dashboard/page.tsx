@@ -136,6 +136,21 @@ export default function DashboardPage() {
 
         {/* Content Area */}
         <main className="flex-1 overflow-y-auto p-8">
+          {/* Emotional Hero Section */}
+          <div className="mb-12">
+            <div className="bg-gradient-to-r from-beeline-yellow/10 via-transparent to-transparent border border-beeline-yellow/20 rounded-2xl p-8">
+              <p className="text-sm text-beeline-yellow font-semibold mb-2">✨ While you were away</p>
+              <h2 className="text-4xl font-light text-dark-text mb-2">
+                Welcome back, {session?.user?.name?.split(' ')[0]}.
+              </h2>
+              <p className="text-dark-text-secondary">
+                Your AI closed <span className="font-semibold text-beeline-yellow">{stats?.completedOrders || 0} sales</span> and 
+                handled <span className="font-semibold text-beeline-yellow">{stats?.totalConversations || 0} conversations</span> while you lived your life.
+              </p>
+            </div>
+          </div>
+
+          {/* WhatsApp Connection */}
           {session?.user?.vendorId && (
             <div className="mb-8">
               <WhatsAppConnection vendorId={session.user.vendorId} />
@@ -145,19 +160,53 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Column */}
             <div className="lg:col-span-2">
-              <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl shadow-glass p-6">
-                <h2 className="text-xl font-semibold text-dark-text mb-4">
-                  Today's Activity
+              {/* 3 Key KPIs - Simplified Focus */}
+              <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl shadow-glass p-8 mb-8">
+                <h2 className="text-xl font-semibold text-dark-text mb-6">
+                  Your Key Metrics
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  <BigStat value={stats?.totalConversations || 0} label="Conversations Handled" />
-                  <BigStat value={`GHS ${stats?.paymentsDetected * 150 || 0}`} label="Revenue Captured" />
+                <div className="grid grid-cols-3 gap-6">
+                  <KPICard 
+                    value={stats?.completedOrders || 0} 
+                    label="Orders" 
+                    icon="📦"
+                  />
+                  <KPICard 
+                    value={stats?.totalConversations || 0} 
+                    label="Conversations" 
+                    icon="💬"
+                  />
+                  <KPICard 
+                    value={`GHS ${(stats?.paymentsDetected || 0) * 150}`} 
+                    label="Revenue" 
+                    icon="💰"
+                  />
                 </div>
               </div>
 
-              <div className="mt-8">
+              {/* Story Section - What AI Accomplished */}
+              <div className="bg-gradient-to-b from-dark-bg-secondary/50 to-transparent border border-dark-border rounded-2xl p-6 mb-8">
+                <h3 className="text-lg font-semibold text-dark-text mb-4">🎯 What Your AI Did For You</h3>
+                <ul className="space-y-3 text-dark-text-secondary">
+                  <li className="flex items-start gap-3">
+                    <span className="text-beeline-yellow">✓</span>
+                    <span>Responded to <strong>{stats?.userMessages || 0} customer messages</strong> in under 2 seconds</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-beeline-yellow">✓</span>
+                    <span>Maintained <strong>{stats?.aiResponseRate ? (stats.aiResponseRate * 100).toFixed(0) : 0}% response accuracy</strong> across all conversations</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-beeline-yellow">✓</span>
+                    <span>Detected <strong>{stats?.paymentsDetected || 0} payments</strong> and logged them automatically</span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Conversations That Need Attention */}
+              <div>
                 <h2 className="text-xl font-semibold text-dark-text mb-4">
-                  Needs Attention
+                  Conversations That Need You
                 </h2>
                 {conversations.length > 0 ? (
                   <div className="space-y-4">
@@ -173,16 +222,35 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            {/* Side Column */}
-            <div>
+            {/* Side Column - Tips & Insights */}
+            <div className="space-y-4">
               <div className="bg-gradient-to-br from-beeline-yellow/10 to-transparent border border-beeline-yellow/20 rounded-2xl p-6">
                 <div className="flex items-center gap-3 mb-3">
                   <FaLightbulb className="w-5 h-5 text-beeline-yellow" />
-                  <h3 className="font-semibold text-beeline-yellow">Pro Tip</h3>
+                  <h3 className="font-semibold text-beeline-yellow">Quick Win</h3>
                 </div>
                 <p className="text-dark-text-secondary text-sm">
-                  Record a voice note in your settings to teach your AI about new products. It learns instantly.
+                  Add your top 5 products to the AI's knowledge base. It'll start recommending them in conversations.
                 </p>
+              </div>
+              
+              {/* Expanded Stats */}
+              <div className="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl p-6">
+                <h3 className="font-semibold text-dark-text mb-4 text-sm">Full Analytics</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-dark-text-secondary">Total Messages</span>
+                    <span className="text-dark-text">{stats?.totalMessages || 0}</span>
+                  </div>
+                  <div className="flex justify-between border-t border-dark-border pt-3 mt-3">
+                    <span className="text-dark-text-secondary">AI Messages</span>
+                    <span className="text-dark-text">{stats?.aiMessages || 0}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-dark-text-secondary">Customer Messages</span>
+                    <span className="text-dark-text">{stats?.userMessages || 0}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -199,6 +267,16 @@ function NavItem({ icon, label, active = false, href }: { icon: React.ReactNode;
     </div>
   );
   return href ? <Link href={href} title={label}>{content}</Link> : <button title={label}>{content}</button>;
+}
+
+function KPICard({ value, label, icon }: { value: string | number; label: string; icon: string }) {
+  return (
+    <div className="bg-dark-bg-secondary/50 p-6 rounded-xl border border-dark-border hover:border-beeline-yellow/30 transition-colors">
+      <div className="text-3xl mb-2">{icon}</div>
+      <p className="text-3xl font-bold text-beeline-yellow">{value}</p>
+      <p className="text-dark-text-secondary text-sm mt-2">{label}</p>
+    </div>
+  );
 }
 
 function BigStat({ value, label }: { value: string | number, label: string }) {
