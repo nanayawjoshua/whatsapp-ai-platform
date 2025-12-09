@@ -44,7 +44,19 @@ function SignupContent() {
         body: JSON.stringify({ phone }),
       });
 
-      if (!response.ok) throw new Error('Failed to initiate WhatsApp connection');
+      if (!response.ok) {
+        // Try to get detailed error message from response
+        let errorMsg = 'Failed to initiate WhatsApp connection';
+        try {
+          const errorData = await response.json();
+          if (errorData.error) {
+            errorMsg = errorData.error;
+          }
+        } catch {
+          errorMsg = `Error: ${response.status} ${response.statusText}`;
+        }
+        throw new Error(errorMsg);
+      }
 
       const data = await response.json();
       setQrCode(data.qrCode);
