@@ -74,11 +74,27 @@ export async function POST(request: NextRequest) {
     const vendorId = `vendor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     // Get cloud bridge URL from environment
-    const bridgeUrl = process.env.CLOUD_BRIDGE_URL || 'http://localhost:3000';
+    // CRITICAL: This must be set in production
+    let bridgeUrl = process.env.CLOUD_BRIDGE_URL;
+    
+    if (!bridgeUrl) {
+      // In development, use localhost; in production, this will fail fast
+      if (process.env.NODE_ENV === 'development') {
+        bridgeUrl = 'http://localhost:3000';
+        console.log('📍 Using development bridge URL');
+      } else {
+        console.error('🚨 CRITICAL: CLOUD_BRIDGE_URL environment variable not set in production!');
+        return NextResponse.json(
+          { error: 'Bridge service not configured. Contact support and set CLOUD_BRIDGE_URL env var.' },
+          { status: 503 }
+        );
+      }
+    }
 
     console.log('🔗 Bridge configuration:', {
       bridgeUrl,
       hasEnv: !!process.env.CLOUD_BRIDGE_URL,
+      nodeEnv: process.env.NODE_ENV,
       vendorId
     });
 

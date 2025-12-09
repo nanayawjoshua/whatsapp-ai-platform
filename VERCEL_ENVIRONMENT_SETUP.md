@@ -1,96 +1,124 @@
 # Vercel Environment Setup Guide
 
-This guide shows how to set up different environments (Preview/Development and Production) on Vercel with separate configurations for testing and live payments.
+**🚨 CRITICAL: You Must Do This Now to Fix 500 Error**
 
-## Environment Strategy
+The WhatsApp endpoint will fail with 500 until you set `CLOUD_BRIDGE_URL` environment variable.
 
-- **Preview/Development**: Test mode (test Paystack keys, test data)
-- **Production**: Live mode (live Paystack keys, real payments)
+## ⚡ Quick Fix (5 minutes)
 
-## Step-by-Step Setup
-
-### 1. Deploy to Vercel
-
-1. Go to https://vercel.com and sign in with GitHub
-2. Click "Add New" → "Project"
-3. Import repository: `nanayawjoshua/whatsapp-ai-platform`
-4. Configure project settings:
-   - **Framework Preset**: Next.js (auto-detected)
-   - **Root Directory**: `website` ⚠️ IMPORTANT - Click "Edit" and set this
-   - **Build Command**: `npm run build` (auto-detected)
-   - **Output Directory**: `.next` (auto-detected)
-
-### 2. Configure Environment Variables
-
-Go to Project Settings → Environment Variables
-
-#### A. Variables for ALL Environments (Production, Preview, Development)
-
-These should be added and applied to **all three checkboxes** (Production, Preview, Development):
-
-```bash
-# Database (same for all environments)
-DATABASE_URL=postgresql://neondb_owner:npg_wkI9d3RebGKO@ep-silent-lake-ad3vhsoo-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
-
-# NextAuth Secret (same for all)
-NEXTAUTH_SECRET=toRMbFTMmaqdl96N/i985MNXqwcEDDrnBTs6+/6xxm8=
-
-# Google OAuth (same for all)
-GOOGLE_CLIENT_ID=236111634034-8jeeps5grj1qmrm7idm8fmj6fi1didvf.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=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
-
-# Cloud Bridge (same for all)
-CLOUD_BRIDGE_URL=https://beeline-bridge.onrender.com
+### Step 1: Go to Vercel Dashboard
+```
+https://vercel.com/dashboard
 ```
 
-#### B. Production-Only Variables (LIVE MODE)
+### Step 2: Select Your Beeline Project
+Click on "beeline-website" or your project name
 
-Add these and check ONLY **Production**:
+### Step 3: Click Settings
+Top menu → Settings
 
-```bash
-# Paystack LIVE keys
-PAYSTACK_SECRET=sk_live_YOUR_LIVE_SECRET_KEY
-NEXT_PUBLIC_PAYSTACK_PUBLIC=pk_live_f2697bf774330cae809ca0a9135f680b13d95f9e
-PAYSTACK_WEBHOOK_SECRET=your_live_webhook_secret
+### Step 4: Click Environment Variables
+Left sidebar → Environment Variables
 
-# Production URL (set after first deployment)
-NEXTAUTH_URL=https://your-production-domain.vercel.app
-NODE_ENV=production
+### Step 5: Add These 6 Variables
+For EACH variable, click "Add New" and fill in:
+
+**Variable 1:**
+```
+Name: CLOUD_BRIDGE_URL
+Value: https://beeline-bridge.onrender.com
+Environments: ✓ Production  ✓ Preview  ✓ Development
 ```
 
-#### C. Preview & Development Variables (TEST MODE)
-
-Add these and check ONLY **Preview** and **Development**:
-
-```bash
-# Paystack TEST keys
-PAYSTACK_SECRET=sk_test_YOUR_TEST_SECRET_KEY
-NEXT_PUBLIC_PAYSTACK_PUBLIC=pk_test_YOUR_TEST_PUBLIC_KEY
-PAYSTACK_WEBHOOK_SECRET=your_test_webhook_secret
-
-# Preview/Dev URL (Vercel auto-generates preview URLs)
-NODE_ENV=development
+**Variable 2:**
+```
+Name: NEXTAUTH_SECRET
+Value: toRMbFTMmaqdl96N/i985MNXqwcEDDrnBTs6+/6xxm8=
+Environments: ✓ Production  ✓ Preview  ✓ Development
 ```
 
-**Note**: `NEXTAUTH_URL` for preview/dev will be auto-detected by NextAuth, so you don't need to set it.
+**Variable 3:**
+```
+Name: NEXTAUTH_URL
+Value: https://beeline.works
+Environments: ✓ Production  ✓ Preview  ✓ Development
+```
 
-### 3. Get Your Paystack Keys
+**Variable 4:**
+```
+Name: GOOGLE_CLIENT_ID
+Value: 236111634034-8jeeps5grj1qmrm7idm8fmj6fi1didvf.apps.googleusercontent.com
+Environments: ✓ Production  ✓ Preview  ✓ Development
+```
 
-1. Go to https://dashboard.paystack.com/#/settings/developers
-2. Copy your **Test** keys:
-   - Test Secret Key (starts with `sk_test_`)
-   - Test Public Key (starts with `pk_test_`)
-3. Copy your **Live** keys:
-   - Live Secret Key (starts with `sk_live_`)
-   - Live Public Key (starts with `pk_live_`)
+**Variable 5:**
+```
+Name: GOOGLE_CLIENT_SECRET
+Value: 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
+Environments: ✓ Production  ✓ Preview  ✓ Development
+```
 
-### 4. Update Google OAuth Redirect URIs
+**Variable 6:**
+```
+Name: DATABASE_URL
+Value: postgresql://neondb_owner:npg_wkI9d3RebGKO@ep-silent-lake-ad3vhsoo-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+Environments: ✓ Production  ✓ Preview  ✓ Development
+```
 
-After deployment, add your Vercel URLs to Google Cloud Console:
+### Step 6: Click Save on Each Variable
+After adding all 6, they'll all be saved
 
-1. Go to https://console.cloud.google.com/apis/credentials
-2. Edit your OAuth 2.0 Client ID
-3. Add to **Authorized redirect URIs**:
+### Step 7: Redeploy
+1. Go to "Deployments" tab
+2. Click the latest deployment
+3. Click "Redeploy" button
+4. Wait 2-3 minutes for build
+
+### Step 8: Test It
+1. Go to: https://beeline.works/signup
+2. Enter phone: 0203772824
+3. Click "Connect WhatsApp"
+4. You should see a QR code (not a 500 error!)
+
+---
+
+## Why This Is Required
+
+| Variable | Purpose | If Missing |
+|----------|---------|------------|
+| `CLOUD_BRIDGE_URL` | Points to WhatsApp bridge | 500 error |
+| `NEXTAUTH_SECRET` | Session encryption | Login fails |
+| `NEXTAUTH_URL` | Auth callback domain | OAuth fails |
+| `GOOGLE_CLIENT_ID` | Google OAuth | Sign in fails |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth secret | Sign in fails |
+| `DATABASE_URL` | PostgreSQL connection | Admin/database fails |
+
+---
+
+## Verification
+
+After redeploy, check Vercel logs:
+- Go to latest deployment
+- Click "Logs"
+- Look for: `🔗 Bridge configuration: { ... hasEnv: true ...}`
+- If `hasEnv: true` ✅ → Variables are set
+- If `hasEnv: false` ❌ → Variables not set (go back to Step 5)
+
+---
+
+## Done! ✅
+
+Once variables are set and deployed:
+- ✅ WhatsApp connections will work
+- ✅ Google OAuth will work
+- ✅ Admin dashboard will work
+- ✅ Next: Test with real phone number
+
+---
+
+## Legacy Content Below
+
+(Previous detailed setup information follows...)
    ```
    https://your-production-domain.vercel.app/api/auth/callback/google
    https://your-preview-url.vercel.app/api/auth/callback/google
