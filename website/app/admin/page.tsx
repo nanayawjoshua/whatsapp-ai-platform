@@ -109,7 +109,7 @@ export default function AdminDashboardPage() {
             <MetricCard title="Total Vendors" value={metrics?.totalVendors} icon={<FaUsers />} />
             <MetricCard title="Live Connections" value={metrics?.liveConnections} icon={<FaWhatsapp />} />
             <MetricCard title="Conversations Today" value={metrics?.todayConversations} icon={<FaChartLine />} />
-            <MetricCard title="Revenue Today" value={`GHS ${metrics?.paymentsDetected * 150 || 0}`} icon={<FaMoneyBillWave />} />
+            <MetricCard title="Revenue Today" value={`GHS ${(metrics?.paymentsDetected || 0) * 150}`} icon={<FaMoneyBillWave />} />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
