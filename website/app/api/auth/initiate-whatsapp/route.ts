@@ -40,11 +40,20 @@ async function convertQrToDataUri(qrUrl: string): Promise<string | null> {
 }
 
 export async function POST(request: NextRequest) {
+  console.log('📞 WhatsApp initiate-whatsapp endpoint called');
+  
   try {
-    const { phone } = await request.json();
+    const body = await request.json();
+    const { phone } = body;
+    
+    console.log('📝 Received request:', {
+      phone: phone ? phone.slice(-4) : 'MISSING',
+      bodyKeys: Object.keys(body)
+    });
 
     // Validate phone input
     if (!phone || typeof phone !== 'string') {
+      console.warn('❌ Phone validation failed: empty or not string');
       return NextResponse.json(
         { error: 'Phone number is required' },
         { status: 400 }
@@ -67,11 +76,13 @@ export async function POST(request: NextRequest) {
     // Get cloud bridge URL from environment
     const bridgeUrl = process.env.CLOUD_BRIDGE_URL || 'http://localhost:3000';
 
-    console.log('Calling bridge service:', {
+    console.log('🔗 Bridge configuration:', {
       bridgeUrl,
-      vendorId,
-      phone: phone.slice(-4) // Log last 4 digits only for privacy
+      hasEnv: !!process.env.CLOUD_BRIDGE_URL,
+      vendorId
     });
+
+    console.log('📤 Calling bridge service...');
 
     // Call cloud bridge service to generate QR code
     const bridgeResponse = await fetch(`${bridgeUrl}/vendor/generate-qr`, {
@@ -94,16 +105,17 @@ export async function POST(request: NextRequest) {
 
     if (!bridgeResponse.ok) {
       const errorText = await bridgeResponse.text();
-      console.error('Bridge service error:', {
+      console.error('🚨 Bridge service returned error:', {
         status: bridgeResponse.status,
         statusText: bridgeResponse.statusText,
-        body: errorText.slice(0, 200),
+        errorPreview: errorText.slice(0, 200),
         vendorId,
         bridgeUrl
       });
 
       // Handle specific error cases
       if (bridgeResponse.status === 503) {
+        console.error('503: Server at capacity');
         return NextResponse.json(
           { error: 'Server at capacity. Please try again later.' },
           { status: 503 }
@@ -111,6 +123,7 @@ export async function POST(request: NextRequest) {
       }
 
       if (bridgeResponse.status === 408) {
+        console.error('408: QR generation timeout');
         return NextResponse.json(
           { error: 'QR code generation timed out. The bridge service may be unavailable. Please try again.' },
           { status: 504 }
@@ -118,28 +131,37 @@ export async function POST(request: NextRequest) {
       }
 
       if (bridgeResponse.status === 400) {
+        console.error('400: Bad request to bridge');
         return NextResponse.json(
           { error: errorText || 'Invalid request to bridge service' },
           { status: 400 }
         );
       }
 
+      console.error(`${bridgeResponse.status}: Unexpected bridge error`);
       return NextResponse.json(
         { error: 'Failed to generate WhatsApp QR code. Bridge service error.' },
         { status: 500 }
       );
     }
 
+    console.log('✅ Bridge response OK');
     const data = await bridgeResponse.json();
 
     // Validate response contains QR code
     if (!data.qrCode) {
-      console.error('No QR code in bridge response:', data);
+      console.error('❌ No QR code in bridge response:', data);
       return NextResponse.json(
         { error: 'Failed to generate QR code. Please try again.' },
         { status: 500 }
       );
     }
+
+    console.log('🎉 Success! QR code generated', {
+      vendorId,
+      qrLength: data.qrCode?.length,
+      expiresIn: data.expiresIn
+    });
 
     // Return success response with QR code and metadata
     // QR code might be a Google Charts URL or base64 data URI
@@ -150,14 +172,17 @@ export async function POST(request: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('WhatsApp initiation error:', {
+    console.error('❌ WhatsApp initiation error:', {
       message: error.message,
       name: error.name,
-      stack: error.stack?.split('\n').slice(0, 3)
+      code: error.code,
+      cause: error.cause,
+      stack: error.stack?.split('\n').slice(0, 5)
     });
 
     // Handle network/timeout errors gracefully
     if (error.name === 'AbortError') {
+      console.error('Abort error - request timed out');
       return NextResponse.json(
         { error: 'Request timed out. Bridge service may be overloaded. Please try again.' },
         { status: 504 }
@@ -165,14 +190,24 @@ export async function POST(request: NextRequest) {
     }
 
     if (error.message?.includes('ECONNREFUSED')) {
+      console.error('Connection refused - bridge not accessible');
       return NextResponse.json(
         { error: 'Cannot connect to WhatsApp bridge service. Please check your connection.' },
         { status: 503 }
       );
     }
 
+    if (error.message?.includes('TypeError')) {
+      console.error('TypeError caught:', error.message);
+      return NextResponse.json(
+        { error: `Type error: ${error.message}` },
+        { status: 500 }
+      );
+    }
+
+    console.error('Unknown error type:', error.toString());
     return NextResponse.json(
-      { error: 'Internal server error. Please try again.' },
+      { error: `Internal server error: ${error.message || 'Unknown error'}` },
       { status: 500 }
     );
   }
