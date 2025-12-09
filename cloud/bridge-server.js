@@ -282,27 +282,54 @@ async function getVIPContacts(vendorId) {
 async function getVendorSettings(vendorId) {
   try {
     const result = await db.query(
-      'SELECT ai_silence_timeout, ai_enabled FROM vendor_settings WHERE vendor_id = $1',
+      `SELECT 
+        vs.ai_silence_timeout, 
+        vs.ai_enabled,
+        v.vendor_id,
+        v.name,
+        v.business_type,
+        v.account_type,
+        v.personality_tone,
+        vs.system_prompt_override
+      FROM vendor_settings vs
+      LEFT JOIN vendors v ON v.vendor_id = vs.vendor_id
+      WHERE vs.vendor_id = $1`,
       [vendorId]
     );
 
     if (result.rows.length === 0) {
-      // Default settings
       return {
-        silenceTimeout: 5, // minutes
-        aiEnabled: true
+        silenceTimeout: 5,
+        aiEnabled: true,
+        vendorId,
+        businessName: 'Our Business',
+        businessType: 'general',
+        personalityTone: 'friendly',
+        systemPrompt: null
       };
     }
 
+    const row = result.rows[0];
     return {
-      silenceTimeout: result.rows[0].ai_silence_timeout || 5,
-      aiEnabled: result.rows[0].ai_enabled !== false
+      silenceTimeout: row.ai_silence_timeout || 5,
+      aiEnabled: row.ai_enabled !== false,
+      vendorId: row.vendor_id,
+      businessName: row.name || 'Our Business',
+      businessType: row.business_type || 'general',
+      accountType: row.account_type || 'business',
+      personalityTone: row.personality_tone || 'friendly',
+      systemPrompt: row.system_prompt_override
     };
   } catch (error) {
     logger.error({ vendorId, error }, 'Failed to get vendor settings');
     return {
       silenceTimeout: 5,
-      aiEnabled: true
+      aiEnabled: true,
+      vendorId,
+      businessName: 'Our Business',
+      businessType: 'general',
+      personalityTone: 'friendly',
+      systemPrompt: null
     };
   }
 }
@@ -538,6 +565,9 @@ async function connectVendor(vendorId) {
         // Use overridden message if force command was used
         const finalMessage = aiDecision.message || messageContent;
 
+        // Get vendor settings for persona
+        const vendorSettings = await getVendorSettings(vendorId);
+
         const payload = {
           vendorId,
           customerId,
@@ -545,7 +575,15 @@ async function connectVendor(vendorId) {
           channel: 'whatsapp',
           conversationHistory: history,
           timestamp: Date.now(),
-          aiReason: aiDecision.reason
+          aiReason: aiDecision.reason,
+          // Vendor persona configuration
+          vendor: {
+            name: vendorSettings.businessName,
+            businessType: vendorSettings.businessType,
+            accountType: vendorSettings.accountType,
+            personalityTone: vendorSettings.personalityTone,
+            systemPromptOverride: vendorSettings.systemPrompt
+          }
         };
 
         logger.debug({ payload }, 'Forwarding to n8n for AI response');
