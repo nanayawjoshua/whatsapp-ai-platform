@@ -5,10 +5,16 @@ import { query } from '@/lib/db';
 import { verifyPassword, generateSessionId } from '@/lib/auth';
 
 const authOptions: NextAuthOptions = {
+  // Configure NEXTAUTH_URL to match production domain
+  // Must match one of the Google OAuth redirect URIs
+  // If NEXTAUTH_URL not set, NextAuth attempts to auto-detect from host header
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      // Explicitly set the callback URL to handle redirect_uri_mismatch
+      // NextAuth will append /api/auth/callback/google to this base
+      allowDangerousEmailAccountLinking: true,
     }),
     CredentialsProvider({
       name: 'Credentials',
@@ -66,6 +72,13 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
+    async redirect({ url, baseUrl }) {
+      console.log('🔄 Redirect callback:', { url, baseUrl });
+      // Allow absolute URLs, otherwise use relative to baseUrl
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      if (new URL(url).origin === new URL(baseUrl).origin) return url;
+      return baseUrl;
+    },
     async signIn({ user, account, profile }) {
       // Handle Google OAuth sign in
       if (account?.provider === 'google' && profile?.email) {

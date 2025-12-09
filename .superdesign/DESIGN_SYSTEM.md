@@ -298,3 +298,4 @@ Inspired by the best SaaS dashboards (Vercel, Linear, Cluely), Beeline's interfa
 
 **Built with 🐝 by Beeline Team**
 **Powered by Claude Code + MCP Tools**
+

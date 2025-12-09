@@ -1,0 +1,162 @@
+[
+  {
+    "severity": "critical",
+    "file": "website/app/signup/page.tsx",
+    "line": 41,
+    "issue": "Missing API endpoint: The signup form calls '/api/auth/initiate-whatsapp' but this endpoint does not exist in the codebase",
+    "fix": "Create the file: website/app/api/auth/initiate-whatsapp/route.ts with POST handler to initiate WhatsApp QR code generation using the cloud bridge",
+    "priority": 10
+  },
+  {
+    "severity": "critical",
+    "file": "website/app/payment/page.tsx",
+    "line": 22,
+    "issue": "Missing API endpoint: The payment form calls '/api/payments/initiate' but this endpoint does not exist in the codebase",
+    "fix": "Create the file: website/app/api/payments/initiate/route.ts with POST handler to initiate payment with Paystack or payment provider",
+    "priority": 10
+  },
+  {
+    "severity": "critical",
+    "file": "website/lib/session.ts",
+    "line": 1,
+    "issue": "API requires authentication but uses custom session management with cookies, while dashboard uses NextAuth. This creates inconsistent authentication between API endpoints.",
+    "fix": "Standardize authentication: Either use NextAuth for both API and dashboard, or implement consistent cookie/token validation across all endpoints",
+    "priority": 9
+  },
+  {
+    "severity": "high",
+    "file": "website/app/api/auth/[...nextauth]/route.ts",
+    "line": 87,
+    "issue": "Google OAuth sign-in may fail: If a user signs in via Google but has not created a vendor account, the code returns a redirect URL instead of a proper error response",
+    "fix": "Change line 87 from 'return /signup?error=account_not_found' to either auto-create vendor record or return proper JSON error response",
+    "priority": 8
+  },
+  {
+    "severity": "high",
+    "file": "website/lib/auth.ts",
+    "line": 100,
+    "issue": "Session token uses base64 encoding without encryption or signing. Tokens can be decoded and modified by users, allowing privilege escalation",
+    "fix": "Implement JWT with RS256 or HS256 signing using jsonwebtoken library, or switch to NextAuth's built-in JWT handling",
+    "priority": 8
+  },
+  {
+    "severity": "high",
+    "file": "website/app/api/auth/login/route.ts",
+    "line": 160,
+    "issue": "Missing database table schema: The code references 'vendor_auth_sessions' table but database schema is not defined in the codebase",
+    "fix": "Ensure the database migration creates vendor_auth_sessions table with columns: session_id, vendor_id, ip_address, user_agent, expires_at, is_active, last_active",
+    "priority": 8
+  },
+  {
+    "severity": "high",
+    "file": "website/lib/config.ts",
+    "line": 11,
+    "issue": "Environment variable 'NEXT_PUBLIC_N8N_WEBHOOK_URL' not validated or checked for empty string before use in API calls",
+    "fix": "Add validation in webhook routes to check if URL exists before making fetch requests, or throw error at startup if required env vars are missing",
+    "priority": 7
+  },
+  {
+    "severity": "high",
+    "file": "website/app/api/paystack/webhook/route.ts",
+    "line": 19,
+    "issue": "Webhook signature verification can be bypassed: code checks signature but allows webhook processing if signature is missing (test mode)",
+    "fix": "In production, require signature validation always. Add environment variable to enforce signature validation or skip in explicit test mode",
+    "priority": 7
+  },
+  {
+    "severity": "high",
+    "file": "website/app/api/vendor/stats/route.ts",
+    "line": 1,
+    "issue": "Missing authentication: The endpoint does not call 'requireAuth()' function, making it accessible without authentication",
+    "fix": "Add line after try block: 'const vendor = await requireAuth(request);' and use vendor.vendorId in all queries",
+    "priority": 9
+  },
+  {
+    "severity": "high",
+    "file": "website/app/api/admin/metrics/route.ts",
+    "line": 1,
+    "issue": "Missing authentication and admin role check: Super admin metrics endpoint is completely unauthenticated",
+    "fix": "Add authentication check and admin role verification before querying metrics",
+    "priority": 9
+  },
+  {
+    "severity": "medium",
+    "file": "website/app/dashboard/page.tsx",
+    "line": 64,
+    "issue": "Type mismatch: 'aiResponseRate' value calculated in stats is multiplied by 100 again in JSX display",
+    "fix": "Check if aiResponseRate is already a percentage (0-100) or decimal (0-1), then adjust line to not multiply by 100 if already percentage",
+    "priority": 6
+  },
+  {
+    "severity": "medium",
+    "file": "website/lib/db.ts",
+    "line": 12,
+    "issue": "SSL warning bypass: 'rejectUnauthorized: false' disables SSL certificate validation, which is insecure for production",
+    "fix": "For production, set 'rejectUnauthorized: true' or remove SSL override. Only use false for local development",
+    "priority": 6
+  },
+  {
+    "severity": "medium",
+    "file": "website/app/page.tsx",
+    "line": 1,
+    "issue": "'use client' directive on landing page but some metadata should only be server-rendered. Entire page is client component",
+    "fix": "Remove 'use client' and implement as RSC, or ensure all client features work without server-side dependencies",
+    "priority": 5
+  },
+  {
+    "severity": "medium",
+    "file": "website/app/api/paystack/initialize/route.ts",
+    "line": 47,
+    "issue": "Environment variable 'NEXT_PUBLIC_SITE_URL' used but may be undefined, causing incorrect payment callback URLs",
+    "fix": "Add fallback or validation: const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXTAUTH_URL || 'https://beeline.works'; and validate it's a valid URL",
+    "priority": 6
+  },
+  {
+    "severity": "medium",
+    "file": "website/app/api/vendor/generate-qr/route.ts",
+    "line": 1,
+    "issue": "Missing authentication check on public API endpoint. Any user can call this endpoint to generate QR codes",
+    "fix": "Add authentication: 'const vendor = await requireAuth(request);' before allowing QR generation",
+    "priority": 7
+  },
+  {
+    "severity": "medium",
+    "file": "website/app/providers.tsx",
+    "line": 4,
+    "issue": "SessionProvider from next-auth may not have NEXTAUTH_SECRET configured, causing session issues",
+    "fix": "Ensure NEXTAUTH_SECRET is set in .env.local. Add validation or warning if missing",
+    "priority": 5
+  },
+  {
+    "severity": "medium",
+    "file": "website/app/dashboard/conversations/[id]/page.tsx",
+    "line": 45,
+    "issue": "No error handling or loading state when API returns 401. Router.push might not clear loading state if called during render",
+    "fix": "Add useEffect cleanup and ensure loading state is cleared before navigation",
+    "priority": 5
+  },
+  {
+    "severity": "low",
+    "file": "website/lib/whatsapp.ts",
+    "line": 5,
+    "issue": "Environment variable fallback uses NEXT_PUBLIC_ prefix which shouldn't be used server-side. May cause issues with cloud bridge URL",
+    "fix": "Use only process.env.CLOUD_BRIDGE_URL (no NEXT_PUBLIC_) for server-side code",
+    "priority": 4
+  },
+  {
+    "severity": "low",
+    "file": "website/next.config.js",
+    "line": 1,
+    "issue": "Images domain whitelist is empty. If using next/image with external URLs, they will fail unless added to whitelist",
+    "fix": "Add domains for any external image sources used in the application",
+    "priority": 3
+  },
+  {
+    "severity": "low",
+    "file": "website/app/api/paystack/webhook/route.ts",
+    "line": 90,
+    "issue": "Webhook forwarding to n8n may fail silently if URL is not configured. No error handling or retry mechanism",
+    "fix": "Add try-catch and logging for n8n webhook calls. Consider retry mechanism or queue system",
+    "priority": 4
+  }
+]
