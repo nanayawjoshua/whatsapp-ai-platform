@@ -163,6 +163,9 @@ async function usePostgresAuthState(vendorId) {
       }
 
       const sessionData = result.rows[0].session_data;
+      if (!sessionData) {
+        return { creds: {}, keys: {} };
+      }
       return {
         creds: sessionData.creds || {},
         keys: sessionData.keys || {}
