@@ -20,7 +20,8 @@ export async function GET(request: NextRequest) {
         { status: 401 }
       );
     }
-  try {
+
+    // Total vendors
     // Total vendors
     const totalVendorsResult = await query('SELECT COUNT(*) as count FROM vendors');
     const totalVendors = parseInt(totalVendorsResult.rows[0].count);
