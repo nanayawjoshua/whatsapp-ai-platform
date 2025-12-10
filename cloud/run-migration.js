@@ -37,27 +37,61 @@ async function runMigration() {
     await pool.query('SELECT NOW()');
     console.log('✅ Database connected!\n');
 
-    // Read migration file
-    const migrationPath = path.join(__dirname, 'migrations', '003_add_enterprise_support.sql');
-    console.log(`📄 Reading migration file: ${migrationPath}`);
-    const sql = fs.readFileSync(migrationPath, 'utf8');
+    // Check if we should delete vendor instead
+    if (process.argv[2] === 'delete-vendor') {
+      const vendorId = process.argv[3];
+      if (!vendorId) {
+        console.error('❌ Please provide vendorId: node run-migration.js delete-vendor <vendorId>');
+        process.exit(1);
+      }
 
-    // Execute migration
-    console.log('🔨 Executing migration...\n');
-    await pool.query(sql);
+      console.log(`🗑️  Deleting vendor ${vendorId}...\n`);
 
-    console.log('✅ Migration completed successfully!\n');
-    console.log('📊 Enterprise support added:');
-    console.log('   - enterprise_accounts table');
-    console.log('   - enterprise_users table');
-    console.log('   - enterprise_analytics table');
-    console.log('   - vendors table updated with account_type and enterprise fields');
-    console.log('   - Pricing calculation functions');
-    console.log('   - Auto-update triggers');
-    console.log('\n🎉 Enterprise support is ready!');
+      // Delete in correct order (foreign keys)
+      await pool.query('DELETE FROM messages WHERE conversation_id LIKE $1', [`${vendorId}:%`]);
+      await pool.query('DELETE FROM conversations WHERE vendor_id = $1', [vendorId]);
+      await pool.query('DELETE FROM products WHERE vendor_id = $1', [vendorId]);
+      await pool.query('DELETE FROM vendor_personas WHERE vendor_id = $1', [vendorId]);
+      await pool.query('DELETE FROM analytics_events WHERE vendor_id = $1', [vendorId]);
+      await pool.query('DELETE FROM referral_rewards WHERE referrer_vendor_id = $1 OR referred_vendor_id = $1', [vendorId]);
+      await pool.query('DELETE FROM vendor_sessions WHERE vendor_id = $1', [vendorId]);
+      await pool.query('DELETE FROM vendors WHERE vendor_id = $1', [vendorId]);
+
+      console.log('✅ Vendor deleted successfully!\n');
+      return;
+    }
+
+    // Run all migrations in order
+    const migrations = [
+      '001_initial_schema.sql',
+      '002_add_vendor_settings.sql',
+      '003_add_enterprise_support.sql',
+      '004_add_vendor_auth.sql'
+    ];
+
+    for (const migrationFile of migrations) {
+      const migrationPath = path.join(__dirname, 'migrations', migrationFile);
+      console.log(`📄 Reading migration file: ${migrationPath}`);
+      const sql = fs.readFileSync(migrationPath, 'utf8');
+
+      // Execute the whole migration file
+      console.log(`🔨 Executing ${migrationFile}...\n`);
+      try {
+        await pool.query(sql);
+        console.log(`✅ ${migrationFile} completed!\n`);
+      } catch (error) {
+        if (error.code === '42P07' || error.message.includes('already exists')) {
+          console.log(`⚠️  Skipping ${migrationFile} - already applied\n`);
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    console.log('🎉 All migrations completed successfully!');
 
   } catch (error) {
-    console.error('\n❌ Migration failed:', error.message);
+    console.error('\n❌ Operation failed:', error.message);
     console.error('\nFull error:', error);
     process.exit(1);
   } finally {

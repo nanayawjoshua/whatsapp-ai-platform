@@ -25,6 +25,7 @@ import { Boom } from '@hapi/boom';
 import pino from 'pino';
 import axios from 'axios';
 import express from 'express';
+import cors from 'cors';
 import Redis from 'ioredis';
 import pkg from 'pg';
 const { Pool } = pkg;
@@ -135,6 +136,7 @@ try {
 
 // Express app (health checks, webhooks)
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // Active WhatsApp sockets (in-memory)
@@ -464,10 +466,7 @@ async function connectVendor(vendorId) {
     auth: {
       creds: state.creds,
       keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' }))
-    },
-    markOnlineOnConnect: false,
-    syncFullHistory: false,
-    generateHighQualityLinkPreview: false
+    }
   });
 
   // Save credentials on update
@@ -735,6 +734,7 @@ app.get('/health', async (req, res) => {
 
 // Generate QR code for new vendor onboarding
 app.post('/vendor/generate-qr', async (req, res) => {
+  console.log('🔄 Received /vendor/generate-qr request:', req.body);
   const { vendorId, vendorData } = req.body;
 
   if (!vendorId) {
@@ -783,8 +783,10 @@ app.post('/vendor/generate-qr', async (req, res) => {
       [finalVendorId, 'initializing']
     );
 
+    logger.info({ vendorId: finalVendorId }, 'About to connect vendor...');
     // Connect (will generate QR)
     await connectVendor(finalVendorId);
+    logger.info({ vendorId: finalVendorId }, 'Connect vendor completed');
 
     // Wait for QR to be generated (polling)
     let attempts = 0;
