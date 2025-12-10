@@ -1,0 +1,128 @@
+{
+  "name": "Beeline - WhatsApp → Groq (Conversation Memory)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build Groq request with conversation memory\nconst message = $json.message || 'Hello';\nconst history = Array.isArray($json.conversationHistory) ? $json.conversationHistory : [];\nconst vendor = $json.vendor && typeof $json.vendor === 'object' ? $json.vendor : {};\nconst businessName = vendor.name || $json.businessName || 'Our Business';\nconst personalityTone = vendor.personalityTone || 'friendly';\nconst systemPromptOverride = vendor.systemPromptOverride;\n\nlet systemPrompt;\nif (systemPromptOverride) {\n  systemPrompt = systemPromptOverride;\n} else {\n  systemPrompt = `You are a helpful customer service AI for ${businessName}.\nPersonality tone: ${personalityTone}\n\nIMPORTANT:\n- REMEMBER and REFERENCE previous messages in this conversation\n- If customer mentioned their name, use it\n- Keep responses under 100 words\n- Be helpful and personable`;\n}\n\nconst messages = [{ role: 'system', content: systemPrompt }];\n\n// Add conversation history\nif (Array.isArray(history) && history.length > 0) {\n  for (const msg of history) {\n    if (msg.role && msg.content) {\n      messages.push(msg);\n    }\n  }\n}\n\n// Add current message\nmessages.push({ role: 'user', content: message });\n\nreturn {\n  json: {\n    model: 'llama-3.3-70b-versatile',\n    messages: messages,\n    temperature: 0.7,\n    max_tokens: 500\n  }\n};"
+      },
+      "name": "Build Prompt (Code)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [520, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "llama-3.3-70b-versatile"
+            },
+            {
+              "name": "messages",
+              "value": "={{ $json.messages }}"
+            },
+            {
+              "name": "temperature",
+              "value": "={{ $json.temperature }}"
+            },
+            {
+              "name": "max_tokens",
+              "value": "={{ $json.max_tokens }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Call Groq",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [820, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract reply from Groq response\nlet reply = null;\n\nif ($json.choices && Array.isArray($json.choices) && $json.choices.length > 0) {\n  const firstChoice = $json.choices[0];\n  if (firstChoice.message && firstChoice.message.content) {\n    reply = firstChoice.message.content;\n  }\n}\n\nif (!reply) {\n  reply = 'Sorry, I had trouble understanding. Can you rephrase that?';\n}\n\nreturn { json: { reply } };"
+      },
+      "name": "Extract Reply (Code)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1060, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={\"reply\": \"={{ $json.reply }}\"}"
+      },
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [1280, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Build Prompt (Code)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Prompt (Code)": {
+      "main": [
+        [
+          {
+            "node": "Call Groq",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Groq": {
+      "main": [
+        [
+          {
+            "node": "Extract Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Reply": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "beeline-groq-workflow"
+}

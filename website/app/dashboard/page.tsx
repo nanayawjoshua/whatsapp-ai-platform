@@ -63,9 +63,14 @@ export default function DashboardPage() {
     if (status === 'unauthenticated') {
       router.push('/login');
     } else if (status === 'authenticated') {
+      // If user signed up with Google but hasn't completed phone setup, redirect to signup
+      if (!session?.user?.phone) {
+        router.push('/signup');
+        return;
+      }
       loadDashboardData();
     }
-  }, [status]);
+  }, [status, session]);
 
   const loadDashboardData = async () => {
     try {

@@ -8,7 +8,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const redis = new Redis(process.env.REDIS_URL, {
+const redisUrl = process.env.REDIS_URL;
+
+// Build Redis options and enable TLS for Upstash if needed
+const redisOptions = {
   maxRetriesPerRequest: null,
   enableReadyCheck: false,
   retryStrategy(times) {
@@ -17,7 +20,19 @@ const redis = new Redis(process.env.REDIS_URL, {
   },
   family: 4,
   lazyConnect: true
-});
+};
+
+try {
+  const parsed = new URL(redisUrl);
+  if (parsed.protocol === 'rediss:' || redisUrl.includes('upstash.io')) {
+    console.log('Detected Upstash or rediss scheme - enabling TLS for Redis client');
+    redisOptions.tls = {};
+  }
+} catch (e) {
+  console.log('Could not parse REDIS_URL for TLS detection');
+}
+
+const redis = new Redis(redisUrl, redisOptions);
 
 redis.on('error', (err) => {
   console.error('Redis error:', err.message);

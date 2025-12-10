@@ -69,10 +69,11 @@ let redis = null;
 let redisAvailable = false;
 
 try {
-  redis = new Redis(config.redisUrl, {
+  // Build redis options and enable TLS for providers that require it (e.g. Upstash)
+  const redisOptions = {
     maxRetriesPerRequest: 3, // Limit retries to prevent hanging
     enableReadyCheck: false,
-    connectTimeout: 5000, // 5 second connection timeout
+    connectTimeout: 15000, // 15 second connection timeout
     retryStrategy(times) {
       if (times > 3) {
         logger.warn('Redis connection failed after 3 retries, disabling Redis');
@@ -82,7 +83,35 @@ try {
       return delay;
     },
     family: 4 // Force IPv4
-  });
+  };
+
+  // Detect Upstash or rediss scheme - enable TLS if needed
+  // Determine whether TLS should be enabled for the Redis client (e.g. Upstash)
+  let redisClientUrl = config.redisUrl;
+  try {
+    const parsed = new URL(config.redisUrl);
+    const scheme = parsed.protocol; // e.g. 'redis:' or 'rediss:'
+    const host = parsed.hostname || '';
+
+    // If the URL explicitly uses rediss:// or the hostname indicates Upstash, enable TLS.
+    if (scheme === 'rediss:' || host.includes('upstash.io') || config.redisUrl.startsWith('rediss://')) {
+      logger.info({ scheme, host }, 'Redis URL indicates TLS is required - enabling TLS for client');
+      // ioredis will use tls option when provided. Set servername to avoid SNI issues.
+      redisOptions.tls = { servername: host };
+
+      // Keep the original URL as provided by the environment. ioredis accepts TLS options
+      // alongside a `redis://` scheme, so rewriting the scheme is unnecessary and can
+      // cause confusion with provider consoles that show `redis://`.
+      logger.debug('Using provided Redis URL with TLS options (no scheme rewrite)');
+    } else {
+      logger.info({ scheme, host }, 'Redis URL indicates TLS is not required for the client');
+    }
+  } catch (e) {
+    logger.debug('Could not parse REDIS_URL for TLS detection, proceeding with provided URL');
+  }
+
+  // Initialize Redis client using the original (or possibly modified) URL and options
+  redis = new Redis(redisClientUrl, redisOptions);
 
   redis.on('error', (err) => {
     logger.error({ err }, 'Redis connection error');

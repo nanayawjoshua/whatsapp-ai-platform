@@ -1,0 +1,94 @@
+{
+  "name": "Beeline WhatsApp - Conversation Memory (WORKING)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// SIMPLE AND BULLETPROOF: Extract payload, build messages with history, return to Groq\nconst msg = $json.message || 'hello';\nconst hist = $json.conversationHistory || [];\n\nconst messages = [\n  { role: 'system', content: 'You are a helpful assistant. Remember previous messages and reference them.' }\n];\n\n// Add history\nhist.forEach(h => {\n  if (h.role && h.content) messages.push(h);\n});\n\n// Add current message\nmessages.push({ role: 'user', content: msg });\n\nreturn {\n  json: {\n    model: 'llama-3.3-70b-versatile',\n    messages,\n    temperature: 0.7,\n    max_tokens: 500\n  }\n};"
+      },
+      "id": "2",
+      "name": "Build Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [520, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "llama-3.3-70b-versatile"
+            },
+            {
+              "name": "messages",
+              "value": "={{ $json.messages }}"
+            },
+            {
+              "name": "temperature",
+              "value": "0.7"
+            },
+            {
+              "name": "max_tokens",
+              "value": "500"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3",
+      "name": "Groq",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [820, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "return { json: { reply: $json.choices[0].message.content || 'No response' } };"
+      },
+      "id": "4",
+      "name": "Extract",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1060, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={\"reply\": \"={{ $json.reply }}\"}"
+      },
+      "id": "5",
+      "name": "Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [1280, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[ { "node": "Build Request", "type": "main", "index": 0 } ]] },
+    "Build Request": { "main": [[ { "node": "Groq", "type": "main", "index": 0 } ]] },
+    "Groq": { "main": [[ { "node": "Extract", "type": "main", "index": 0 } ]] },
+    "Extract": { "main": [[ { "node": "Response", "type": "main", "index": 0 } ]] }
+  },
+  "active": false,
+  "pinData": {},
+  "settings": {},
+  "id": "beeline-working-v3"
+}

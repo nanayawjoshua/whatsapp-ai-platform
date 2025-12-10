@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
   
   try {
     const body = await request.json();
-    const { phone } = body;
+    const { phone, vendorId: providedVendorId } = body;
     
     console.log('📝 Received request:', {
       phone: phone ? phone.slice(-4) : 'MISSING',
@@ -74,8 +74,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate unique vendor ID from timestamp + random suffix
-    const vendorId = `vendor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Use provided vendor ID or generate new one
+    const vendorId = providedVendorId || `vendor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     // Get cloud bridge URL from environment
     // CRITICAL: This must be set in production

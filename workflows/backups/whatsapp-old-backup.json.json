@@ -1,0 +1,253 @@
+{
+  "name": "WhatsApp AI Agent - Supermarket MVP",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// === BEELINE GHANA – UNIVERSAL CODE NODE (WhatsApp + Telegram) ===\n// Elon final version – December 2, 2025\n\nconsole.log('Raw webhook payload:', JSON.stringify($json, null, 2));\n\nlet chatId, userId, userMessage, firstName = 'Customer', channel = 'unknown';\nlet conversationHistory = [];\n\n// === 1. Detect source (Telegram vs WhatsApp Pi) ===\nif ($json.message && $json.message.chat) {\n  // Telegram Trigger format\n  channel = 'telegram';\n  chatId = $json.message.chat.id.toString();\n  userId = $json.message.from.id.toString();\n  userMessage = $json.message.text || '';\n  firstName = $json.message.from.first_name || 'Customer';\n  conversationHistory = $json.conversationHistory || [];\n} else {\n  // WhatsApp Pi payload format\n  channel = 'whatsapp';\n  chatId = $json.customerId || $json.chatId;\n  userId = $json.customerId || $json.userId;\n  userMessage = $json.message || '';\n  firstName = $json.firstName || 'Customer';\n  conversationHistory = $json.conversationHistory || [];\n}\n\n// === 2. CRITICAL: Greeting logic (fixed forever) ===\nconst isFirstMessage = conversationHistory.length === 0;\n\nconsole.log(`Channel: ${channel}`);\nconsole.log(`History length: ${conversationHistory.length} → isFirstMessage: ${isFirstMessage}`);\n\n// === 3. System prompt with perfect conditional greeting ===\nconst systemPrompt = `You are a warm, friendly Ghanaian market vendor.\n\nRules:\n- Speak naturally: \"charley\", \"boss\", \"Akwaaba\", Twi mix welcome\n- Prices in GHS only\n- Keep replies short and sweet\n\nCRITICAL GREETING RULE:\n${isFirstMessage \n  ? 'THIS IS THE CUSTOMER\\'S VERY FIRST MESSAGE → Start with: \"Akwaaba, welcome to our shop! How can I help you today?\"' \n  : 'FOLLOW-UP MESSAGE → NO \"Akwaaba\" or welcome again. Jump straight into the conversation.'}\n`;\n\n// === 4. Build final messages array ===\nconst messages = [{ role: \"system\", content: systemPrompt }];\n\nconversationHistory.forEach(msg => {\n  messages.push({ role: msg.role, content: msg.content });\n});\n\nmessages.push({ role: \"user\", content: userMessage });\n\nconsole.log('Final messages → Groq:', JSON.stringify(messages, null, 2));\n\nreturn {\n  json: {\n    chatId,\n    userId,\n    channel,\n    firstName,\n    groqRequest: {\n      model: \"llama-3.3-70b-versatile\",\n      temperature: 0.7,\n      max_tokens: 500,\n      messages\n    },\n    debug: { isFirstMessage, historyLength: conversationHistory.length }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        176,
+        -400
+      ],
+      "id": "cd103ee2-26f3-4ab2-a1f9-fc3cc96b14d3",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={\n  \"reply\": \"{{ $('Groq API').item.json.choices[0].message.content }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        848,
+        -304
+      ],
+      "id": "21b967e0-306c-4a51-997a-ae18f7ef94f7",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.telegram.org/bot8432681499:AAH3Fd3we8cE_oRCplP8CTSCfZgbX4f1xZA/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "={{ $('Code in JavaScript').item.json.chatId }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $('Groq API').item.json.choices[0].message.content }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        848,
+        -496
+      ],
+      "id": "cbe2ca26-b193-4d80-822e-15c3289aefdd",
+      "name": "HTTP Request tel"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "llama-3.3-70b-versatile"
+            },
+            {
+              "name": "messages",
+              "value": "={{ $json.groqRequest.messages }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        400,
+        -400
+      ],
+      "id": "5e0e58ed-266e-4635-859c-2828e326c41d",
+      "name": "Groq API",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2kjO9RFzLn0cfBj0",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        -528
+      ],
+      "id": "46a7396d-2fc3-4973-a123-9fa5f3b06eb4",
+      "name": "Telegram Trigger",
+      "webhookId": "9086f018-a5d3-4c6c-8e5c-4752c3ea8547",
+      "credentials": {
+        "telegramApi": {
+          "id": "0QeRtUoIIy0JzQOa",
+          "name": "Beeline Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "whatsapp",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -48,
+        -304
+      ],
+      "id": "1993e51c-fc32-4b48-8fa8-2d60360a3c9e",
+      "name": "Webhook",
+      "webhookId": "84dd7110-d9d4-44a0-9c77-671168d4a06e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5e6855ea-fea2-4ee5-9848-fdb70af8dea5",
+              "leftValue": "={{ $('Code in JavaScript').item.json.channel }}",
+              "rightValue": "telegram",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        624,
+        -400
+      ],
+      "id": "bfca513a-7674-452d-9adc-03d7b979e3c9",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Groq API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request tel": {
+      "main": [
+        []
+      ]
+    },
+    "Groq API": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request tel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "f197b4ed-3781-4cce-96af-db763bda8321",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "83ce62ff05ce9f81a703373384caa53f3780cdaa1a951af6f70114a0014101a4"
+  },
+  "id": "1IcLjdjgCa9S0Klx",
+  "tags": []
+}

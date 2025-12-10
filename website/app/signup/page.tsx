@@ -2,18 +2,23 @@
 
 import { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { FaGoogle } from 'react-icons/fa';
 import { MdQrCode2 } from 'react-icons/md';
 import BeelineLogo from '../components/BeelineLogo';
 
 function SignupContent() {
+  const { data: session } = useSession();
   const [phone, setPhone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stage, setStage] = useState<'input' | 'qr' | 'success'>('input');
   const [qrCode, setQrCode] = useState<string | null>(null);
+  const [vendorId, setVendorId] = useState<string | null>(null);
   const [authMethod, setAuthMethod] = useState<'google' | 'phone' | null>(null);
+
+  // If user is signed in with Google but no phone, start with phone input
+  const isCompletingGoogleSignup = session?.user && !session.user.phone;
 
   const handleGoogleSignin = async () => {
     setAuthMethod('google');
@@ -38,10 +43,15 @@ function SignupContent() {
         throw new Error('Please enter a valid phone number');
       }
 
+      const body: any = { phone };
+      if (isCompletingGoogleSignup && session?.user?.vendorId) {
+        body.vendorId = session.user.vendorId;
+      }
+
       const response = await fetch('/api/auth/initiate-whatsapp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone }),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
@@ -60,6 +70,7 @@ function SignupContent() {
 
       const data = await response.json();
       setQrCode(data.qrCode);
+      setVendorId(data.vendorId);
       setStage('qr');
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
@@ -88,42 +99,55 @@ function SignupContent() {
         <div className="w-full max-w-md">
           {/* STEP INDICATOR */}
           <div className="mb-12 text-center">
-            <p className="text-xs text-dark-text-tertiary uppercase tracking-wider mb-8">
-              {stage === 'input' && `Step ${authMethod ? '1' : '0'} of 3: ${authMethod === 'google' ? 'Google' : 'Connect'}`}
-              {stage === 'qr' && 'Step 2 of 3: Scan QR Code'}
-              {stage === 'success' && 'Step 3 of 3: Complete!'}
-            </p>
+             <p className="text-xs text-dark-text-tertiary uppercase tracking-wider mb-8">
+               {stage === 'input' && (isCompletingGoogleSignup ? 'Step 1 of 2: Connect WhatsApp' : `Step ${authMethod ? '1' : '0'} of 3: ${authMethod === 'google' ? 'Google' : 'Connect'}`)}
+               {stage === 'qr' && (isCompletingGoogleSignup ? 'Step 2 of 2: Scan QR Code' : 'Step 2 of 3: Scan QR Code')}
+               {stage === 'success' && (isCompletingGoogleSignup ? 'Complete!' : 'Step 3 of 3: Complete!')}
+             </p>
           </div>
 
-          {/* STAGE 1: Input */}
-          {stage === 'input' && (
-            <>
-              <h1 className="text-5xl md:text-6xl font-light tracking-tight mb-4">
-                Let's get started.
-              </h1>
-              <p className="text-lg text-dark-text-secondary mb-12 font-light">
-                Your AI meets you on WhatsApp. Choose how to begin.
-              </p>
+           {/* STAGE 1: Input */}
+           {stage === 'input' && (
+             <>
+               {isCompletingGoogleSignup ? (
+                 <>
+                   <h1 className="text-5xl md:text-6xl font-light tracking-tight mb-4">
+                     Complete your signup
+                   </h1>
+                   <p className="text-lg text-dark-text-secondary mb-12 font-light">
+                     Welcome! Just enter your phone number to connect WhatsApp.
+                   </p>
+                 </>
+               ) : (
+                 <>
+                   <h1 className="text-5xl md:text-6xl font-light tracking-tight mb-4">
+                     Let's get started.
+                   </h1>
+                   <p className="text-lg text-dark-text-secondary mb-12 font-light">
+                     Your AI meets you on WhatsApp. Choose how to begin.
+                   </p>
 
-              {/* Google Sign-In */}
-              <button
-                onClick={handleGoogleSignin}
-                disabled={isSubmitting}
-                className="w-full px-6 py-4 mb-4 bg-glass-bg backdrop-blur-md border border-glass-border rounded-lg text-dark-text font-semibold flex items-center justify-center gap-3 hover:bg-dark-bg-tertiary/80 hover:border-beeline-yellow/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <FaGoogle className="text-lg" />
-                Sign in with Google
-              </button>
+                   {/* Google Sign-In */}
+                   <button
+                     onClick={handleGoogleSignin}
+                     disabled={isSubmitting}
+                     className="w-full px-6 py-4 mb-4 bg-glass-bg backdrop-blur-md border border-glass-border rounded-lg text-dark-text font-semibold flex items-center justify-center gap-3 hover:bg-dark-bg-tertiary/80 hover:border-beeline-yellow/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                   >
+                     <FaGoogle className="text-lg" />
+                     Sign in with Google
+                   </button>
 
-              {/* Divider */}
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-dark-border/50"></div>
-                </div>
-                <div className="relative flex justify-center text-xs">
-                  <span className="px-2 bg-dark-bg text-dark-text-tertiary">or</span>
-                </div>
-              </div>
+                   {/* Divider */}
+                   <div className="relative my-6">
+                     <div className="absolute inset-0 flex items-center">
+                       <div className="w-full border-t border-dark-border/50"></div>
+                     </div>
+                     <div className="relative flex justify-center text-xs">
+                       <span className="px-2 bg-dark-bg text-dark-text-tertiary">or</span>
+                     </div>
+                   </div>
+                 </>
+               )}
 
               {/* Phone Input */}
               <form onSubmit={handlePhoneSubmit}>
@@ -203,30 +227,39 @@ function SignupContent() {
             </>
           )}
 
-          {/* STAGE 3: Success */}
-          {stage === 'success' && (
-            <>
-              <div className="text-center">
-                <div className="mb-8">
-                  <div className="inline-block w-16 h-16 bg-gradient-beeline rounded-full flex items-center justify-center">
-                    <span className="text-3xl">✨</span>
-                  </div>
-                </div>
-                <h1 className="text-4xl font-light tracking-tight mb-4">
-                  You're all set!
-                </h1>
-                <p className="text-lg text-dark-text-secondary mb-8 font-light">
-                  Your AI assistant is ready. Check your WhatsApp.
-                </p>
-                <Link
-                  href="/dashboard"
-                  className="inline-block px-12 py-4 bg-gradient-beeline text-black font-semibold rounded-lg shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all"
-                >
-                  Go to Dashboard →
-                </Link>
-              </div>
-            </>
-          )}
+           {/* STAGE 3: Success */}
+           {stage === 'success' && (
+             <>
+               <div className="text-center">
+                 <div className="mb-8">
+                   <div className="inline-block w-16 h-16 bg-gradient-beeline rounded-full flex items-center justify-center">
+                     <span className="text-3xl">✨</span>
+                   </div>
+                 </div>
+                 <h1 className="text-4xl font-light tracking-tight mb-4">
+                   You're all set!
+                 </h1>
+                 <p className="text-lg text-dark-text-secondary mb-8 font-light">
+                   Your AI assistant is ready. Check your WhatsApp.
+                 </p>
+                 <button
+                   onClick={async () => {
+                     if (authMethod === 'phone' && vendorId) {
+                       // For phone signup, sign in with vendorId
+                       await signIn('credentials', {
+                         vendorId,
+                         redirect: false,
+                       });
+                     }
+                     window.location.href = '/dashboard';
+                   }}
+                   className="inline-block px-12 py-4 bg-gradient-beeline text-black font-semibold rounded-lg shadow-glow hover:shadow-glow-lg hover:scale-105 transition-all"
+                 >
+                   Go to Dashboard →
+                 </button>
+               </div>
+             </>
+           )}
 
           {/* Privacy & Terms Footer */}
           <p className="text-center text-xs text-dark-text-tertiary mt-12">

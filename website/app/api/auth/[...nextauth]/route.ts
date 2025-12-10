@@ -23,6 +23,40 @@ const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
+        // Special case for phone signup completion
+        if (credentials?.vendorId && !credentials?.identifier) {
+          try {
+            const result = await query(
+              `SELECT vendor_id, name, email, phone, business_type, subscription_status
+               FROM vendors
+               WHERE vendor_id = $1
+               LIMIT 1`,
+              [credentials.vendorId]
+            );
+
+            if (result.rows.length === 0) {
+              return null;
+            }
+
+            const vendor = result.rows[0];
+
+            // Return user object
+            return {
+              id: vendor.vendor_id,
+              name: vendor.name,
+              email: vendor.email,
+              image: null,
+              vendorId: vendor.vendor_id,
+              phone: vendor.phone,
+              businessType: vendor.business_type,
+              subscriptionStatus: vendor.subscription_status,
+            };
+          } catch (error) {
+            console.error('Auth error:', error);
+            return null;
+          }
+        }
+
         if (!credentials?.identifier || !credentials?.password) {
           return null;
         }
