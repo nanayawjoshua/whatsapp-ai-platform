@@ -24,14 +24,14 @@ const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         // Special case for phone signup completion
-        if (credentials?.vendorId && !credentials?.identifier) {
+        if ((credentials as any)?.vendorId && !credentials?.identifier) {
           try {
             const result = await query(
               `SELECT vendor_id, name, email, phone, business_type, subscription_status
                FROM vendors
                WHERE vendor_id = $1
                LIMIT 1`,
-              [credentials.vendorId]
+              [(credentials as any).vendorId]
             );
 
             if (result.rows.length === 0) {
