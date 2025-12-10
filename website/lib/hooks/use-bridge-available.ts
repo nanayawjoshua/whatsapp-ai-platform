@@ -1,10 +1,12 @@
+import { useState, useCallback } from 'react';
+
 /**
  * Bridge Availability Hook
- * 
+ *
  * Client-side JS to ensure bridge is awake before making requests
  * Usage in Next.js/React:
  *   import { useBridgeAvailable } from '@/lib/hooks/use-bridge-available'
- *   
+ *
  *   const BridgeSignup = () => {
  *     const { ensureBridgeAwake, isAwake } = useBridgeAvailable()
  *     
@@ -51,10 +53,10 @@ export async function ensureBridgeAwake(bridgeUrl: string = '/api/bridge/health'
  * React Hook for bridge availability
  */
 export function useBridgeAvailable() {
-  const [isAwake, setIsAwake] = React.useState<boolean | null>(null);
-  const [isChecking, setIsChecking] = React.useState(false);
+  const [isAwake, setIsAwake] = useState<boolean | null>(null);
+  const [isChecking, setIsChecking] = useState(false);
 
-  const ensureBridgeAwake = React.useCallback(async () => {
+  const ensureBridgeAwake = useCallback(async () => {
     setIsChecking(true);
     try {
       const available = await ensureBridgeAwake('/api/bridge/health');
