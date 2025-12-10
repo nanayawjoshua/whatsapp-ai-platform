@@ -92,21 +92,32 @@ const authOptions: NextAuthOptions = {
             [profile.email]
           );
 
-          if (result.rows.length > 0) {
-            // Vendor exists, update user object
-            const vendor = result.rows[0];
-            user.id = vendor.vendor_id;
-            user.vendorId = vendor.vendor_id;
-            user.phone = vendor.phone;
-            user.businessType = vendor.business_type;
-            user.subscriptionStatus = vendor.subscription_status;
-            return true;
-          } else {
-            // Vendor doesn't exist - need to complete signup first
-            // For now, we'll reject. In future, create vendor record here
-            console.log('Google user not found in vendors table:', profile.email);
-            return '/signup?error=account_not_found';
-          }
+           if (result.rows.length > 0) {
+             // Vendor exists, update user object
+             const vendor = result.rows[0];
+             user.id = vendor.vendor_id;
+             user.vendorId = vendor.vendor_id;
+             user.phone = vendor.phone;
+             user.businessType = vendor.business_type;
+             user.subscriptionStatus = vendor.subscription_status;
+             return true;
+           } else {
+             // Vendor doesn't exist - auto-create account
+             try {
+               const newVendor = await query(
+                 `INSERT INTO vendors (name, email, phone, account_type, subscription_status, created_at)
+                  VALUES ($1, $2, $3, $4, $5, NOW())
+                  RETURNING vendor_id, name, email, phone, business_type, subscription_status`,
+                 [profile.name || profile.email, profile.email, null, 'personal', 'trial']
+               );
+               user.id = newVendor.rows[0].vendor_id;
+               user.vendorId = newVendor.rows[0].vendor_id;
+               return true;
+             } catch (error) {
+               console.error('Auto-signup error:', error);
+               return false;
+             }
+           }
         } catch (error) {
           console.error('Sign in error:', error);
           return false;

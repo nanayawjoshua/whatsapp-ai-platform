@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
 import { query } from '@/lib/db';
 
 // Mark route as dynamic
@@ -8,7 +9,17 @@ export const dynamic = 'force-dynamic';
  * Super Admin Metrics API
  * Returns platform-wide statistics and analytics
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  try {
+    const session = await getServerSession();
+
+    // Check if user is authenticated and is admin
+    if (!session || session.user?.role !== 'admin') {
+      return NextResponse.json(
+        { error: 'Unauthorized - admin access required' },
+        { status: 401 }
+      );
+    }
   try {
     // Total vendors
     const totalVendorsResult = await query('SELECT COUNT(*) as count FROM vendors');

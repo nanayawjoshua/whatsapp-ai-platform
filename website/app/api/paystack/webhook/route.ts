@@ -19,22 +19,22 @@ export async function POST(request: NextRequest) {
     const body = await request.text();
     const signature = request.headers.get('x-paystack-signature');
 
-    // Verify webhook signature (skip in test mode if no webhook secret)
-    if (signature && process.env.PAYSTACK_WEBHOOK_SECRET) {
-      const hash = crypto
-        .createHmac('sha512', process.env.PAYSTACK_WEBHOOK_SECRET)
-        .update(body)
-        .digest('hex');
+    // Verify webhook signature
+    const hash = crypto
+      .createHmac('sha512', process.env.PAYSTACK_WEBHOOK_SECRET || '')
+      .update(body)
+      .digest('hex');
 
-      if (hash !== signature) {
-        console.error('Invalid Paystack webhook signature');
-        return NextResponse.json(
-          { error: 'Invalid signature' },
-          { status: 400 }
-        );
-      }
-    } else {
-      console.warn('Webhook signature verification skipped (test mode or no secret configured)');
+    // In production, always verify. In test, allow bypass if secret not set
+    const isProduction = process.env.NODE_ENV === 'production';
+    const shouldVerify = isProduction || !!process.env.PAYSTACK_WEBHOOK_SECRET;
+
+    if (shouldVerify && (!signature || hash !== signature)) {
+      console.error('Invalid Paystack webhook signature');
+      return NextResponse.json(
+        { error: 'Invalid signature' },
+        { status: 400 }
+      );
     }
 
     // Parse webhook event

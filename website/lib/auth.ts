@@ -4,6 +4,9 @@
  */
 
 import { randomBytes, createHash } from 'crypto';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.NEXTAUTH_SECRET || 'fallback-secret';
 
 // Use bcrypt-compatible hashing for passwords
 // In production, install bcryptjs: npm install bcryptjs
@@ -92,17 +95,18 @@ export function normalizeGhanaPhone(phone: string): string {
 
 /**
  * Create session token for client
- * In production, use JWT library
  */
 export function createSessionToken(session: VendorSession): string {
-  // Simple base64 encoding for now
-  // TODO: Replace with JWT in production
-  const payload = JSON.stringify({
-    sid: session.sessionId,
-    vid: session.vendorId,
-    exp: session.expiresAt.getTime()
-  });
-  return Buffer.from(payload).toString('base64');
+  return jwt.sign(
+    {
+      sid: session.sessionId,
+      vid: session.vendorId,
+      email: session.email,
+      exp: Math.floor(session.expiresAt.getTime() / 1000)
+    },
+    JWT_SECRET,
+    { algorithm: 'HS256' }
+  );
 }
 
 /**
@@ -110,16 +114,10 @@ export function createSessionToken(session: VendorSession): string {
  */
 export function verifySessionToken(token: string): { sessionId: string; vendorId: string } | null {
   try {
-    const payload = JSON.parse(Buffer.from(token, 'base64').toString('utf-8'));
-    const expiresAt = new Date(payload.exp);
-
-    if (expiresAt < new Date()) {
-      return null; // Expired
-    }
-
+    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] }) as any;
     return {
-      sessionId: payload.sid,
-      vendorId: payload.vid
+      sessionId: decoded.sid,
+      vendorId: decoded.vid
     };
   } catch {
     return null;

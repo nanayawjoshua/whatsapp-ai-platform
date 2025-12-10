@@ -18,9 +18,9 @@ export function getDb(): Pool {
 
     pool = new Pool({
       connectionString: databaseUrl,
-      ssl: {
-        rejectUnauthorized: false // Required for Neon
-      },
+      ssl: process.env.NODE_ENV === 'production'
+        ? true
+        : { rejectUnauthorized: false },
       max: 10, // Maximum connections in pool
       idleTimeoutMillis: 30000,
       connectionTimeoutMillis: 5000
