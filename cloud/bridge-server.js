@@ -743,7 +743,7 @@ app.post('/vendor/generate-qr', async (req, res) => {
   }
 
   try {
-    logger.info({ vendorId, vendorData }, 'Generating QR code for new vendor');
+    logger.info({ vendorId, vendorData }, 'Generating QR code for vendor');
 
     // Extract vendor data from request (sent from website after payment)
     const name = vendorData?.name || 'New Vendor';
@@ -752,42 +752,49 @@ app.post('/vendor/generate-qr', async (req, res) => {
     const businessType = vendorData?.businessType || null;
     const accountType = vendorData?.accountType || 'business'; // personal, business, or enterprise
 
-    // Create vendor record first (required for foreign key)
-    await db.query(
-      `INSERT INTO vendors (vendor_id, name, phone, email, business_type, account_type, subscription_status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
-       ON CONFLICT (vendor_id) DO UPDATE SET
-         name = EXCLUDED.name,
-         phone = EXCLUDED.phone,
-         email = EXCLUDED.email,
-         business_type = EXCLUDED.business_type,
-         account_type = EXCLUDED.account_type`,
-      [vendorId, name, phone, email, businessType, accountType, 'trial']
+    // Check if vendor with this phone already exists
+    const existingVendor = await db.query(
+      `SELECT vendor_id FROM vendors WHERE phone = $1 LIMIT 1`,
+      [phone]
     );
+
+    let finalVendorId = vendorId;
+    if (existingVendor.rows.length > 0) {
+      // Use existing vendor ID
+      finalVendorId = existingVendor.rows[0].vendor_id;
+      logger.info({ phone, existingVendorId: finalVendorId }, 'Using existing vendor for phone');
+    } else {
+      // Create new vendor record
+      await db.query(
+        `INSERT INTO vendors (vendor_id, name, phone, email, business_type, account_type, subscription_status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [vendorId, name, phone, email, businessType, accountType, 'trial']
+      );
+    }
 
     // Create initial session record
     await db.query(
       `INSERT INTO vendor_sessions (vendor_id, status, created_at)
        VALUES ($1, $2, NOW())
        ON CONFLICT (vendor_id) DO NOTHING`,
-      [vendorId, 'initializing']
+      [finalVendorId, 'initializing']
     );
 
     // Connect (will generate QR)
-    await connectVendor(vendorId);
+    await connectVendor(finalVendorId);
 
     // Wait for QR to be generated (polling)
     let attempts = 0;
     while (attempts < 30) {
       const result = await db.query(
         'SELECT qr_code FROM vendor_sessions WHERE vendor_id = $1',
-        [vendorId]
+        [finalVendorId]
       );
 
       if (result.rows[0]?.qr_code) {
         return res.json({
           qrCode: result.rows[0].qr_code,
-          vendorId,
+          vendorId: finalVendorId,
           expiresIn: 60
         });
       }
@@ -798,7 +805,7 @@ app.post('/vendor/generate-qr', async (req, res) => {
 
     res.status(408).json({ error: 'QR generation timeout' });
   } catch (error) {
-    logger.error({ vendorId, error }, 'Failed to generate QR');
+    logger.error({ vendorId, finalVendorId, error }, 'Failed to generate QR');
     res.status(500).json({ error: error.message });
   }
 });
