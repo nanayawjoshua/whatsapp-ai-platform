@@ -56,7 +56,7 @@ export function useBridgeAvailable() {
   const [isAwake, setIsAwake] = useState<boolean | null>(null);
   const [isChecking, setIsChecking] = useState(false);
 
-  const ensureBridgeAwake = useCallback(async (): Promise<boolean> => {
+  const checkBridgeAwake = useCallback(async (): Promise<boolean> => {
     setIsChecking(true);
     try {
       const available = await ensureBridgeAwake('/api/bridge/health');
@@ -67,7 +67,7 @@ export function useBridgeAvailable() {
     }
   }, []);
 
-  return { ensureBridgeAwake, isAwake, isChecking };
+  return { ensureBridgeAwake: checkBridgeAwake, isAwake, isChecking };
 }
 
 export default ensureBridgeAwake;
