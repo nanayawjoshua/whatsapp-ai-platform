@@ -25,7 +25,7 @@ import { execSync } from 'child_process';
 
 // PROJECT OS - Phase 1: Phone-Specific Imports
 import { checkBattery, acquireWakeLock, releaseWakeLock } from './utils/phone-utils.js';
-import { syncWithMaster, publishState } from './utils/redis-sync.js';
+import { syncWithMaster, publishState, getRedisStats } from './utils/redis-sync.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -195,8 +195,9 @@ async function startPhoneBridge() {
   const express = await import('express');
   const app = express.default();
 
-  app.get('/health', async (req, res) => {
+  app.get('/health', async (_req, res) => {
     const batteryLevel = phoneConfig.batteryMonitor ? await checkBattery() : null;
+    const redisStats = getRedisStats();
 
     res.json({
       status: 'healthy',
@@ -207,7 +208,14 @@ async function startPhoneBridge() {
       maxWorkers: phoneConfig.workerThreads,
       sessions: 0, // TODO: Track active sessions
       uptime: process.uptime(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      // Redis sync status
+      redis: {
+        status: redisStats.status,
+        connected: redisStats.connected,
+        connectionAttempts: redisStats.connectionAttempts,
+        mode: redisStats.connected ? 'synced' : 'offline'
+      }
     });
   });
 
