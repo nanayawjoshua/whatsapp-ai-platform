@@ -10,44 +10,56 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Brand Colors (Keep the gradient)
         'beeline-yellow': '#F9C74F',
         'beeline-orange': '#F3722C',
         'beeline-amber': '#C97E2F',
-        'beeline-yellow-dark': '#FFB300',
-        'beeline-yellow-light': '#FFF9E6',
-        'beeline-cream': '#FFF4E6',
+
+        // Premium Light Theme (Apple/Stripe-inspired)
+        'cream': '#FFFBF5',           // Primary background - warm, not stark
+        'cream-dark': '#F8F5F0',      // Secondary background
+        'cream-border': '#E8E4DF',    // Warm gray borders
+
+        // Text Hierarchy
+        'text-primary': '#1A1A1A',    // Near black, high contrast
+        'text-secondary': '#6B6B6B',  // Medium gray
+        'text-tertiary': '#9B9B9B',   // Light gray
+
+        // Surface
+        'surface': '#FFFFFF',          // Pure white cards
+        'surface-hover': '#FAFAFA',    // Subtle hover state
+
+        // Accents
+        'success': '#10B981',          // Green for success states
+        'warning': '#F59E0B',          // Amber for warnings
+        'error': '#EF4444',            // Red for errors
+
+        // Legacy (for backwards compatibility during migration)
         'beeline-black': '#1a1a1a',
-        'beeline-gray': '#F0F3F5',
-        'beeline-gray-light': '#F8FAFB',
-        // Dark mode colors - Darker & more translucent
-        'dark-bg': '#0F0F0F',
-        'dark-bg-secondary': '#1A1A1A',
-        'dark-bg-tertiary': '#242424',
-        'dark-text': '#FFFFFF',
-        'dark-text-secondary': 'rgba(255, 255, 255, 0.7)',
-        'dark-text-tertiary': 'rgba(255, 255, 255, 0.5)',
-        'dark-border': 'rgba(249, 199, 79, 0.1)',
-        // Glass colors
-        'glass-bg': 'rgba(26, 26, 26, 0.6)',
-        'glass-border': 'rgba(249, 199, 79, 0.1)',
+        'beeline-cream': '#FFFBF5',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       backgroundImage: {
-        'gradient-warm': 'linear-gradient(135deg, #FFF9E6 0%, #FFE8B3 50%, #FFD6A1 100%)',
-        'gradient-soft': 'linear-gradient(135deg, #FFF9E6 0%, #FFFFFF 100%)',
-        'gradient-card': 'linear-gradient(to bottom, #FFFFFF 0%, #F8FAFB 100%)',
+        // Premium Light Theme Gradients
         'gradient-beeline': 'linear-gradient(135deg, #F9C74F 0%, #F3722C 100%)',
-        'gradient-dark-glow': 'radial-gradient(circle at 50% 0%, rgba(249, 199, 79, 0.15) 0%, transparent 50%)',
+        'gradient-cream': 'linear-gradient(to bottom, #FFFBF5 0%, #F8F5F0 100%)',
+        'gradient-warm': 'radial-gradient(circle at top, rgba(249, 199, 79, 0.08) 0%, transparent 60%)',
+        'gradient-glow': 'radial-gradient(circle at 50% 0%, rgba(249, 199, 79, 0.12) 0%, transparent 50%)',
+        'gradient-card': 'linear-gradient(to bottom, #FFFFFF 0%, #FAFAFA 100%)',
+        'gradient-mesh': 'radial-gradient(at 40% 20%, rgba(249, 199, 79, 0.15) 0px, transparent 50%), radial-gradient(at 80% 0%, rgba(243, 114, 44, 0.15) 0px, transparent 50%)',
       },
       boxShadow: {
-        'soft': '0 2px 8px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.05)',
-        'medium': '0 4px 12px rgba(0, 0, 0, 0.12), 0 12px 32px rgba(0, 0, 0, 0.08)',
-        'hover': '0 8px 20px rgba(255, 193, 7, 0.25), 0 16px 40px rgba(0, 0, 0, 0.1)',
-        'glass': '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
-        'glow': '0 0 40px rgba(249, 199, 79, 0.3)',
-        'glow-lg': '0 0 60px rgba(249, 199, 79, 0.5)',
+        // Premium Light Theme Shadows (Subtle, not heavy)
+        'sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+        'soft': '0 2px 8px rgba(0, 0, 0, 0.06), 0 4px 16px rgba(0, 0, 0, 0.04)',
+        'medium': '0 4px 12px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.06)',
+        'large': '0 8px 24px rgba(0, 0, 0, 0.10), 0 16px 48px rgba(0, 0, 0, 0.08)',
+        'hover': '0 8px 20px rgba(249, 199, 79, 0.20), 0 12px 32px rgba(0, 0, 0, 0.08)',
+        'glow': '0 0 32px rgba(249, 199, 79, 0.25)',
+        'glow-lg': '0 0 48px rgba(249, 199, 79, 0.35)',
+        'inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
       },
       backdropBlur: {
         'xs': '2px',
