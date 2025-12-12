@@ -1,55 +1,37 @@
 'use client';
 
-import Link from "next/link";
-import { FaWhatsapp, FaCheckCircle, FaClock, FaShieldAlt } from "react-icons/fa";
-import { MdQrCode2, MdPsychology, MdFlashOn } from "react-icons/md";
-import BeelineLogo from "./components/BeelineLogo";
+import Link from 'next/link';
+import { FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
+import BeelineLogo from './components/BeelineLogo';
 
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-cream">
-      {/* Header - Sticky, Minimal, Premium */}
+      {/* Header - Minimal, Like Apple */}
       <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-xl border-b border-cream-border">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <BeelineLogo size="md" />
-
-            {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center gap-8">
-              <a href="#how-it-works" className="text-text-secondary hover:text-text-primary transition-colors text-sm font-medium">
-                How it works
-              </a>
-              <a href="#pricing" className="text-text-secondary hover:text-text-primary transition-colors text-sm font-medium">
-                Pricing
-              </a>
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#how-it-works" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">How it works</a>
+              <a href="#pricing" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Pricing</a>
             </div>
-
-            {/* CTA */}
-            <div className="flex items-center gap-4">
-              <Link
-                href="/login"
-                className="hidden sm:inline-block text-text-secondary hover:text-text-primary transition-colors text-sm font-medium"
-              >
-                Log in
-              </Link>
-              <Link
-                href="/signup"
-                className="px-5 py-2.5 bg-gradient-beeline text-white text-sm font-semibold rounded-full hover:shadow-hover transition-all"
-              >
-                Get started →
-              </Link>
-            </div>
+            <Link
+              href="/signup"
+              className="px-6 py-2.5 bg-gradient-beeline text-white text-sm font-semibold rounded-full hover:shadow-hover transition-all"
+            >
+              Get started
+            </Link>
           </div>
         </nav>
       </header>
 
-      {/* Hero Section - Jobs Style: Massive headline, minimal text */}
+      {/* Hero - Jobs Style: One Big Idea */}
       <section className="relative pt-24 pb-32 px-6 overflow-hidden">
-        {/* Subtle gradient mesh background */}
-        <div className="absolute inset-0 bg-gradient-mesh pointer-events-none opacity-50"></div>
+        {/* Subtle background gradient */}
+        <div className="absolute inset-0 bg-gradient-warm pointer-events-none"></div>
 
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          {/* The Hook - Massive, Simple */}
           <h1 className="text-6xl sm:text-7xl lg:text-8xl font-light tracking-tight mb-6 text-text-primary">
             Your WhatsApp.
             <br />
@@ -57,94 +39,66 @@ export default function HomePage() {
               But it never sleeps.
             </span>
           </h1>
-
-          {/* Subheadline - Tiny, Understated */}
-          <p className="text-xl sm:text-2xl text-text-secondary mb-12 font-light max-w-3xl mx-auto">
-            Beeline turns every message into an opportunity.
-            <br className="hidden sm:block" />
-            While you focus on what matters.
+          <p className="text-xl sm:text-2xl text-text-secondary mb-12 max-w-3xl mx-auto font-light">
+            AI that handles sales and customer service on WhatsApp. 24/7. In your voice.
           </p>
 
-          {/* Single CTA - No clutter */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Link
               href="/signup"
-              className="px-8 py-4 bg-gradient-beeline text-white text-base font-semibold rounded-full hover:scale-105 hover:shadow-hover transition-all shadow-medium"
+              className="inline-block px-10 py-5 bg-gradient-beeline text-white text-lg font-semibold rounded-full hover:scale-105 transition-all shadow-medium"
             >
-              Start free trial →
+              Try 10 conversations free →
             </Link>
-            <Link
+            <a
               href="#how-it-works"
-              className="px-8 py-4 bg-surface text-text-primary text-base font-semibold rounded-full hover:bg-surface-hover transition-all border border-cream-border"
+              className="inline-block px-10 py-5 bg-surface text-text-primary text-lg font-semibold rounded-full border border-cream-border hover:bg-cream-dark transition-all"
             >
               See how it works
-            </Link>
+            </a>
           </div>
 
-          {/* Social Proof - Subtle */}
-          <p className="text-sm text-text-tertiary flex items-center justify-center gap-2">
-            <span className="inline-block w-2 h-2 bg-success rounded-full animate-pulse"></span>
-            847 businesses using Beeline right now
-          </p>
-        </div>
-
-        {/* Hero Visual - WhatsApp Conversation Demo */}
-        <div className="max-w-4xl mx-auto mt-20 relative z-10">
-          <div className="bg-surface rounded-3xl shadow-large p-6 border border-cream-border animate-float">
-            <div className="aspect-video bg-gradient-cream rounded-2xl overflow-hidden border border-cream-border flex items-center justify-center relative">
-              {/* WhatsApp Chat Mockup */}
-              <div className="w-full h-full flex flex-col bg-gradient-to-b from-surface to-cream-dark p-8">
-                {/* Chat Header */}
-                <div className="flex items-center gap-3 pb-6 border-b border-cream-border">
-                  <div className="w-12 h-12 rounded-full bg-gradient-beeline flex items-center justify-center shadow-soft">
-                    <span className="text-white font-bold text-lg">S</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-text-primary">Sarah's Jewelry</p>
-                    <p className="text-xs text-success flex items-center gap-1">
-                      <span className="w-2 h-2 bg-success rounded-full"></span>
-                      Active now
-                    </p>
-                  </div>
-                  <div className="text-text-tertiary text-xs">3:47 AM</div>
+          {/* WhatsApp Conversation Demo - Concrete, Visual */}
+          <div className="max-w-md mx-auto">
+            <div className="bg-surface rounded-3xl shadow-large p-6 border border-cream-border animate-float">
+              <div className="flex items-center gap-3 mb-6 pb-4 border-b border-cream-border">
+                <div className="w-10 h-10 bg-gradient-beeline rounded-full flex items-center justify-center">
+                  <FaWhatsapp className="w-6 h-6 text-white" />
                 </div>
-
-                {/* Messages */}
-                <div className="flex-1 py-6 space-y-4">
-                  {/* Customer Message */}
-                  <div className="flex justify-start">
-                    <div className="bg-surface border border-cream-border rounded-2xl rounded-tl-sm px-4 py-3 max-w-xs shadow-soft">
-                      <p className="text-sm text-text-primary">Hi! Do you have gold earrings in stock?</p>
-                      <p className="text-xs text-text-tertiary mt-1">3:47 AM</p>
-                    </div>
-                  </div>
-
-                  {/* AI Response - Instant */}
-                  <div className="flex justify-end">
-                    <div className="bg-gradient-beeline rounded-2xl rounded-tr-sm px-4 py-3 max-w-xs shadow-soft">
-                      <p className="text-sm text-white">Yes! We have beautiful 18k gold hoops and studs. Would you like to see photos? 📸</p>
-                      <div className="flex items-center gap-1 mt-2 text-xs text-white/80">
-                        <FaCheckCircle className="w-3 h-3" />
-                        <span>Delivered • 3:47 AM</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* AI Indicator */}
-                  <div className="flex justify-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-cream-dark border border-cream-border rounded-full shadow-sm">
-                      <div className="w-2 h-2 bg-beeline-orange rounded-full animate-pulse"></div>
-                      <span className="text-xs font-medium text-text-secondary">AI responded instantly • Sarah was asleep</span>
-                    </div>
-                  </div>
+                <div>
+                  <p className="font-semibold text-text-primary text-sm">Your Business</p>
+                  <p className="text-xs text-success">Online</p>
                 </div>
+              </div>
+
+              {/* Customer message */}
+              <div className="mb-4">
+                <div className="bg-cream-dark rounded-2xl rounded-tl-sm p-4 inline-block max-w-[80%]">
+                  <p className="text-sm text-text-primary">Do you have the black shoes in size 42?</p>
+                  <p className="text-xs text-text-tertiary mt-1">3:24 AM</p>
+                </div>
+              </div>
+
+              {/* AI response */}
+              <div className="flex justify-end">
+                <div className="bg-gradient-beeline rounded-2xl rounded-tr-sm p-4 inline-block max-w-[80%]">
+                  <p className="text-sm text-white">Yes! We have 3 pairs left. ₵280. Can deliver today if you order now 🚚</p>
+                  <p className="text-xs text-white/70 mt-1">3:24 AM ✓✓</p>
+                </div>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-cream-border text-center">
+                <p className="text-xs text-text-tertiary">
+                  <span className="inline-block w-2 h-2 bg-success rounded-full mr-2"></span>
+                  Responded in 0.8 seconds. While you were sleeping.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* The Problem Section - Create emotional tension */}
+      {/* Problem - Jobs always showed the pain first */}
       <section className="py-20 px-6 bg-cream-dark">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl sm:text-5xl font-light tracking-tight mb-6 text-text-primary">
@@ -153,15 +107,15 @@ export default function HomePage() {
             <span className="text-text-secondary">while you sleep.</span>
           </h2>
           <p className="text-lg text-text-secondary max-w-2xl mx-auto mb-12">
-            Every unanswered message is a missed sale. Every delayed response is a customer going to your competitor.
+            Every unanswered message is a missed sale. Every delayed customer service question drives them to your competitor.
           </p>
 
-          {/* Stats Grid - Painful truths */}
+          {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
               { stat: "67%", label: "of customers expect replies within 1 hour" },
-              { stat: "3AM", label: "when most businesses lose sales" },
-              { stat: "₵450", label: "average value of a missed WhatsApp lead" }
+              { stat: "3AM", label: "when most sales & support requests happen" },
+              { stat: "₵450", label: "average value of a missed customer inquiry" }
             ].map((item, i) => (
               <div key={i} className="bg-surface rounded-2xl p-8 border border-cream-border shadow-soft">
                 <div className="text-4xl font-bold bg-gradient-beeline bg-clip-text text-transparent mb-2">
@@ -174,7 +128,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* The Solution - How It Works (Jobs' 3-Step Rule) */}
+      {/* How It Works - Jobs' "Three Things" Rule */}
       <section id="how-it-works" className="py-32 px-6 bg-cream">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-20">
@@ -188,82 +142,44 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Steps - Visual, Minimal Text */}
-          <div className="space-y-24">
+          <div className="grid md:grid-cols-3 gap-12">
             {/* Step 1 */}
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="order-2 md:order-1">
-                <div className="inline-block px-3 py-1 bg-cream-dark rounded-full text-xs font-semibold text-text-secondary mb-4">
-                  STEP 1
-                </div>
-                <h3 className="text-4xl font-light mb-4 text-text-primary">
-                  Scan.
-                </h3>
-                <p className="text-lg text-text-secondary mb-6">
-                  Connect your WhatsApp number with a QR code. No downloads. No new apps. Just scan.
-                </p>
-                <div className="flex items-center gap-2 text-sm text-text-tertiary">
-                  <FaShieldAlt className="text-success" />
-                  <span>100% secure. We never see your messages without permission.</span>
-                </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-beeline rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-glow">
+                <span className="text-2xl font-bold text-white">1</span>
               </div>
-              <div className="order-1 md:order-2">
-                <div className="bg-gradient-cream rounded-3xl p-12 border border-cream-border shadow-medium flex items-center justify-center">
-                  <MdQrCode2 className="w-48 h-48 text-beeline-yellow opacity-30" />
-                </div>
-              </div>
+              <h3 className="text-2xl font-semibold text-text-primary mb-4">Scan</h3>
+              <p className="text-text-secondary leading-relaxed">
+                Scan a QR code with WhatsApp. Your AI connects to your number in 5 seconds.
+              </p>
             </div>
 
             {/* Step 2 */}
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="bg-gradient-cream rounded-3xl p-12 border border-cream-border shadow-medium flex items-center justify-center">
-                <MdPsychology className="w-48 h-48 text-beeline-orange opacity-30" />
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-beeline rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-glow">
+                <span className="text-2xl font-bold text-white">2</span>
               </div>
-              <div>
-                <div className="inline-block px-3 py-1 bg-cream-dark rounded-full text-xs font-semibold text-text-secondary mb-4">
-                  STEP 2
-                </div>
-                <h3 className="text-4xl font-light mb-4 text-text-primary">
-                  Choose.
-                </h3>
-                <p className="text-lg text-text-secondary mb-6">
-                  Pick your AI's personality. Professional? Friendly? Funny? Or train it with your own voice notes.
-                </p>
-                <div className="flex items-center gap-2 text-sm text-text-tertiary">
-                  <FaClock className="text-beeline-orange" />
-                  <span>Takes 15 seconds. Sounds like you.</span>
-                </div>
-              </div>
+              <h3 className="text-2xl font-semibold text-text-primary mb-4">Train</h3>
+              <p className="text-text-secondary leading-relaxed">
+                Tell it about your products, pricing, and personality. Upload your knowledge base.
+              </p>
             </div>
 
             {/* Step 3 */}
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div className="order-2 md:order-1">
-                <div className="inline-block px-3 py-1 bg-cream-dark rounded-full text-xs font-semibold text-text-secondary mb-4">
-                  STEP 3
-                </div>
-                <h3 className="text-4xl font-light mb-4 text-text-primary">
-                  Sell.
-                </h3>
-                <p className="text-lg text-text-secondary mb-6">
-                  Your AI handles inquiries 24/7. You take over when needed. Watch sales grow while you sleep.
-                </p>
-                <div className="flex items-center gap-2 text-sm text-text-tertiary">
-                  <MdFlashOn className="text-success" />
-                  <span>Average response time: <strong>0.8 seconds</strong></span>
-                </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-beeline rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-glow">
+                <span className="text-2xl font-bold text-white">3</span>
               </div>
-              <div className="order-1 md:order-2">
-                <div className="bg-gradient-beeline rounded-3xl p-12 border border-beeline-orange/20 shadow-glow flex items-center justify-center">
-                  <FaWhatsapp className="w-48 h-48 text-white" />
-                </div>
-              </div>
+              <h3 className="text-2xl font-semibold text-text-primary mb-4">Sell</h3>
+              <p className="text-text-secondary leading-relaxed">
+                Your AI handles sales and customer service. You take over anytime.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Social Proof - Real Story (Jobs always used real testimonials) */}
+      {/* Social Proof - Real Story (Jobs used real testimonials) */}
       <section className="py-20 px-6 bg-gradient-cream">
         <div className="max-w-4xl mx-auto">
           <div className="bg-surface rounded-3xl p-12 border border-cream-border shadow-large">
@@ -273,7 +189,7 @@ export default function HomePage() {
               </div>
               <div className="flex-1 text-center md:text-left">
                 <p className="text-2xl font-light text-text-primary mb-6 leading-relaxed">
-                  "Last month, Beeline handled <strong className="font-semibold">412 conversations</strong> while I was sleeping, spending time with family, or running my business. It's like hiring the world's best employee for ₵49."
+                  "Last month, Beeline handled <strong className="font-semibold">412 conversations</strong> while I was sleeping, with family, or running my business. It's like hiring the world's best employee for ₵49."
                 </p>
                 <div>
                   <p className="font-semibold text-text-primary">Sarah Mensah</p>
@@ -285,19 +201,19 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pricing - Jobs Style: Simple, Two Options */}
+      {/* Pricing - Jobs Style: Three Clear Choices */}
       <section id="pricing" className="py-32 px-6 bg-cream">
-        <div className="max-w-5xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-5xl sm:text-6xl font-light tracking-tight mb-6 text-text-primary">
-            Two plans.
+            Three plans.
             <br />
-            <span className="text-text-secondary">One choice.</span>
+            <span className="text-text-secondary">Pick yours.</span>
           </h2>
           <p className="text-xl text-text-secondary mb-16 max-w-2xl mx-auto">
             Less than hiring someone for a single day. Cancel anytime.
           </p>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {/* Personal */}
             <div className="bg-surface rounded-3xl p-10 border border-cream-border shadow-soft hover:shadow-medium transition-all">
               <div className="mb-8">
@@ -326,7 +242,7 @@ export default function HomePage() {
                 href="/signup?plan=personal"
                 className="block w-full px-6 py-3 bg-cream-dark text-text-primary font-semibold rounded-full hover:bg-text-primary hover:text-white transition-all border border-cream-border"
               >
-                Start free trial
+                Start free
               </Link>
             </div>
 
@@ -346,7 +262,6 @@ export default function HomePage() {
               <ul className="space-y-4 mb-8 text-left">
                 {[
                   "Everything in Personal",
-                  "Voice note training",
                   "Product catalog",
                   "Advanced analytics",
                   "Priority support",
@@ -362,38 +277,72 @@ export default function HomePage() {
                 href="/signup?plan=business"
                 className="block w-full px-6 py-3 bg-white text-beeline-orange font-semibold rounded-full hover:bg-cream transition-all shadow-medium"
               >
-                Start free trial
+                Start free
+              </Link>
+            </div>
+
+            {/* Enterprise */}
+            <div className="bg-surface rounded-3xl p-10 border-2 border-beeline-yellow/30 shadow-soft hover:shadow-medium transition-all">
+              <div className="mb-8">
+                <h3 className="text-2xl font-semibold text-text-primary mb-2">Enterprise</h3>
+                <p className="text-text-secondary text-sm mb-6">For chains & teams</p>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-5xl font-bold text-text-primary">₵599</span>
+                  <span className="text-text-secondary">/month</span>
+                </div>
+                <p className="text-xs text-text-tertiary mt-2">5-60 locations</p>
+              </div>
+              <ul className="space-y-4 mb-8 text-left">
+                {[
+                  "Everything in Business",
+                  "Multi-location dashboard",
+                  "Knowledge base (upload docs)",
+                  "Team management",
+                  "Volume discounts (up to 50%)",
+                  "Dedicated account manager"
+                ].map((feature, i) => (
+                  <li key={i} className="flex items-center gap-3 text-text-secondary">
+                    <FaCheckCircle className="text-success w-5 h-5 flex-shrink-0" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/signup?plan=enterprise"
+                className="block w-full px-6 py-3 bg-cream-dark text-text-primary font-semibold rounded-full hover:bg-text-primary hover:text-white transition-all border border-cream-border"
+              >
+                Contact sales
               </Link>
             </div>
           </div>
 
           <p className="text-sm text-text-tertiary mt-12">
-            7-day free trial. No credit card required. Cancel anytime.
+            First 10 conversations free. No credit card required. Cancel anytime.
           </p>
         </div>
       </section>
 
-      {/* Final CTA - The "One More Thing" Moment */}
+      {/* "One More Thing" - Jobs' signature move */}
       <section className="py-32 px-6 bg-text-primary text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-beeline opacity-10"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <p className="text-sm font-semibold tracking-wider mb-4 text-white/60">ONE MORE THING</p>
           <h2 className="text-5xl sm:text-6xl font-light tracking-tight mb-6">
-            It sounds like you.
+            It learns your business.
           </h2>
           <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto">
-            Train your AI with a 15-second voice note. It learns your style, your tone, your personality. Customers won't know the difference.
+            Upload your menu, pricing, FAQs, policies—anything. Your AI becomes an expert on YOUR business. Perfect for customer service at scale.
           </p>
           <Link
             href="/signup"
             className="inline-block px-10 py-5 bg-white text-text-primary text-lg font-semibold rounded-full hover:scale-105 transition-all shadow-large"
           >
-            Try it free for 7 days →
+            Try 10 conversations free →
           </Link>
         </div>
       </section>
 
-      {/* Footer - Minimal, Clean */}
+      {/* Footer */}
       <footer className="bg-cream-dark border-t border-cream-border py-12 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
@@ -426,7 +375,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="pt-8 border-t border-cream-border text-center text-sm text-text-tertiary">
-            <p>© 2025 Beeline. Built in Ghana. 🇬🇭</p>
+            <p>© 2025 Beeline. Made in Ghana with 🐝</p>
           </div>
         </div>
       </footer>
