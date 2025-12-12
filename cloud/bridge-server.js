@@ -30,6 +30,14 @@ import Redis from 'ioredis';
 import pkg from 'pg';
 const { Pool } = pkg;
 
+// PROJECT OS - Phase 2: Bridge Discovery Service
+import {
+  initBridgeRegistry,
+  registerBridge,
+  heartbeat as sendHeartbeat,
+  deregisterBridge
+} from '../shared/bridge-registry.js';
+
 // PROJECT OS - Phase 3: Oxylabs Proxy Integration
 // Purpose: Route all outbound HTTP requests through residential proxies to bypass WhatsApp IP blocking
 // Cost: $8/GB, auto-fallback if proxy fails, Ghana IP targeting for authenticity
@@ -1158,11 +1166,47 @@ app.post('/vendor/pause-ai', async (req, res) => {
 // SERVER STARTUP
 // ============================================================================
 
+// PROJECT OS - Phase 2: Bridge ID and metadata
+const BRIDGE_ID = process.env.BRIDGE_ID || 'cloud-bridge-primary';
+const BRIDGE_URL = process.env.BRIDGE_URL || process.env.RENDER_EXTERNAL_URL || `http://localhost:${config.port}`;
+const BRIDGE_LOCATION = process.env.BRIDGE_LOCATION || 'cloud';
+
 async function start() {
   try {
     // Test database connection
     await db.query('SELECT NOW()');
     logger.info('✅ PostgreSQL connected');
+
+    // PROJECT OS - Phase 2: Initialize bridge registry
+    if (config.redisUrl) {
+      try {
+        await initBridgeRegistry(config.redisUrl);
+        logger.info('✅ Bridge registry initialized');
+
+        // Register this bridge
+        await registerBridge({
+          id: BRIDGE_ID,
+          type: 'cloud',
+          url: BRIDGE_URL,
+          location: BRIDGE_LOCATION,
+          capacity: config.maxVendors,
+          currentLoad: vendorSockets.size
+        });
+
+        // Start heartbeat interval (every 30 seconds)
+        setInterval(async () => {
+          await sendHeartbeat(BRIDGE_ID, {
+            currentLoad: vendorSockets.size,
+            status: 'healthy',
+            uptime: process.uptime()
+          });
+        }, 30000);
+
+        logger.info(`✅ Bridge registered: ${BRIDGE_ID} at ${BRIDGE_URL}`);
+      } catch (error) {
+        logger.warn({ error }, 'Bridge registry unavailable - running without discovery');
+      }
+    }
 
     // Connect all vendors from database
     // DISABLED: Prevents auto-reconnect loop for old test sessions
@@ -1175,7 +1219,9 @@ async function start() {
       logger.info({
         maxVendors: config.maxVendors,
         environment: config.environment,
-        n8nUrl: config.n8nWebhookUrl
+        n8nUrl: config.n8nWebhookUrl,
+        bridgeId: BRIDGE_ID,
+        bridgeUrl: BRIDGE_URL
       }, 'Configuration loaded');
     });
 
@@ -1188,6 +1234,14 @@ async function start() {
 // Graceful shutdown
 process.on('SIGTERM', async () => {
   logger.info('SIGTERM received, shutting down gracefully...');
+
+  // PROJECT OS - Phase 2: Deregister from bridge registry
+  try {
+    await deregisterBridge(BRIDGE_ID);
+    logger.info({ bridgeId: BRIDGE_ID }, 'Bridge deregistered from registry');
+  } catch (error) {
+    logger.warn({ error }, 'Failed to deregister bridge');
+  }
 
   // Disconnect all vendors
   for (const [vendorId, sock] of vendorSockets.entries()) {

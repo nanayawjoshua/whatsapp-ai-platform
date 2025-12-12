@@ -1,20 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { discoverBridge } from '@/lib/bridge-discovery';
 
 export const dynamic = 'force-dynamic';
 
 /**
  * POST /api/auth/initiate-whatsapp
- * 
+ *
  * Initiates WhatsApp connection for phone-based signup.
- * Calls the cloud bridge service to generate a QR code.
- * 
+ * Uses bridge discovery to find available bridges (Pi/Phone/Cloud)
+ * Falls back to CLOUD_BRIDGE_URL if registry unavailable.
+ *
  * Ensures bridge is awake before making request (handles Render sleep)
- * 
+ *
  * Request body:
  * {
  *   phone: string (e.g., "+233501234567" or "0501234567")
  * }
- * 
+ *
  * Response:
  * {
  *   qrCode: string (Google Charts URL or base64 data URI),
@@ -75,31 +77,26 @@ export async function POST(request: NextRequest) {
     }
 
     // Use provided vendor ID or generate new one
-    const vendorId = providedVendorId || `vendor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const vendorId = providedVendorId || `vendor_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
-    // Get cloud bridge URL from environment
-    // CRITICAL: This must be set in production
-    let bridgeUrl = process.env.CLOUD_BRIDGE_URL;
-    
+    // PROJECT OS - Phase 2: Use bridge discovery to find available bridge
+    // This automatically discovers Pi/Phone/Cloud bridges via Redis registry
+    // Falls back to CLOUD_BRIDGE_URL env var if discovery unavailable
+    console.log('🔍 Discovering available bridge...');
+    const bridgeUrl = await discoverBridge();
+
     if (!bridgeUrl) {
-      // In development, use localhost; in production, this will fail fast
-      if (process.env.NODE_ENV === 'development') {
-        bridgeUrl = 'http://localhost:3000';
-        console.log('📍 Using development bridge URL');
-      } else {
-        console.error('🚨 CRITICAL: CLOUD_BRIDGE_URL environment variable not set in production!');
-        return NextResponse.json(
-          { error: 'Bridge service not configured. Contact support and set CLOUD_BRIDGE_URL env var.' },
-          { status: 503 }
-        );
-      }
+      console.error('❌ No bridges available');
+      return NextResponse.json(
+        { error: 'No WhatsApp bridges available. Please try again later.' },
+        { status: 503 }
+      );
     }
 
-    console.log('🔗 Bridge configuration:', {
+    console.log('🔗 Bridge selected:', {
       bridgeUrl,
-      hasEnv: !!process.env.CLOUD_BRIDGE_URL,
-      nodeEnv: process.env.NODE_ENV,
-      vendorId
+      vendorId,
+      discoveryUsed: !bridgeUrl.includes('localhost')
     });
 
     console.log('📤 Calling bridge service...');
