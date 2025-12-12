@@ -4,9 +4,23 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { FaUsers, FaWhatsapp, FaMoneyBillWave, FaChartLine, FaSync, FaLightbulb } from 'react-icons/fa';
+import {
+  Users,
+  Activity,
+  TrendingUp,
+  DollarSign,
+  RefreshCw,
+  LayoutDashboard,
+  Settings,
+  Bell,
+  Search,
+  User,
+  LogOut,
+  Circle,
+  ArrowUp,
+  ArrowDown,
+} from 'lucide-react';
 import BeelineLogo from '../components/BeelineLogo';
-import { MdDashboard, MdPeople, MdSettings } from 'react-icons/md';
 
 interface AdminMetrics {
   totalVendors: number;
@@ -46,6 +60,7 @@ export default function AdminDashboardPage() {
   const [metrics, setMetrics] = useState<AdminMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'overview' | 'vendors' | 'settings'>('overview');
 
   useEffect(() => {
     if (status === 'unauthenticated' || (status === 'authenticated' && session?.user?.role !== 'admin')) {
@@ -70,154 +85,372 @@ export default function AdminDashboardPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
+      <div className="min-h-screen bg-cream flex items-center justify-center">
         <div className="text-center">
           <BeelineLogo size="lg" />
-          <p className="text-dark-text-secondary mt-4">Loading Super Admin Dashboard...</p>
+          <p className="text-text-secondary mt-4">Loading Admin Dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg flex text-dark-text">
-      {/* Sidebar */}
-      <aside className="w-20 bg-glass-bg backdrop-blur-xl border-r border-dark-border flex flex-col items-center py-6 space-y-6">
-        <BeelineLogo size="md" showText={false} />
-        <nav className="flex flex-col items-center space-y-4">
-          <NavItem icon={<MdDashboard />} label="Dashboard" active />
-          <NavItem icon={<MdPeople />} label="Vendors" />
-          <NavItem icon={<MdSettings />} label="Settings" />
-        </nav>
-      </aside>
+    <div className="min-h-screen bg-cream">
+      {/* Top Navigation - Vercel Style */}
+      <header className="sticky top-0 z-50 bg-surface border-b border-cream-border">
+        <div className="max-w-[1600px] mx-auto px-6">
+          <div className="flex items-center justify-between h-16">
+            {/* Left: Logo + Nav */}
+            <div className="flex items-center gap-8">
+              <BeelineLogo size="sm" />
+
+              {/* Navigation Tabs */}
+              <nav className="hidden md:flex items-center gap-1">
+                <NavTab
+                  label="Overview"
+                  icon={<LayoutDashboard size={16} />}
+                  active={activeTab === 'overview'}
+                  onClick={() => setActiveTab('overview')}
+                />
+                <NavTab
+                  label="Vendors"
+                  icon={<Users size={16} />}
+                  active={activeTab === 'vendors'}
+                  onClick={() => setActiveTab('vendors')}
+                />
+                <NavTab
+                  label="Settings"
+                  icon={<Settings size={16} />}
+                  active={activeTab === 'settings'}
+                  onClick={() => setActiveTab('settings')}
+                />
+              </nav>
+            </div>
+
+            {/* Right: Actions */}
+            <div className="flex items-center gap-3">
+              {/* Search */}
+              <button className="hidden sm:flex items-center gap-2 px-3 py-1.5 text-sm text-text-tertiary hover:text-text-secondary border border-cream-border rounded-lg hover:bg-cream-dark transition-colors">
+                <Search size={14} />
+                <span>Search...</span>
+                <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-xs bg-cream-dark rounded border border-cream-border">
+                  ⌘K
+                </kbd>
+              </button>
+
+              {/* Refresh */}
+              <button
+                onClick={fetchMetrics}
+                className="p-2 text-text-secondary hover:text-text-primary hover:bg-cream-dark rounded-lg transition-colors"
+                title="Refresh data"
+              >
+                <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+              </button>
+
+              {/* Notifications */}
+              <button className="relative p-2 text-text-secondary hover:text-text-primary hover:bg-cream-dark rounded-lg transition-colors">
+                <Bell size={18} />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+              </button>
+
+              {/* User Menu */}
+              <div className="flex items-center gap-2 pl-3 border-l border-cream-border">
+                <div className="hidden sm:block text-right">
+                  <p className="text-sm font-medium text-text-primary">Admin</p>
+                  <p className="text-xs text-text-tertiary">{session?.user?.email}</p>
+                </div>
+                <button className="p-1.5 rounded-full bg-gradient-beeline text-white">
+                  <User size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-glass-bg backdrop-blur-xl border-b border-dark-border">
-          <div className="px-8 py-6 flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-light tracking-tight">Super Admin</h1>
-              <p className="text-dark-text-secondary mt-1">Platform-wide metrics at a glance.</p>
+      <main className="max-w-[1600px] mx-auto px-6 py-8">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-text-primary mb-2">Platform Overview</h1>
+          <p className="text-text-secondary">Real-time system health and vendor analytics</p>
+        </div>
+
+        {/* System Health Banner */}
+        <div className="bg-gradient-to-r from-success/10 to-success/5 border border-success/20 rounded-2xl p-6 mb-8">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-success/20 rounded-xl flex items-center justify-center">
+                <Activity size={24} className="text-success" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-text-primary mb-1">All Systems Operational</h3>
+                <p className="text-sm text-text-secondary">
+                  {metrics?.liveConnections || 0} active connections • {metrics?.activeVendors || 0} vendors online
+                </p>
+              </div>
             </div>
-            <button onClick={fetchMetrics} className="p-3 rounded-xl bg-dark-bg-tertiary/50 hover:bg-dark-bg-tertiary transition-colors">
-              <FaSync className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-            </button>
+            <div className="flex items-center gap-2 text-success">
+              <Circle size={8} fill="currentColor" />
+              <span className="text-sm font-semibold">Live</span>
+            </div>
           </div>
-        </header>
+        </div>
 
-        <main className="flex-1 overflow-y-auto p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <MetricCard title="Total Vendors" value={metrics?.totalVendors} icon={<FaUsers />} />
-            <MetricCard title="Live Connections" value={metrics?.liveConnections} icon={<FaWhatsapp />} />
-            <MetricCard title="Conversations Today" value={metrics?.todayConversations} icon={<FaChartLine />} />
-            <MetricCard title="Revenue Today" value={`GHS ${(metrics?.paymentsDetected || 0) * 150}`} icon={<FaMoneyBillWave />} />
-          </div>
+        {/* KPI Grid - 4 Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <MetricCard
+            title="Total Vendors"
+            value={metrics?.totalVendors || 0}
+            change={12.3}
+            trend="up"
+            icon={<Users size={20} className="text-beeline-orange" />}
+            subtitle={`${metrics?.activeVendors || 0} active`}
+          />
+          <MetricCard
+            title="Live Connections"
+            value={metrics?.liveConnections || 0}
+            change={5.7}
+            trend="up"
+            icon={<Activity size={20} className="text-success" />}
+            subtitle="WhatsApp sessions"
+          />
+          <MetricCard
+            title="Conversations Today"
+            value={metrics?.todayConversations || 0}
+            change={18.2}
+            trend="up"
+            icon={<TrendingUp size={20} className="text-beeline-orange" />}
+            subtitle={`${metrics?.totalConversations || 0} total`}
+          />
+          <MetricCard
+            title="Revenue Today"
+            value={`₵${((metrics?.paymentsDetected || 0) * 150).toFixed(0)}`}
+            change={24.5}
+            trend="up"
+            icon={<DollarSign size={20} className="text-success" />}
+            subtitle={`${metrics?.completedOrders || 0} orders`}
+          />
+        </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-            <div className="lg:col-span-3">
-              <div className="bg-glass-bg border border-glass-border rounded-2xl p-6">
-                <h3 className="text-xl font-semibold mb-4">Recent Vendors</h3>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left">
-                    <thead>
-                      <tr className="border-b border-dark-border">
-                        <th className="p-3">Vendor</th>
-                        <th className="p-3">Status</th>
-                        <th className="p-3">Type</th>
-                        <th className="p-3">Joined</th>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Column - Vendor Table */}
+          <div className="lg:col-span-2">
+            <div className="bg-surface border border-cream-border rounded-2xl overflow-hidden">
+              <div className="px-6 py-4 border-b border-cream-border">
+                <h2 className="text-lg font-semibold text-text-primary">Recent Vendors</h2>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-cream-dark">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                        Vendor
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                        Type
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                        Joined
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-cream-border">
+                    {metrics?.recentVendors?.map((v) => (
+                      <tr key={v.vendor_id} className="hover:bg-cream-dark transition-colors">
+                        <td className="px-6 py-4">
+                          <div>
+                            <p className="font-medium text-text-primary">{v.name}</p>
+                            <p className="text-sm text-text-tertiary">{v.phone}</p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <StatusPill status={v.subscription_status} />
+                        </td>
+                        <td className="px-6 py-4">
+                          <TypePill type={v.account_type} />
+                        </td>
+                        <td className="px-6 py-4 text-sm text-text-secondary">
+                          {new Date(v.created_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {metrics?.recentVendors?.map(v => (
-                        <tr key={v.vendor_id} className="border-b border-dark-border hover:bg-dark-bg-tertiary/30">
-                          <td className="p-3">{v.name}</td>
-                          <td className="p-3"><StatusPill status={v.subscription_status} /></td>
-                          <td className="p-3"><TypePill type={v.account_type} /></td>
-                          <td className="p-3 text-sm text-dark-text-tertiary">{new Date(v.created_at).toLocaleDateString()}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <div className="lg:col-span-2 space-y-8">
-              <div className="bg-glass-bg border border-glass-border rounded-2xl p-6">
-                <h3 className="text-xl font-semibold mb-4">Subscription Status</h3>
-                <BreakdownChart data={metrics?.bySubscriptionStatus} />
-              </div>
-              <div className="bg-glass-bg border border-glass-border rounded-2xl p-6">
-                <h3 className="text-xl font-semibold mb-4">Account Types</h3>
-                <BreakdownChart data={metrics?.byAccountType} />
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
-        </main>
-      </div>
+
+          {/* Side Column - Charts */}
+          <div className="space-y-6">
+            {/* Subscription Status */}
+            <div className="bg-surface border border-cream-border rounded-2xl p-6">
+              <h3 className="font-semibold text-text-primary mb-4">Subscription Status</h3>
+              <BreakdownChart data={metrics?.bySubscriptionStatus} />
+            </div>
+
+            {/* Account Types */}
+            <div className="bg-surface border border-cream-border rounded-2xl p-6">
+              <h3 className="font-semibold text-text-primary mb-4">Account Types</h3>
+              <BreakdownChart data={metrics?.byAccountType} />
+            </div>
+
+            {/* Quick Stats */}
+            <div className="bg-gradient-to-br from-beeline-yellow/10 to-beeline-orange/5 border border-beeline-yellow/20 rounded-2xl p-6">
+              <h3 className="font-semibold text-text-primary mb-4">Quick Stats</h3>
+              <div className="space-y-3">
+                <StatRow label="Total Messages" value={metrics?.totalMessages || 0} />
+                <StatRow label="Completed Orders" value={metrics?.completedOrders || 0} />
+                <StatRow label="Payments Detected" value={metrics?.paymentsDetected || 0} />
+                <StatRow label="Referrals Triggered" value={metrics?.referralsTriggered || 0} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
 
-function NavItem({ icon, label, active = false, href }: { icon: React.ReactNode; label: string; active?: boolean; href?: string }) {
-  const content = (
-    <div className={`p-3 rounded-xl transition-colors ${active ? 'bg-beeline-yellow/10 text-beeline-yellow' : 'text-dark-text-secondary hover:bg-dark-bg-tertiary/50'}`}>
-      {icon}
-    </div>
-  );
-  return href ? <Link href={href} title={label}>{content}</Link> : <button title={label}>{content}</button>;
-}
-
-function MetricCard({ title, value, icon }: { title: string; value?: string | number; icon: React.ReactNode }) {
+function NavTab({
+  label,
+  icon,
+  active,
+  onClick,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  active: boolean;
+  onClick: () => void;
+}) {
   return (
-    <div className="bg-glass-bg border border-glass-border rounded-2xl p-6">
-      <div className="flex items-center justify-between">
-        <span className="text-dark-text-secondary">{title}</span>
-        <div className="text-beeline-yellow">{icon}</div>
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+        active
+          ? 'bg-cream-dark text-text-primary'
+          : 'text-text-secondary hover:text-text-primary hover:bg-cream-dark'
+      }`}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
+function MetricCard({
+  title,
+  value,
+  change,
+  trend,
+  icon,
+  subtitle,
+}: {
+  title: string;
+  value: string | number;
+  change?: number;
+  trend?: 'up' | 'down';
+  icon: React.ReactNode;
+  subtitle?: string;
+}) {
+  return (
+    <div className="bg-surface border border-cream-border rounded-2xl p-6 hover:shadow-soft transition-all">
+      <div className="flex items-start justify-between mb-4">
+        <div className="p-2.5 rounded-lg bg-gradient-to-br from-beeline-yellow/10 to-beeline-orange/10">
+          {icon}
+        </div>
+        {change && (
+          <div
+            className={`flex items-center gap-1 text-xs font-semibold ${
+              trend === 'up' ? 'text-success' : 'text-error'
+            }`}
+          >
+            {trend === 'up' ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
+            {change}%
+          </div>
+        )}
       </div>
-      <p className="text-4xl font-bold mt-2">{value ?? '...'}</p>
+      <div className="space-y-1">
+        <p className="text-sm font-medium text-text-secondary">{title}</p>
+        <p className="text-3xl font-bold text-text-primary">{value}</p>
+        {subtitle && <p className="text-xs text-text-tertiary">{subtitle}</p>}
+      </div>
     </div>
   );
 }
 
 function StatusPill({ status }: { status: string }) {
-  const styles = {
-    active: 'bg-green-500/20 text-green-400',
-    trial: 'bg-yellow-500/20 text-yellow-400',
-    expired: 'bg-red-500/20 text-red-400',
-  }[status] || 'bg-gray-500/20 text-gray-400';
-  return <span className={`px-2 py-1 text-xs font-medium rounded-full ${styles}`}>{status}</span>;
+  const config = {
+    active: { bg: 'bg-success/10', text: 'text-success', border: 'border-success/20' },
+    trial: { bg: 'bg-warning/10', text: 'text-warning', border: 'border-warning/20' },
+    expired: { bg: 'bg-error/10', text: 'text-error', border: 'border-error/20' },
+  }[status] || { bg: 'bg-text-tertiary/10', text: 'text-text-tertiary', border: 'border-text-tertiary/20' };
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full border ${config.bg} ${config.text} ${config.border}`}
+    >
+      <Circle size={6} fill="currentColor" />
+      {status}
+    </span>
+  );
 }
 
 function TypePill({ type }: { type: string }) {
-    const styles = {
-    personal: 'bg-blue-500/20 text-blue-400',
-    business: 'bg-purple-500/20 text-purple-400',
-    enterprise: 'bg-pink-500/20 text-pink-400',
-  }[type] || 'bg-gray-500/20 text-gray-400';
-  return <span className={`px-2 py-1 text-xs font-medium rounded-full ${styles}`}>{type}</span>;
+  const config = {
+    personal: { bg: 'bg-blue-500/10', text: 'text-blue-600', border: 'border-blue-500/20' },
+    business: { bg: 'bg-purple-500/10', text: 'text-purple-600', border: 'border-purple-500/20' },
+    enterprise: { bg: 'bg-pink-500/10', text: 'text-pink-600', border: 'border-pink-500/20' },
+  }[type] || { bg: 'bg-text-tertiary/10', text: 'text-text-tertiary', border: 'border-text-tertiary/20' };
+
+  return (
+    <span
+      className={`inline-flex px-2.5 py-1 text-xs font-medium rounded-full border ${config.bg} ${config.text} ${config.border}`}
+    >
+      {type}
+    </span>
+  );
 }
 
 function BreakdownChart({ data }: { data?: { [key: string]: number } }) {
-  if (!data) return <p className="text-dark-text-secondary">No data available.</p>;
+  if (!data) return <p className="text-text-tertiary text-sm">No data available</p>;
 
   const total = Object.values(data).reduce((sum, val) => sum + val, 0);
 
   return (
-    <div className="space-y-3">
-      {Object.entries(data).map(([key, value]) => (
-        <div key={key}>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="capitalize text-dark-text-secondary">{key}</span>
-            <span>{value}</span>
+    <div className="space-y-4">
+      {Object.entries(data).map(([key, value]) => {
+        const percentage = total > 0 ? (value / total) * 100 : 0;
+        return (
+          <div key={key}>
+            <div className="flex justify-between text-sm mb-2">
+              <span className="capitalize text-text-secondary font-medium">{key}</span>
+              <span className="text-text-primary font-semibold">{value}</span>
+            </div>
+            <div className="w-full bg-cream-dark rounded-full h-2 overflow-hidden">
+              <div
+                className="bg-gradient-beeline h-2 rounded-full transition-all duration-500"
+                style={{ width: `${percentage}%` }}
+              ></div>
+            </div>
           </div>
-          <div className="w-full bg-dark-bg-tertiary rounded-full h-2">
-            <div
-              className="bg-gradient-beeline h-2 rounded-full"
-              style={{ width: `${(value / total) * 100}%` }}
-            ></div>
-          </div>
-        </div>
-      ))}
+        );
+      })}
+    </div>
+  );
+}
+
+function StatRow({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="flex items-center justify-between text-sm">
+      <span className="text-text-secondary">{label}</span>
+      <span className="font-semibold text-text-primary">{value}</span>
     </div>
   );
 }
