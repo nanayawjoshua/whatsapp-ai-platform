@@ -22,6 +22,7 @@ import { Boom } from '@hapi/boom';
 import pino from 'pino';
 import { createClient } from '@supabase/supabase-js';
 import Groq from 'groq-sdk';
+import qrcode from 'qrcode-terminal';
 
 dotenv.config();
 
@@ -58,7 +59,7 @@ const groq = new Groq({ apiKey: config.groqApiKey });
 // BAILEYS SETUP (Simplified)
 // ============================================================================
 
-import { default as makeWASocket, useMultiFileAuthState } from '@whiskeysockets/baileys';
+import { default as makeWASocket, useMultiFileAuthState, fetchLatestBaileysVersion, DisconnectReason } from '@whiskeysockets/baileys';
 
 let socket = null;
 let qrCode = null;
@@ -69,10 +70,16 @@ async function connectWhatsApp() {
     logger.info('Connecting to WhatsApp...');
 
     const { state, saveCreds } = await useMultiFileAuthState('./phone_bridge/auth_info');
+    const { version } = await fetchLatestBaileysVersion();
 
     socket = makeWASocket({
+      version,
       auth: state,
-      printQRInTerminal: true, // Show QR in terminal if needed
+      logger: pino({ level: 'silent' }),
+      browser: ['Beeline', 'Chrome', '120.0.0'],
+      connectTimeoutMs: 60000,
+      defaultQueryTimeoutMs: 60000,
+      keepAliveIntervalMs: 30000,
       downloadHistory: false,
       syncFullHistory: false,
       markOnlineOnConnect: false
@@ -87,6 +94,9 @@ async function connectWhatsApp() {
 
       if (qr) {
         qrCode = qr;
+        console.log('\n📱 === QR CODE FOR VENDOR REGISTRATION ===\n');
+        qrcode.generate(qr, { small: true });
+        console.log('\n✅ Scan this QR code with WhatsApp to connect\n');
         logger.info('QR code generated (scan with another WhatsApp)');
       }
 
@@ -98,10 +108,13 @@ async function connectWhatsApp() {
 
       if (connection === 'close') {
         connectionState = 'closed';
-        const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== 401;
+        const statusCode = lastDisconnect?.error?.output?.statusCode;
+        const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
+
         if (shouldReconnect) {
-          logger.warn('Connection closed, reconnecting...');
-          connectWhatsApp();
+          const reconnectDelay = 5000; // 5 second delay to avoid throttling
+          logger.warn(`Connection closed (status: ${statusCode}), reconnecting in ${reconnectDelay}ms...`);
+          setTimeout(() => connectWhatsApp(), reconnectDelay);
         } else {
           logger.error('Connection closed with auth error, please reconnect');
         }
