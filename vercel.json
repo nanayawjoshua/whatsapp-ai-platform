@@ -2,11 +2,29 @@
   "buildCommand": "cd whatsapp-ai-platform-beeline-main/website && npm install --legacy-peer-deps && npm run build",
   "outputDirectory": "whatsapp-ai-platform-beeline-main/website/.next",
   "public": "whatsapp-ai-platform-beeline-main/website/public",
-  "env": {
-    "NEXT_PUBLIC_SUPABASE_URL": "@next_public_supabase_url",
-    "NEXT_PUBLIC_SUPABASE_KEY": "@next_public_supabase_key",
-    "SUPABASE_SERVICE_KEY": "@supabase_service_key",
-    "PHONE_BRIDGE_URL": "@phone_bridge_url",
-    "NODE_ENV": "production"
-  }
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Credentials",
+          "value": "true"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+        }
+      ]
+    }
+  ]
 }
