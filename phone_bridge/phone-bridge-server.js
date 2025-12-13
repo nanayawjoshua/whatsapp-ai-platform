@@ -63,6 +63,7 @@ import { BaileysEventEmitter } from '@whiskeysockets/baileys';
 
 let socket = null;
 let qrCode = null;
+let connectionState = 'closed';
 
 async function connectWhatsApp() {
   try {
@@ -92,10 +93,12 @@ async function connectWhatsApp() {
 
       if (connection === 'open') {
         logger.info('✅ WhatsApp connected successfully');
+        connectionState = 'open';
         qrCode = null;
       }
 
       if (connection === 'close') {
+        connectionState = 'closed';
         const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== 401;
         if (shouldReconnect) {
           logger.warn('Connection closed, reconnecting...');
@@ -131,6 +134,7 @@ async function connectWhatsApp() {
 async function routeMessage(message) {
   try {
     const vendorPhone = message.key.remoteJid;
+    const senderPhone = message.key.remoteJid.split('@')[0];
     const messageText = message.message.conversation || message.message.extendedTextMessage?.text || '';
 
     if (!messageText.trim()) return;
@@ -150,19 +154,41 @@ async function routeMessage(message) {
     // Classify message with Grok
     const classification = await classifyWithGrok(messageText);
 
+    // Generate conversation ID (vendor:sender)
+    const conversationId = `${vendor.id}:${senderPhone}`;
+
     // Store message in Supabase
-    await supabase.from('messages').insert({
+    const { data: savedMessage, error: insertError } = await supabase.from('messages').insert({
       vendor_id: vendor.id,
+      conversation_id: conversationId,
+      sender_phone: senderPhone,
       message_text: messageText,
       message_type: classification.type,
       metadata: classification
-    });
+    }).select();
 
-    // Route based on type
-    if (classification.type === 'product_upload') {
-      await handleProductUpload(vendor, classification);
-    } else if (classification.type === 'buyer_inquiry') {
-      await handleBuyerInquiry(vendor, classification);
+    if (insertError) {
+      logger.error(insertError, 'Failed to save message');
+      return;
+    }
+
+    // Send responses
+    try {
+      if (classification.type === 'product_upload') {
+        await sendWhatsAppMessage(
+          vendorPhone,
+          '✅ Product received! Thank you for listing with Beeline.'
+        );
+        await handleProductUpload(vendor, classification);
+      } else if (classification.type === 'buyer_inquiry') {
+        await sendWhatsAppMessage(
+          vendorPhone,
+          '📩 New buyer inquiry received! Check your dashboard for details.'
+        );
+        await handleBuyerInquiry(vendor, classification);
+      }
+    } catch (sendError) {
+      logger.warn(sendError, 'Failed to send response');
     }
   } catch (error) {
     logger.error(error, 'Error routing message');
@@ -198,6 +224,23 @@ Respond with JSON:
   }
 }
 
+async function sendWhatsAppMessage(phone, text) {
+  try {
+    if (!socket) {
+      throw new Error('WhatsApp not connected');
+    }
+
+    // Format phone as JID (e.g., 233501234567@s.whatsapp.net)
+    const jid = phone.replace(/\D/g, '') + '@s.whatsapp.net';
+
+    await socket.sendMessage(jid, { text });
+    logger.info(`✅ Sent message to ${phone}`);
+  } catch (error) {
+    logger.error(error, `Failed to send message to ${phone}`);
+    throw error;
+  }
+}
+
 async function handleProductUpload(vendor, classification) {
   // Store product in Supabase
   // Later: Extract image from WhatsApp and store in Supabase Storage
@@ -226,13 +269,20 @@ app.post('/api/generate-qr', async (req, res) => {
 
     const { vendorId, vendorData } = req.body;
 
+    // If we have a cached QR code from initial connection, use it
+    // Otherwise, return error asking vendor to wait
     if (!qrCode) {
-      return res.status(503).json({ error: 'No QR code available' });
+      return res.status(503).json({
+        error: 'QR code not yet available. Please wait for WhatsApp connection.',
+        status: connectionState
+      });
     }
 
     // Generate QR code image using qrcode library
     const QRCode = (await import('qrcode')).default;
     const qrImage = await QRCode.toDataURL(qrCode);
+
+    logger.info(`📱 Generated QR for vendor ${vendorId}`);
 
     res.json({
       qrCode: qrImage,
@@ -245,6 +295,28 @@ app.post('/api/generate-qr', async (req, res) => {
   }
 });
 
+// Send message endpoint (for website/dashboard to trigger messages)
+app.post('/api/send-message', async (req, res) => {
+  try {
+    const { phone, message } = req.body;
+
+    if (!phone || !message) {
+      return res.status(400).json({ error: 'phone and message are required' });
+    }
+
+    await sendWhatsAppMessage(phone, message);
+
+    res.json({
+      success: true,
+      message: 'Message sent successfully',
+      phone
+    });
+  } catch (error) {
+    logger.error(error, 'Send message failed');
+    res.status(500).json({ error: 'Failed to send message' });
+  }
+});
+
 // Health check
 app.get('/health', async (req, res) => {
   const isConnected = socket && socket.user;
@@ -253,6 +325,7 @@ app.get('/health', async (req, res) => {
     status: isConnected ? 'healthy' : 'unhealthy',
     phoneModel: config.phoneModel,
     whatsappConnected: isConnected ? true : false,
+    connectionState,
     uptime: process.uptime(),
     timestamp: new Date().toISOString()
   });
