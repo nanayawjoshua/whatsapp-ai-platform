@@ -253,6 +253,25 @@ CREATE UNIQUE INDEX idx_daily_analytics_date ON daily_analytics(date);
 -- Max file size: 10MB
 
 -- ============================================================================
+-- HELPER FUNCTIONS FOR RLS
+-- ============================================================================
+
+-- Function to check if current user is admin
+-- Uses Supabase's built-in is_super_admin flag from auth.users table
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS boolean
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT EXISTS (
+    SELECT 1
+    FROM auth.users u
+    WHERE u.id = auth.uid()
+    AND u.is_super_admin = true
+  );
+$$;
+
+-- ============================================================================
 -- ROW LEVEL SECURITY (RLS) POLICIES
 -- ============================================================================
 
