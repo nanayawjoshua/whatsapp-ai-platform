@@ -11,7 +11,7 @@ import { NextRequest, NextResponse } from 'next/server';
  */
 
 export async function GET(request: NextRequest) {
-  const bridgeUrl = process.env.CLOUD_BRIDGE_URL;
+  const bridgeUrl = process.env.PHONE_BRIDGE_URL;
 
   if (!bridgeUrl) {
     return NextResponse.json(

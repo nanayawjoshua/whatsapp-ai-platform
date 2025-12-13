@@ -22,16 +22,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get cloud bridge URL from environment
-    const cloudBridgeUrl = process.env.CLOUD_BRIDGE_URL || 'http://localhost:3000';
+    // BUZZ: Get phone bridge URL from environment
+    const phoneBridgeUrl = process.env.PHONE_BRIDGE_URL || 'http://localhost:3001';
 
-    console.log('Requesting QR code from cloud bridge:', {
+    console.log('BUZZ: Requesting QR code from phone bridge:', {
       vendorId,
-      cloudBridgeUrl,
+      phoneBridgeUrl,
     });
 
-    // Call cloud bridge to generate QR
-    const cloudResponse = await fetch(`${cloudBridgeUrl}/vendor/generate-qr`, {
+    // BUZZ: Call phone bridge to generate QR
+    const phoneResponse = await fetch(`${phoneBridgeUrl}/api/generate-qr`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       }),
     });
 
-    if (!cloudResponse.ok) {
+    if (!phoneResponse.ok) {
       const errorData = await cloudResponse.json();
       console.error('Cloud bridge error:', errorData);
       return NextResponse.json(
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const qrData = await cloudResponse.json();
+    const qrData = await phoneResponse.json();
 
     console.log('QR code generated successfully:', {
       vendorId,
