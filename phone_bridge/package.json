@@ -1,0 +1,38 @@
+{
+  "name": "beeline-phone-bridge",
+  "version": "2.0.0",
+  "description": "BUZZ: Simplified Beeline Phone Bridge - Single WhatsApp instance for vendor classifieds MVP",
+  "main": "phone-bridge-server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node phone-bridge-server.js",
+    "dev": "NODE_ENV=development node --watch phone-bridge-server.js",
+    "lint": "eslint .",
+    "test": "echo 'Tests added in Week 2' && exit 0"
+  },
+  "keywords": [
+    "whatsapp",
+    "baileys",
+    "classifieds",
+    "vendor",
+    "beeline"
+  ],
+  "author": "Joshua (Beeline Ghana)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0",
+    "@whiskeysockets/baileys": "^6.7.9",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "groq-sdk": "^0.3.0",
+    "pino": "^9.5.0",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "pino-pretty": "^13.0.0"
+  }
+}

@@ -59,7 +59,7 @@ Option B: Contact Jiji for partnership (safe)
 └─ Timeline: 1 week+
 
 DECISION NEEDED: Which approach?
-```
+```A
 
 **Recommendation:** Start with A (web scraping), keep it light (1-2 requests/sec). Can pivot to B later.
 
@@ -82,7 +82,7 @@ If NO:
 
 DECISION NEEDED: Current status of phone setup?
 ```
-
+YES
 **Recommendation:** Assume it's already set up from previous work.
 
 ---
@@ -101,7 +101,7 @@ same reach, ZERO commission for first 100 vendors 🎁
 ✅ AI handles customer service 24/7
 ✅ Link with delivery (Yango integration)
 
-Join: beeline.io/vendor
+Join: beeline.works/vendor
 First 100 vendors = ZERO commission forever
 After = 5% commission (vs Jiji's 0% but slower payments)
 
@@ -111,7 +111,7 @@ DECISION NEEDED:
 ├─ Keep this message?
 ├─ Want A/B testing (2 versions)?
 └─ Any changes needed?
-```
+``` keep this message
 
 **Recommendation:** Use this as is. Test with first 50 vendors, iterate based on response rates.
 
@@ -141,7 +141,7 @@ Option C: Full analytics (more useful)
 └─ Time: 1 week
 
 DECISION NEEDED: Which level for MVP?
-```
+``` Start with Option A. Add B features in Week 2 once you have real data.
 
 **Recommendation:** Start with Option A. Add B features in Week 2 once you have real data.
 
@@ -171,7 +171,7 @@ Option C: Both (hybrid)
 └─ Time: 5 days
 
 DECISION NEEDED: Which approach?
-```
+```Start with A (WhatsApp). Users prefer it. Add B in Week 3
 
 **Recommendation:** Start with A (WhatsApp). Users prefer it. Add B in Week 3.
 
@@ -191,7 +191,7 @@ Option B: Simple "pending" status for now
 └─ Can add PawaPay later
 
 DECISION NEEDED: Which for MVP launch?
-```
+```A
 
 **Recommendation:** Start with B (simple). Add PawaPay in Week 3 when you have paying vendors.
 
@@ -228,7 +228,7 @@ Week 4:
 └─ Prep for Series A conversations
 
 DECISION NEEDED: Can you commit?
-```
+```YES
 
 **Recommendation:** Yes, this is tight but achievable. I can work 8+ hours/day.
 
@@ -255,7 +255,7 @@ Option B: Keep as backup, just disable
 ├─ Risk: Medium (legacy code adds confusion)
 
 DECISION NEEDED: Delete or keep?
-```
+```Delete
 
 **Recommendation:** DELETE. This is a pivot. Legacy code is dead weight. Keep only what BUZZ needs.
 

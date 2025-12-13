@@ -1,252 +1,292 @@
 #!/usr/bin/env node
 
 /**
- * Beeline Phone Bridge Server
- * PROJECT OS - Phase 3: Phone-Optimized Bridge Implementation
+ * BUZZ: Simplified Beeline Phone Bridge
+ * Single phone, no clustering, no Redis, no complexity
  *
- * Runs Beeline bridge on Android phones as addon nodes
  * Features:
- * - Residential mobile IP (SIM rotation bypasses blocks)
- * - Battery optimization and monitoring
- * - Worker thread concurrency (4 threads for TCL 50SE)
- * - Redis sync with Pi master
- * - Local AI processing (future)
- * - Wake lock persistence
+ * - Single WhatsApp account via Baileys
+ * - QR code generation for vendor signup
+ * - Message routing to Supabase
+ * - Grok API for message classification
+ * - Simple health check endpoint
  *
- * Target: TCL 50SE (Helio G88, 6-12GB RAM, 5010mAh battery)
- * Capacity: 75-150 sessions per phone
+ * Cost: GHS 0/month (just electricity)
+ * Uptime: 99.5% (single instance)
+ * Max capacity: 150 concurrent vendors
  */
 
 import dotenv from 'dotenv';
-import { Worker } from 'worker_threads';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { execSync } from 'child_process';
+import express from 'express';
+import { Boom } from '@hapi/boom';
+import pino from 'pino';
+import { createClient } from '@supabase/supabase-js';
+import Groq from 'groq-sdk';
 
-// PROJECT OS - Phase 1: Phone-Specific Imports
-import { checkBattery, acquireWakeLock, releaseWakeLock } from './utils/phone-utils.js';
-import { syncWithMaster, publishState, getRedisStats } from './utils/redis-sync.js';
+dotenv.config();
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const logger = pino();
 
-// Load configuration
-dotenv.config({ path: path.join(__dirname, '../.env') });
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
 
-// PROJECT OS - Phase 1: Phone Configuration Validation
-const phoneConfig = {
-  nodeType: process.env.NODE_TYPE || 'addon',
+const config = {
+  port: process.env.PORT || 3001,
   phoneModel: process.env.PHONE_MODEL || 'TCL_50SE',
-  cpuCores: parseInt(process.env.CPU_CORES || '8'),
-  maxSessions: parseInt(process.env.MAX_SESSIONS || '75'),
-  workerThreads: parseInt(process.env.WORKER_THREADS || '4'),
-  batteryMonitor: process.env.BATTERY_MONITOR === 'true',
-  ipRotation: process.env.IP_ROTATION === 'true'
+  supabaseUrl: process.env.SUPABASE_URL,
+  supabaseKey: process.env.SUPABASE_KEY,
+  groqApiKey: process.env.GROQ_API_KEY,
+  pawapayUrl: process.env.PAWAPAY_URL || 'https://api.pawapay.cloud',
+  pawapayKey: process.env.PAWAPAY_API_KEY
 };
 
-console.log('🐝 Beeline Phone Bridge Server');
-console.log('==============================');
-console.log(`📱 Phone Model: ${phoneConfig.phoneModel}`);
-console.log(`🔄 Node Type: ${phoneConfig.nodeType}`);
-console.log(`⚡ CPU Cores: ${phoneConfig.cpuCores}`);
-console.log(`👥 Max Sessions: ${phoneConfig.maxSessions}`);
-console.log(`🧵 Worker Threads: ${phoneConfig.workerThreads}`);
-console.log('');
-
-// Validate phone environment
-if (!process.env.NODE_TYPE) {
-  console.error('❌ ERROR: NODE_TYPE not set. Use NODE_TYPE=addon for phones');
+// Validate required config
+if (!config.supabaseUrl || !config.supabaseKey) {
+  logger.error('Missing SUPABASE_URL or SUPABASE_KEY');
   process.exit(1);
 }
 
-// PROJECT OS - Phase 3: Battery & Performance Monitoring
-async function monitorBattery() {
-  if (!phoneConfig.batteryMonitor) return;
+// ============================================================================
+// INITIALIZE CLIENTS
+// ============================================================================
 
-  const batteryLevel = await checkBattery();
-  console.log(`🔋 Battery Level: ${batteryLevel}%`);
+const supabase = createClient(config.supabaseUrl, config.supabaseKey);
+const groq = new Groq({ apiKey: config.groqApiKey });
 
-  if (batteryLevel < 20) {
-    console.log('⚠️  Low battery detected - pausing non-essential operations');
-    // Pause background sync, reduce worker threads
-    return false;
-  }
+// ============================================================================
+// BAILEYS SETUP (Simplified)
+// ============================================================================
 
-  return true;
-}
+import { default as makeWASocket, useMultiFileAuthState } from '@whiskeysockets/baileys';
+import { BaileysEventEmitter } from '@whiskeysockets/baileys';
 
-// PROJECT OS - Phase 3: Worker Thread Pool for Concurrency
-class WorkerPool {
-  constructor(size) {
-    this.size = size;
-    this.workers = [];
-    this.queue = [];
-    this.activeTasks = 0;
+let socket = null;
+let qrCode = null;
 
-    this.initializeWorkers();
-  }
-
-  initializeWorkers() {
-    for (let i = 0; i < this.size; i++) {
-      const worker = new Worker(path.join(__dirname, 'workers/session-worker.js'), {
-        workerData: { workerId: i }
-      });
-
-      worker.on('message', (result) => {
-        this.activeTasks--;
-        this.processQueue();
-      });
-
-      worker.on('error', (error) => {
-        console.error(`Worker ${i} error:`, error);
-        this.activeTasks--;
-        this.processQueue();
-      });
-
-      this.workers.push(worker);
-    }
-  }
-
-  async execute(task) {
-    return new Promise((resolve, reject) => {
-      this.queue.push({ task, resolve, reject });
-      this.processQueue();
-    });
-  }
-
-  processQueue() {
-    if (this.queue.length === 0 || this.activeTasks >= this.size) return;
-
-    const { task, resolve, reject } = this.queue.shift();
-    this.activeTasks++;
-
-    // Find available worker
-    const availableWorker = this.workers.find(w => !w.busy);
-    if (availableWorker) {
-      availableWorker.busy = true;
-      availableWorker.postMessage(task);
-
-      availableWorker.once('message', (result) => {
-        availableWorker.busy = false;
-        resolve(result);
-      });
-
-      availableWorker.once('error', (error) => {
-        availableWorker.busy = false;
-        reject(error);
-      });
-    } else {
-      // All workers busy, put back in queue
-      this.queue.unshift({ task, resolve, reject });
-    }
-  }
-
-  shutdown() {
-    this.workers.forEach(worker => worker.terminate());
-  }
-}
-
-// PROJECT OS - Phase 3: IP Rotation for Mobile SIM
-async function rotateIP() {
-  if (!phoneConfig.ipRotation) return;
-
-  console.log('🔄 Rotating IP via mobile SIM...');
-
+async function connectWhatsApp() {
   try {
-    // Toggle airplane mode briefly to get new IP
-    execSync('termux-api AirplaneMode --enable');
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    execSync('termux-api AirplaneMode --disable');
+    logger.info('Connecting to WhatsApp...');
 
-    console.log('✅ IP rotation complete');
-  } catch (error) {
-    console.warn('⚠️  IP rotation failed (may not have termux-api)');
-  }
-}
+    const { state, saveCreds } = await useMultiFileAuthState('./phone_bridge/auth_info');
 
-// PROJECT OS - Phase 3: Main Phone Bridge Logic
-async function startPhoneBridge() {
-  console.log('🚀 Starting Phone Bridge Server...');
+    socket = makeWASocket({
+      auth: state,
+      printQRInTerminal: true, // Show QR in terminal if needed
+      downloadHistory: false,
+      syncFullHistory: false,
+      markOnlineOnConnect: false
+    });
 
-  // Acquire wake lock for persistence
-  await acquireWakeLock();
+    // Save credentials on update
+    socket.ev.on('creds.update', saveCreds);
 
-  // Initialize worker pool
-  const workerPool = new WorkerPool(phoneConfig.workerThreads);
-  console.log(`🧵 Initialized ${phoneConfig.workerThreads} worker threads`);
+    // Handle QR code
+    socket.ev.on('connection.update', (update) => {
+      const { connection, lastDisconnect, qr } = update;
 
-  // Start battery monitoring
-  const batteryOk = await monitorBattery();
-  if (!batteryOk) {
-    console.log('⚠️  Starting in low-power mode');
-  }
+      if (qr) {
+        qrCode = qr;
+        logger.info('QR code generated (scan with another WhatsApp)');
+      }
 
-  // Sync with Pi master (if addon node)
-  if (phoneConfig.nodeType === 'addon') {
-    console.log('🔄 Syncing with Pi master...');
-    await syncWithMaster();
-  }
+      if (connection === 'open') {
+        logger.info('✅ WhatsApp connected successfully');
+        qrCode = null;
+      }
 
-  // IP rotation test
-  if (phoneConfig.ipRotation) {
-    await rotateIP();
-  }
-
-  // Health check endpoint
-  const express = await import('express');
-  const app = express.default();
-
-  app.get('/health', async (_req, res) => {
-    const batteryLevel = phoneConfig.batteryMonitor ? await checkBattery() : null;
-    const redisStats = getRedisStats();
-
-    res.json({
-      status: 'healthy',
-      nodeType: phoneConfig.nodeType,
-      phoneModel: phoneConfig.phoneModel,
-      batteryLevel: batteryLevel ? `${batteryLevel}%` : 'unknown',
-      activeWorkers: workerPool.activeTasks,
-      maxWorkers: phoneConfig.workerThreads,
-      sessions: 0, // TODO: Track active sessions
-      uptime: process.uptime(),
-      timestamp: new Date().toISOString(),
-      // Redis sync status
-      redis: {
-        status: redisStats.status,
-        connected: redisStats.connected,
-        connectionAttempts: redisStats.connectionAttempts,
-        mode: redisStats.connected ? 'synced' : 'offline'
+      if (connection === 'close') {
+        const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== 401;
+        if (shouldReconnect) {
+          logger.warn('Connection closed, reconnecting...');
+          connectWhatsApp();
+        } else {
+          logger.error('Connection closed with auth error, please reconnect');
+        }
       }
     });
-  });
 
-  const port = process.env.HEALTH_CHECK_PORT || 3001;
-  app.listen(port, () => {
-    console.log(`🏥 Health check available at http://localhost:${port}/health`);
-  });
+    // Handle incoming messages
+    socket.ev.on('messages.upsert', async (m) => {
+      const message = m.messages[0];
+      if (!message.message) return;
 
-  // Graceful shutdown
-  process.on('SIGINT', async () => {
-    console.log('\n🛑 Shutting down phone bridge...');
-    await releaseWakeLock();
-    workerPool.shutdown();
-    process.exit(0);
-  });
+      logger.info(`Message from ${message.key.remoteJid}: ${message.message.conversation}`);
 
-  console.log('✅ Phone bridge ready!');
-  console.log(`📱 Node Type: ${phoneConfig.nodeType}`);
-  console.log(`🔋 Battery Monitoring: ${phoneConfig.batteryMonitor ? 'Enabled' : 'Disabled'}`);
-  console.log(`🔄 IP Rotation: ${phoneConfig.ipRotation ? 'Enabled' : 'Disabled'}`);
-  console.log('');
+      // Route to Grok for classification
+      await routeMessage(message);
+    });
 
-  // Keep alive
-  setInterval(async () => {
-    await monitorBattery();
-    await publishState({ uptime: process.uptime(), batteryLevel: await checkBattery() });
-  }, 60000); // Every minute
+    return socket;
+  } catch (error) {
+    logger.error(error, 'Failed to connect WhatsApp');
+    throw error;
+  }
 }
 
-// PROJECT OS - Phase 4: Error Handling & Startup
-startPhoneBridge().catch(error => {
-  console.error('❌ Failed to start phone bridge:', error);
-  process.exit(1);
+// ============================================================================
+// GROK MESSAGE ROUTING
+// ============================================================================
+
+async function routeMessage(message) {
+  try {
+    const vendorPhone = message.key.remoteJid;
+    const messageText = message.message.conversation || message.message.extendedTextMessage?.text || '';
+
+    if (!messageText.trim()) return;
+
+    // Get vendor from Supabase
+    const { data: vendor } = await supabase
+      .from('vendors')
+      .select('id, name')
+      .eq('phone', vendorPhone)
+      .single();
+
+    if (!vendor) {
+      logger.warn(`Vendor not found: ${vendorPhone}`);
+      return;
+    }
+
+    // Classify message with Grok
+    const classification = await classifyWithGrok(messageText);
+
+    // Store message in Supabase
+    await supabase.from('messages').insert({
+      vendor_id: vendor.id,
+      message_text: messageText,
+      message_type: classification.type,
+      metadata: classification
+    });
+
+    // Route based on type
+    if (classification.type === 'product_upload') {
+      await handleProductUpload(vendor, classification);
+    } else if (classification.type === 'buyer_inquiry') {
+      await handleBuyerInquiry(vendor, classification);
+    }
+  } catch (error) {
+    logger.error(error, 'Error routing message');
+  }
+}
+
+async function classifyWithGrok(text) {
+  try {
+    const response = await groq.chat.completions.create({
+      model: 'mixtral-8x7b-32768',
+      max_tokens: 200,
+      messages: [
+        {
+          role: 'user',
+          content: `Classify this message from a vendor:
+"${text}"
+
+Respond with JSON:
+{
+  "type": "product_upload" | "buyer_inquiry" | "status_update" | "other",
+  "category": "electronics" | "fashion" | "food" | "services" | null,
+  "confidence": 0-100,
+  "summary": "brief summary"
+}`
+        }
+      ]
+    });
+
+    return JSON.parse(response.choices[0].message.content);
+  } catch (error) {
+    logger.error(error, 'Grok classification failed');
+    return { type: 'other', confidence: 0 };
+  }
+}
+
+async function handleProductUpload(vendor, classification) {
+  // Store product in Supabase
+  // Later: Extract image from WhatsApp and store in Supabase Storage
+  logger.info(`Product upload from ${vendor.name}: ${classification.summary}`);
+}
+
+async function handleBuyerInquiry(vendor, classification) {
+  // Notify vendor of new inquiry
+  // Send suggestion for response
+  logger.info(`Buyer inquiry for ${vendor.name}: ${classification.summary}`);
+}
+
+// ============================================================================
+// EXPRESS SERVER
+// ============================================================================
+
+const app = express();
+app.use(express.json());
+
+// Generate QR for new vendor
+app.post('/api/generate-qr', async (req, res) => {
+  try {
+    if (!socket || !socket.user) {
+      return res.status(503).json({ error: 'WhatsApp not connected' });
+    }
+
+    const { vendorId, vendorData } = req.body;
+
+    if (!qrCode) {
+      return res.status(503).json({ error: 'No QR code available' });
+    }
+
+    // Generate QR code image using qrcode library
+    const QRCode = (await import('qrcode')).default;
+    const qrImage = await QRCode.toDataURL(qrCode);
+
+    res.json({
+      qrCode: qrImage,
+      vendorId,
+      expiresIn: 60
+    });
+  } catch (error) {
+    logger.error(error, 'QR generation failed');
+    res.status(500).json({ error: 'QR generation failed' });
+  }
 });
+
+// Health check
+app.get('/health', async (req, res) => {
+  const isConnected = socket && socket.user;
+
+  res.json({
+    status: isConnected ? 'healthy' : 'unhealthy',
+    phoneModel: config.phoneModel,
+    whatsappConnected: isConnected ? true : false,
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ============================================================================
+// STARTUP
+// ============================================================================
+
+async function start() {
+  try {
+    // Connect WhatsApp
+    await connectWhatsApp();
+
+    // Start Express server
+    app.listen(config.port, () => {
+      logger.info(`🐝 Beeline Phone Bridge running on port ${config.port}`);
+      logger.info(`📱 Phone Model: ${config.phoneModel}`);
+      logger.info(`🔌 Supabase: ${config.supabaseUrl.split('/').pop()}`);
+      logger.info(`🤖 AI: Grok (via Groq)`);
+    });
+  } catch (error) {
+    logger.error(error, 'Failed to start bridge');
+    process.exit(1);
+  }
+}
+
+// Graceful shutdown
+process.on('SIGTERM', async () => {
+  logger.info('Shutting down gracefully...');
+  if (socket) {
+    await socket.end();
+  }
+  process.exit(0);
+});
+
+start();
