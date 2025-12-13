@@ -59,7 +59,6 @@ const groq = new Groq({ apiKey: config.groqApiKey });
 // ============================================================================
 
 import { default as makeWASocket, useMultiFileAuthState } from '@whiskeysockets/baileys';
-import { BaileysEventEmitter } from '@whiskeysockets/baileys';
 
 let socket = null;
 let qrCode = null;
