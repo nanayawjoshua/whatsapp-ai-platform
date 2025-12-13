@@ -1,19 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
-import { query } from '@/lib/db';
+// Using client-side Supabase for demo (server-side would need SUPABASE_SERVICE_KEY)
+import { supabase } from '@/lib/supabase';
 
-// Mark route as dynamic
 export const dynamic = 'force-dynamic';
 
 /**
  * Super Admin Metrics API
  * Returns platform-wide statistics and analytics
+ *
+ * NOTE: This endpoint is a placeholder for Phase 3
+ * Full admin dashboard will be implemented in Phase 7
  */
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession();
 
-    // Check if user is authenticated and is admin
     if (!session || session.user?.role !== 'admin') {
       return NextResponse.json(
         { error: 'Unauthorized - admin access required' },
@@ -21,151 +23,37 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Total vendors
-    // Total vendors
-    const totalVendorsResult = await query('SELECT COUNT(*) as count FROM vendors');
-    const totalVendors = parseInt(totalVendorsResult.rows[0].count);
+    // Get vendor count
+    const { count: vendorCount, error: vendorError } = await supabase
+      .from('vendors')
+      .select('*', { count: 'exact', head: true });
 
-    // Active vendors (last active within 7 days)
-    const activeVendorsResult = await query(
-      `SELECT COUNT(*) as count FROM vendors
-       WHERE last_active > NOW() - INTERVAL '7 days'`
-    );
-    const activeVendors = parseInt(activeVendorsResult.rows[0].count);
+    const { count: productCount, error: productError } = await supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true });
 
-    // Inactive vendors
-    const inactiveVendors = totalVendors - activeVendors;
+    const { count: transactionCount, error: transactionError } = await supabase
+      .from('transactions')
+      .select('*', { count: 'exact', head: true });
 
-    // Total conversations
-    const totalConversationsResult = await query('SELECT COUNT(*) as count FROM conversations');
-    const totalConversations = parseInt(totalConversationsResult.rows[0].count);
-
-    // Today's conversations
-    const todayConversationsResult = await query(
-      `SELECT COUNT(*) as count FROM conversations
-       WHERE started_at::date = CURRENT_DATE`
-    );
-    const todayConversations = parseInt(todayConversationsResult.rows[0].count);
-
-    // Total messages
-    const totalMessagesResult = await query(
-      'SELECT SUM(message_count) as total FROM conversations'
-    );
-    const totalMessages = parseInt(totalMessagesResult.rows[0].total || 0);
-
-    // Completed orders
-    const completedOrdersResult = await query(
-      'SELECT COUNT(*) as count FROM conversations WHERE order_completed = true'
-    );
-    const completedOrders = parseInt(completedOrdersResult.rows[0].count);
-
-    // Payments detected
-    const paymentsDetectedResult = await query(
-      'SELECT COUNT(*) as count FROM conversations WHERE payment_detected = true'
-    );
-    const paymentsDetected = parseInt(paymentsDetectedResult.rows[0].count);
-
-    // Referrals triggered
-    const referralsTriggeredResult = await query(
-      'SELECT COUNT(*) as count FROM conversations WHERE referral_triggered = true'
-    );
-    const referralsTriggered = parseInt(referralsTriggeredResult.rows[0].count);
-
-    // By account type
-    const byAccountTypeResult = await query(`
-      SELECT
-        account_type,
-        COUNT(*) as count
-      FROM vendors
-      GROUP BY account_type
-    `);
-
-    const byAccountType = {
-      personal: 0,
-      business: 0,
-      enterprise: 0,
-    };
-
-    byAccountTypeResult.rows.forEach((row) => {
-      const type = row.account_type?.toLowerCase() || 'personal';
-      if (type in byAccountType) {
-        byAccountType[type as keyof typeof byAccountType] = parseInt(row.count);
-      }
-    });
-
-    // By subscription status
-    const bySubscriptionStatusResult = await query(`
-      SELECT
-        subscription_status,
-        COUNT(*) as count
-      FROM vendors
-      GROUP BY subscription_status
-    `);
-
-    const bySubscriptionStatus = {
-      active: 0,
-      expired: 0,
-      trial: 0,
-    };
-
-    bySubscriptionStatusResult.rows.forEach((row) => {
-      const status = row.subscription_status?.toLowerCase() || 'trial';
-      if (status in bySubscriptionStatus) {
-        bySubscriptionStatus[status as keyof typeof bySubscriptionStatus] = parseInt(row.count);
-      }
-    });
-
-    // Recent vendors (last 10)
-    const recentVendorsResult = await query(`
-      SELECT
-        vendor_id,
-        name,
-        phone,
-        account_type,
-        subscription_status,
-        created_at,
-        last_active
-      FROM vendors
-      ORDER BY created_at DESC
-      LIMIT 10
-    `);
-
-    // Get live connections from cloud bridge
-    let liveConnections = 0;
-    try {
-      const cloudBridgeUrl = process.env.CLOUD_BRIDGE_URL || 'https://beeline-bridge.onrender.com';
-      const healthResponse = await fetch(`${cloudBridgeUrl}/health`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        signal: AbortSignal.timeout(5000), // 5 second timeout
-      });
-
-      if (healthResponse.ok) {
-        const healthData = await healthResponse.json();
-        liveConnections = healthData.vendors || 0;
-      }
-    } catch (error) {
-      console.error('Failed to fetch live connections:', error);
-      // Continue with liveConnections = 0
-    }
+    // Get recent vendors
+    const { data: recentVendors } = await supabase
+      .from('vendors')
+      .select('id, name, phone, category, created_at')
+      .order('created_at', { ascending: false })
+      .limit(10);
 
     return NextResponse.json({
-      totalVendors,
-      activeVendors,
-      inactiveVendors,
-      totalConversations,
-      todayConversations,
-      totalMessages,
-      completedOrders,
-      paymentsDetected,
-      referralsTriggered,
-      byAccountType,
-      bySubscriptionStatus,
-      recentVendors: recentVendorsResult.rows,
-      liveConnections,
+      stats: {
+        totalVendors: vendorCount || 0,
+        totalProducts: productCount || 0,
+        totalTransactions: transactionCount || 0,
+      },
+      recentVendors: recentVendors || [],
       lastUpdated: new Date().toISOString(),
+      note: 'Full metrics dashboard coming in Phase 7',
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Admin metrics error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch metrics' },

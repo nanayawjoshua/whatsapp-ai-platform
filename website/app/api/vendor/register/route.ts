@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,12 +9,18 @@ export const dynamic = 'force-dynamic';
  *
  * Registers a vendor and sends them WhatsApp QR code
  * Uses phone bridge only (no cloud bridge)
+ *
+ * Request body:
+ * - phone: string (any format, will be normalized)
+ * - name?: string (optional, defaults to "New Vendor")
+ * - category?: string (optional, defaults to "uncategorized")
+ *
+ * Response:
+ * - vendorId: string (Supabase UUID)
+ * - phone: string (normalized +233 format)
+ * - qrCode: string (base64 QR code)
+ * - expiresIn: number (seconds until QR expires)
  */
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!
-);
 
 export async function POST(request: NextRequest) {
   console.log('📝 Vendor registration started');

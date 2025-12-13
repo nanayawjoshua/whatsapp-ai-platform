@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { discoverBridge } from '@/lib/bridge-discovery';
 
 export const dynamic = 'force-dynamic';
+
+// NOTE: This route is deprecated in BUZZ
+// Use /api/vendor/register instead
 
 /**
  * POST /api/auth/initiate-whatsapp
@@ -79,16 +81,14 @@ export async function POST(request: NextRequest) {
     // Use provided vendor ID or generate new one
     const vendorId = providedVendorId || `vendor_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 
-    // PROJECT OS - Phase 2: Use bridge discovery to find available bridge
-    // This automatically discovers Pi/Phone/Cloud bridges via Redis registry
-    // Falls back to CLOUD_BRIDGE_URL env var if discovery unavailable
-    console.log('🔍 Discovering available bridge...');
-    const bridgeUrl = await discoverBridge();
+    // BUZZ: Use single phone bridge (no multi-bridge discovery)
+    console.log('🔍 Connecting to phone bridge...');
+    const bridgeUrl = process.env.PHONE_BRIDGE_URL || 'http://localhost:3001';
 
     if (!bridgeUrl) {
-      console.error('❌ No bridges available');
+      console.error('❌ Phone bridge URL not configured');
       return NextResponse.json(
-        { error: 'No WhatsApp bridges available. Please try again later.' },
+        { error: 'WhatsApp bridge is not configured. Please try again later.' },
         { status: 503 }
       );
     }
