@@ -33,13 +33,8 @@ pkg install nodejs-lts -y
 echo "📦 Installing Git..."
 pkg install git -y
 
-# Install Redis tools for sync
-echo "📦 Installing Redis tools..."
-pkg install redis -y
-
-# Install OpenMP for parallelism (PROJECT OS - Phase 2: Concurrency)
-echo "📦 Installing OpenMP for parallel processing..."
-pkg install libomp -y
+# Redis removed - BUZZ simplified version doesn't need sync
+# OpenMP removed - single instance, no parallelism needed
 
 # Install wake lock for background persistence
 echo "📦 Installing Termux API for wake lock..."
@@ -51,20 +46,23 @@ cd ~
 git clone https://github.com/nanayawjoshua/whatsapp-ai-platform.git beeline
 cd beeline
 
-# Copy phone-specific configuration
-echo "⚙️  Setting up phone bridge configuration..."
-cp phone_bridge/config/phone-config.env .env
+# Copy BUZZ simplified configuration
+echo "⚙️  Setting up BUZZ phone bridge configuration..."
+cp phone_bridge/.env.buzz .env
 
 echo ""
 echo "🎉 Setup Complete!"
 echo ""
+echo "🎉 BUZZ Setup Complete!"
+echo ""
 echo "Next Steps:"
-echo "1. Edit .env with your database and Redis credentials"
+echo "1. Verify .env has correct Supabase credentials (already copied)"
 echo "2. Run: node phone_bridge/phone-bridge-server.js"
-echo "3. Test QR generation and message handling"
+echo "3. Scan QR code with WhatsApp when prompted"
+echo "4. Test: curl localhost:3001/health"
 echo ""
 echo "For background operation:"
 echo "nohup node phone_bridge/phone-bridge-server.js &"
-echo "termux-wake-lock  # Keep screen awake"
+echo "termux-wake-lock"
 echo ""
-echo "Monitor with: tail -f nohup.out"
+echo "Monitor: tail -f nohup.out"
