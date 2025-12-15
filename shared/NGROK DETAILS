@@ -1,0 +1,16 @@
+ngrok                                                                  (Ctrl+C to quit)
+
+🤫 Put your secrets in vaults and (re)use them to transform traffic: https://ngrok.com/
+
+Session Status                online
+Account                       yawbroski (Plan: Free)
+Version                       3.34.1
+Region                        Europe (eu)
+Latency                       176ms
+Web Interface                 http://127.0.0.1:4040
+Forwarding                    https://paresthetic-agueda-perspiringly.ngrok-free.dev ->
+
+Connections                   ttl     opn     rt1     rt5     p50     p90
+                              0       0       0.00    0.00    0.00    0.00
+
+

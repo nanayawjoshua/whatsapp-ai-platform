@@ -25,8 +25,8 @@ import {
   CheckCircle2,
   AlertCircle,
 } from 'lucide-react';
-import BeelineLogo from '../components/BeelineLogo';
-import WhatsAppConnection from '../components/WhatsAppConnection';
+import BeelineLogo from '../../components/BeelineLogo';
+import WhatsAppConnection from '../../components/WhatsAppConnection';
 
 interface Vendor {
   vendorId: string;

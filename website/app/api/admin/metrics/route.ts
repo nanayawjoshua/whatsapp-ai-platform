@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 // Using client-side Supabase for demo (server-side would need SUPABASE_SERVICE_KEY)
-import { supabase } from '../../../lib/supabase';
+import { supabase } from '../../../../lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
