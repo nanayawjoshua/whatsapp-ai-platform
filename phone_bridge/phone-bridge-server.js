@@ -1,19 +1,20 @@
 #!/usr/bin/env node
 
 /**
- * BUZZ: Simplified Beeline Phone Bridge
- * Single phone, no clustering, no Redis, no complexity
+ * BEELINE: Multi-Vendor WhatsApp Bridge
+ * Each vendor connects their own WhatsApp number independently
  *
  * Features:
- * - Single WhatsApp account via Baileys
- * - QR code generation for vendor signup
- * - Message routing to Supabase
+ * - Multiple WhatsApp sessions (one per vendor)
+ * - Individual QR code generation per vendor
+ * - Message routing to Supabase per vendor
  * - Grok API for message classification
- * - Simple health check endpoint
+ * - Session persistence per vendor
  *
- * Cost: GHS 0/month (just electricity)
- * Uptime: 99.5% (single instance)
- * Max capacity: 150 concurrent vendors
+ * Architecture:
+ * - Each vendor gets their own auth_info_<vendorId>/ directory
+ * - Separate Baileys socket connection per vendor
+ * - QR codes generated on-demand during signup
  */
 
 import dotenv from 'dotenv';
@@ -22,11 +23,14 @@ import { Boom } from '@hapi/boom';
 import pino from 'pino';
 import { createClient } from '@supabase/supabase-js';
 import Groq from 'groq-sdk';
-import qrcode from 'qrcode-terminal';
+import fs from 'fs';
+import path from 'path';
 
 dotenv.config();
 
 const logger = pino();
+const app = express();
+app.use(express.json());
 
 // ============================================================================
 // CONFIGURATION
@@ -38,8 +42,6 @@ const config = {
   supabaseUrl: process.env.SUPABASE_URL,
   supabaseKey: process.env.SUPABASE_KEY,
   groqApiKey: process.env.GROQ_API_KEY,
-  pawapayUrl: process.env.PAWAPAY_URL || 'https://api.pawapay.cloud',
-  pawapayKey: process.env.PAWAPAY_API_KEY
 };
 
 // Validate required config
@@ -56,245 +58,269 @@ const supabase = createClient(config.supabaseUrl, config.supabaseKey);
 const groq = new Groq({ apiKey: config.groqApiKey });
 
 // ============================================================================
-// BAILEYS SETUP (Simplified)
+// BAILEYS MULTI-SESSION SETUP
 // ============================================================================
 
 import { default as makeWASocket, useMultiFileAuthState, fetchLatestBaileysVersion, DisconnectReason } from '@whiskeysockets/baileys';
 
-let socket = null;
-let qrCode = null;
-let connectionState = 'closed';
+// Store all vendor sessions in memory
+// Format: { vendorId: { socket, qr, state, connectionState } }
+const vendorSessions = new Map();
 
-async function connectWhatsApp() {
+/**
+ * Create or retrieve WhatsApp connection for a specific vendor
+ */
+async function connectVendorWhatsApp(vendorId) {
   try {
-    logger.info('Connecting to WhatsApp...');
+    // Check if session already exists
+    if (vendorSessions.has(vendorId)) {
+      const session = vendorSessions.get(vendorId);
+      if (session.connectionState === 'open') {
+        logger.info(`Vendor ${vendorId} already connected`);
+        return session;
+      }
+    }
 
-    const { state, saveCreds } = await useMultiFileAuthState('./phone_bridge/auth_info');
+    logger.info(`Creating WhatsApp connection for vendor ${vendorId}...`);
+
+    // Create vendor-specific auth directory
+    const authDir = path.join('./phone_bridge', `auth_info_${vendorId}`);
+    if (!fs.existsSync(authDir)) {
+      fs.mkdirSync(authDir, { recursive: true });
+    }
+
+    const { state, saveCreds } = await useMultiFileAuthState(authDir);
     const { version } = await fetchLatestBaileysVersion();
 
-    socket = makeWASocket({
+    const socket = makeWASocket({
       version,
       auth: state,
       logger: pino({ level: 'silent' }),
       browser: ['Beeline', 'Chrome', '120.0.0'],
       connectTimeoutMs: 60000,
-      defaultQueryTimeoutMs: 60000,
-      keepAliveIntervalMs: 30000,
-      downloadHistory: false,
-      syncFullHistory: false,
-      markOnlineOnConnect: false
     });
 
-    // Save credentials on update
-    socket.ev.on('creds.update', saveCreds);
+    // Session object for this vendor
+    const session = {
+      socket,
+      qr: null,
+      connectionState: 'connecting',
+      vendorId,
+      authDir,
+    };
 
-    // Handle QR code
-    socket.ev.on('connection.update', (update) => {
+    vendorSessions.set(vendorId, session);
+
+    // Handle connection updates
+    socket.ev.on('connection.update', async (update) => {
       const { connection, lastDisconnect, qr } = update;
 
       if (qr) {
-        qrCode = qr;
-        console.log('\n📱 === QR CODE FOR VENDOR REGISTRATION ===\n');
-        qrcode.generate(qr, { small: true });
-        console.log('\n✅ Scan this QR code with WhatsApp to connect\n');
-        logger.info('QR code generated (scan with another WhatsApp)');
+        session.qr = qr;
+        logger.info(`QR code generated for vendor ${vendorId}`);
       }
 
       if (connection === 'open') {
-        logger.info('✅ WhatsApp connected successfully');
-        connectionState = 'open';
-        qrCode = null;
+        logger.info(`✅ Vendor ${vendorId} WhatsApp connected successfully`);
+        session.connectionState = 'open';
+        session.qr = null;
+
+        // Update vendor status in database
+        await supabase
+          .from('vendors')
+          .update({
+            status: 'active',
+            whatsapp_connected_at: new Date().toISOString()
+          })
+          .eq('id', vendorId);
       }
 
       if (connection === 'close') {
-        connectionState = 'closed';
+        session.connectionState = 'closed';
         const statusCode = lastDisconnect?.error?.output?.statusCode;
         const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
 
         if (shouldReconnect) {
-          const reconnectDelay = 5000; // 5 second delay to avoid throttling
-          logger.warn(`Connection closed (status: ${statusCode}), reconnecting in ${reconnectDelay}ms...`);
-          setTimeout(() => connectWhatsApp(), reconnectDelay);
+          const reconnectDelay = 5000;
+          logger.warn(`Vendor ${vendorId} connection closed (status: ${statusCode}), reconnecting in ${reconnectDelay}ms...`);
+          setTimeout(() => connectVendorWhatsApp(vendorId), reconnectDelay);
         } else {
-          logger.error('Connection closed with auth error, please reconnect');
+          logger.error(`Vendor ${vendorId} logged out, removing session`);
+          vendorSessions.delete(vendorId);
+
+          // Update vendor status
+          await supabase
+            .from('vendors')
+            .update({ status: 'disconnected' })
+            .eq('id', vendorId);
         }
       }
     });
 
-    // Handle incoming messages
+    // Handle credentials update
+    socket.ev.on('creds.update', saveCreds);
+
+    // Handle incoming messages for this vendor
     socket.ev.on('messages.upsert', async (m) => {
       const message = m.messages[0];
       if (!message.message) return;
 
-      logger.info(`Message from ${message.key.remoteJid}: ${message.message.conversation}`);
-
-      // Route to Grok for classification
-      await routeMessage(message);
+      logger.info(`Message for vendor ${vendorId} from ${message.key.remoteJid}`);
+      await routeVendorMessage(vendorId, message);
     });
 
-    return socket;
+    return session;
   } catch (error) {
-    logger.error(error, 'Failed to connect WhatsApp');
+    logger.error(error, `Failed to connect vendor ${vendorId} WhatsApp`);
     throw error;
   }
 }
 
-// ============================================================================
-// GROK MESSAGE ROUTING
-// ============================================================================
-
-async function routeMessage(message) {
+/**
+ * Route incoming message to the correct vendor's database
+ */
+async function routeVendorMessage(vendorId, message) {
   try {
-    const vendorPhone = message.key.remoteJid;
     const senderPhone = message.key.remoteJid.split('@')[0];
     const messageText = message.message.conversation || message.message.extendedTextMessage?.text || '';
 
     if (!messageText.trim()) return;
 
-    // Get vendor from Supabase
-    const { data: vendor } = await supabase
-      .from('vendors')
-      .select('id, name')
-      .eq('phone', vendorPhone)
-      .single();
-
-    if (!vendor) {
-      logger.warn(`Vendor not found: ${vendorPhone}`);
-      return;
-    }
-
     // Classify message with Grok
     const classification = await classifyWithGrok(messageText);
 
-    // Generate conversation ID (vendor:sender)
-    const conversationId = `${vendor.id}:${senderPhone}`;
+    // Generate conversation ID
+    const conversationId = `${vendorId}:${senderPhone}`;
 
     // Store message in Supabase
-    const { data: savedMessage, error: insertError } = await supabase.from('messages').insert({
-      vendor_id: vendor.id,
+    const { error: insertError } = await supabase.from('messages').insert({
+      vendor_id: vendorId,
       conversation_id: conversationId,
       sender_phone: senderPhone,
       message_text: messageText,
       message_type: classification.type,
       metadata: classification
-    }).select();
+    });
 
     if (insertError) {
       logger.error(insertError, 'Failed to save message');
       return;
     }
 
-    // Send responses
-    try {
+    // Send auto-responses based on message type
+    const session = vendorSessions.get(vendorId);
+    if (session && session.connectionState === 'open') {
       if (classification.type === 'product_upload') {
-        await sendWhatsAppMessage(
-          vendorPhone,
-          '✅ Product received! Thank you for listing with Beeline.'
-        );
-        await handleProductUpload(vendor, classification);
+        await sendWhatsAppMessage(vendorId, senderPhone, '✅ Product received! Thank you for listing with Beeline.');
       } else if (classification.type === 'buyer_inquiry') {
-        await sendWhatsAppMessage(
-          vendorPhone,
-          '📩 New buyer inquiry received! Check your dashboard for details.'
-        );
-        await handleBuyerInquiry(vendor, classification);
+        await sendWhatsAppMessage(vendorId, senderPhone, '📩 New buyer inquiry received! Check your dashboard for details.');
       }
-    } catch (sendError) {
-      logger.warn(sendError, 'Failed to send response');
     }
   } catch (error) {
-    logger.error(error, 'Error routing message');
+    logger.error(error, 'Failed to route message');
   }
 }
 
-async function classifyWithGrok(text) {
+/**
+ * Classify message using Grok AI
+ */
+async function classifyWithGrok(messageText) {
+  if (!config.groqApiKey) {
+    return { type: 'general', confidence: 0 };
+  }
+
   try {
-    const response = await groq.chat.completions.create({
-      model: 'mixtral-8x7b-32768',
-      max_tokens: 200,
+    const completion = await groq.chat.completions.create({
       messages: [
         {
+          role: 'system',
+          content: 'You are a message classifier for a marketplace. Classify messages as: product_upload, buyer_inquiry, payment_confirmation, or general. Respond with JSON: {"type": "...", "confidence": 0-1}'
+        },
+        {
           role: 'user',
-          content: `Classify this message from a vendor:
-"${text}"
-
-Respond with JSON:
-{
-  "type": "product_upload" | "buyer_inquiry" | "status_update" | "other",
-  "category": "electronics" | "fashion" | "food" | "services" | null,
-  "confidence": 0-100,
-  "summary": "brief summary"
-}`
+          content: messageText
         }
-      ]
+      ],
+      model: 'llama3-8b-8192',
+      temperature: 0.3,
     });
 
-    return JSON.parse(response.choices[0].message.content);
+    const result = JSON.parse(completion.choices[0]?.message?.content || '{"type":"general","confidence":0}');
+    return result;
   } catch (error) {
     logger.error(error, 'Grok classification failed');
-    return { type: 'other', confidence: 0 };
+    return { type: 'general', confidence: 0 };
   }
 }
 
-async function sendWhatsAppMessage(phone, text) {
-  try {
-    if (!socket) {
-      throw new Error('WhatsApp not connected');
-    }
+/**
+ * Send WhatsApp message from vendor's account
+ */
+async function sendWhatsAppMessage(vendorId, phone, message) {
+  const session = vendorSessions.get(vendorId);
 
-    // Format phone as JID (e.g., 233501234567@s.whatsapp.net)
-    const jid = phone.replace(/\D/g, '') + '@s.whatsapp.net';
-
-    await socket.sendMessage(jid, { text });
-    logger.info(`✅ Sent message to ${phone}`);
-  } catch (error) {
-    logger.error(error, `Failed to send message to ${phone}`);
-    throw error;
+  if (!session || session.connectionState !== 'open') {
+    throw new Error(`Vendor ${vendorId} not connected`);
   }
-}
 
-async function handleProductUpload(vendor, classification) {
-  // Store product in Supabase
-  // Later: Extract image from WhatsApp and store in Supabase Storage
-  logger.info(`Product upload from ${vendor.name}: ${classification.summary}`);
-}
-
-async function handleBuyerInquiry(vendor, classification) {
-  // Notify vendor of new inquiry
-  // Send suggestion for response
-  logger.info(`Buyer inquiry for ${vendor.name}: ${classification.summary}`);
+  const jid = phone.includes('@') ? phone : `${phone}@s.whatsapp.net`;
+  await session.socket.sendMessage(jid, { text: message });
+  logger.info(`Message sent from vendor ${vendorId} to ${phone}`);
 }
 
 // ============================================================================
-// EXPRESS SERVER
+// API ENDPOINTS
 // ============================================================================
 
-const app = express();
-app.use(express.json());
-
-// Generate QR for new vendor
-app.post('/api/generate-qr', async (req, res) => {
+/**
+ * Generate QR code for vendor signup
+ * Creates new WhatsApp session for this vendor
+ */
+app.post('/vendor/generate-qr', async (req, res) => {
   try {
-    if (!socket || !socket.user) {
-      return res.status(503).json({ error: 'WhatsApp not connected' });
-    }
-
     const { vendorId, vendorData } = req.body;
 
-    // If we have a cached QR code from initial connection, use it
-    // Otherwise, return error asking vendor to wait
-    if (!qrCode) {
-      return res.status(503).json({
-        error: 'QR code not yet available. Please wait for WhatsApp connection.',
-        status: connectionState
-      });
+    if (!vendorId) {
+      return res.status(400).json({ error: 'vendorId is required' });
     }
 
-    // Generate QR code image using qrcode library
-    const QRCode = (await import('qrcode')).default;
-    const qrImage = await QRCode.toDataURL(qrCode);
+    logger.info(`📱 Generating QR for vendor ${vendorId}`);
 
-    logger.info(`📱 Generated QR for vendor ${vendorId}`);
+    // Save vendor to Supabase
+    const { error: vendorError } = await supabase
+      .from('vendors')
+      .upsert({
+        id: vendorId,
+        phone: vendorData?.phone,
+        name: vendorData?.name || 'New Vendor',
+        business_type: vendorData?.businessType || 'retail',
+        account_type: vendorData?.accountType || 'personal',
+        status: 'pending',
+        created_at: new Date().toISOString()
+      });
+
+    if (vendorError) {
+      logger.error(vendorError, 'Failed to save vendor');
+    }
+
+    // Create WhatsApp connection for this vendor
+    const session = await connectVendorWhatsApp(vendorId);
+
+    // Wait for QR code generation (max 30 seconds)
+    const startTime = Date.now();
+    while (!session.qr && (Date.now() - startTime) < 30000) {
+      await new Promise(resolve => setTimeout(resolve, 500));
+    }
+
+    if (!session.qr) {
+      return res.status(408).json({ error: 'QR code generation timeout' });
+    }
+
+    // Generate QR code image
+    const QRCode = (await import('qrcode')).default;
+    const qrImage = await QRCode.toDataURL(session.qr);
+
+    logger.info(`✅ QR code ready for vendor ${vendorId}`);
 
     res.json({
       qrCode: qrImage,
@@ -302,42 +328,63 @@ app.post('/api/generate-qr', async (req, res) => {
       expiresIn: 60
     });
   } catch (error) {
-    logger.error(error, 'QR generation failed');
+    logger.error(error, 'Vendor QR generation failed');
     res.status(500).json({ error: 'QR generation failed' });
   }
 });
 
-// Send message endpoint (for website/dashboard to trigger messages)
-app.post('/api/send-message', async (req, res) => {
+/**
+ * Send message from vendor's WhatsApp
+ */
+app.post('/vendor/send-message', async (req, res) => {
   try {
-    const { phone, message } = req.body;
+    const { vendorId, phone, message } = req.body;
 
-    if (!phone || !message) {
-      return res.status(400).json({ error: 'phone and message are required' });
+    if (!vendorId || !phone || !message) {
+      return res.status(400).json({ error: 'vendorId, phone, and message are required' });
     }
 
-    await sendWhatsAppMessage(phone, message);
+    await sendWhatsAppMessage(vendorId, phone, message);
 
     res.json({
       success: true,
       message: 'Message sent successfully',
+      vendorId,
       phone
     });
   } catch (error) {
     logger.error(error, 'Send message failed');
-    res.status(500).json({ error: 'Failed to send message' });
+    res.status(500).json({ error: error.message });
   }
 });
 
-// Health check
-app.get('/health', async (req, res) => {
-  const isConnected = socket && socket.user;
+/**
+ * Get vendor session status
+ */
+app.get('/vendor/:vendorId/status', async (req, res) => {
+  const { vendorId } = req.params;
+  const session = vendorSessions.get(vendorId);
 
   res.json({
-    status: isConnected ? 'healthy' : 'unhealthy',
+    vendorId,
+    connected: session ? session.connectionState === 'open' : false,
+    state: session ? session.connectionState : 'not_found',
+    hasQR: session ? !!session.qr : false
+  });
+});
+
+/**
+ * Health check
+ */
+app.get('/health', async (req, res) => {
+  const connectedVendors = Array.from(vendorSessions.values())
+    .filter(s => s.connectionState === 'open').length;
+
+  res.json({
+    status: 'healthy',
     phoneModel: config.phoneModel,
-    whatsappConnected: isConnected ? true : false,
-    connectionState,
+    totalVendors: vendorSessions.size,
+    connectedVendors,
     uptime: process.uptime(),
     timestamp: new Date().toISOString()
   });
@@ -349,29 +396,33 @@ app.get('/health', async (req, res) => {
 
 async function start() {
   try {
-    // Connect WhatsApp
-    await connectWhatsApp();
+    // Load existing vendor sessions from database
+    const { data: vendors, error } = await supabase
+      .from('vendors')
+      .select('id')
+      .eq('status', 'active');
+
+    if (!error && vendors) {
+      logger.info(`Found ${vendors.length} active vendors, reconnecting...`);
+      for (const vendor of vendors) {
+        connectVendorWhatsApp(vendor.id).catch(err => {
+          logger.error(err, `Failed to reconnect vendor ${vendor.id}`);
+        });
+      }
+    }
 
     // Start Express server
     app.listen(config.port, () => {
-      logger.info(`🐝 Beeline Phone Bridge running on port ${config.port}`);
+      logger.info(`🐝 Beeline Multi-Vendor Bridge running on port ${config.port}`);
       logger.info(`📱 Phone Model: ${config.phoneModel}`);
       logger.info(`🔌 Supabase: ${config.supabaseUrl.split('/').pop()}`);
       logger.info(`🤖 AI: Grok (via Groq)`);
+      logger.info(`👥 Multi-vendor mode enabled`);
     });
   } catch (error) {
     logger.error(error, 'Failed to start bridge');
     process.exit(1);
   }
 }
-
-// Graceful shutdown
-process.on('SIGTERM', async () => {
-  logger.info('Shutting down gracefully...');
-  if (socket) {
-    await socket.end();
-  }
-  process.exit(0);
-});
 
 start();
