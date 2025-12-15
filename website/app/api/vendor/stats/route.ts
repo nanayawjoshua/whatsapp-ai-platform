@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/session';
-// import { query } from '@/lib/db'; // Deprecated in BUZZ - use Supabase instead
+import { requireAuth } from '../../../lib/session';
+// import { query } from '../../../lib/db'; // Deprecated in BUZZ - use Supabase instead
 
 export const dynamic = 'force-dynamic';
 

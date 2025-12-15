@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthenticatedVendor } from '@/lib/session';
+import { getAuthenticatedVendor } from '../../../lib/session';
 
 export const dynamic = 'force-dynamic';
 
