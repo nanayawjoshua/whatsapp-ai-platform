@@ -79,7 +79,6 @@ SELECT
   p.name,
   p.quantity,
   p.low_stock_threshold,
-  v.name as vendor_name,
   v.phone as vendor_phone
 FROM products p
 JOIN vendors v ON p.vendor_id = v.vendor_id
