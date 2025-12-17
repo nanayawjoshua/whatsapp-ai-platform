@@ -24,7 +24,7 @@
 
 **Go to**: Supabase Dashboard → SQL Editor → New Query
 
-**Copy and paste this entire SQL** (from `supabase/migrations/20250117_create_products_table.sql`):
+**IMPORTANT**: Copy ONLY the SQL code below (no markdown formatting, no backticks)
 
 ```sql
 -- Create products table for vendor inventory management
@@ -104,7 +104,6 @@ SELECT
   p.name,
   p.quantity,
   p.low_stock_threshold,
-  v.name as vendor_name,
   v.phone as vendor_phone
 FROM products p
 JOIN vendors v ON p.vendor_id = v.vendor_id
@@ -115,7 +114,15 @@ ORDER BY p.quantity ASC;
 
 **Click**: "Run" button
 
-**Expected**: Success message, no errors
+**Expected**:
+```
+Success. No rows returned
+```
+
+**Common Errors & Fixes**:
+- ❌ "syntax error at or near 'from'" → You copied markdown text. Copy ONLY the SQL code.
+- ❌ "column 'name' does not exist" → Old version. Use the SQL above (already fixed).
+- ✅ "Success. No rows returned" → Perfect! Migration complete.
 
 ---
 
@@ -246,13 +253,34 @@ Once setup is complete, move to `MVP_TESTING_CHECKLIST.md`
 
 ---
 
-## ✅ Checklist
+## ✅ Setup Checklist
 
-- [ ] Database migration ran successfully
-- [ ] `product-images` storage bucket created
-- [ ] Google OAuth redirect URI added
-- [ ] Vercel environment variables verified
-- [ ] WhatsApp bridge running
-- [ ] Cloudflare tunnel active
+- [ ] Database migration ran successfully (saw "Success. No rows returned")
+- [ ] `product-images` storage bucket created and is PUBLIC
+- [ ] Google OAuth redirect URI added (https://beeline.works/api/auth/callback/google)
+- [ ] Vercel environment variables verified (all 7 exist)
+- [ ] WhatsApp bridge running (`pm2 status` shows online)
+- [ ] Cloudflare tunnel active (`cloudflared tunnel list` shows ACTIVE)
 
-**When all checked**: Proceed to testing!
+**When all checked**: ✅ Setup complete! → Proceed to [MVP_TESTING_CHECKLIST.md](MVP_TESTING_CHECKLIST.md)
+
+---
+
+## 🎯 Quick Verification
+
+**Test the migration worked**:
+
+Go to Supabase → Table Editor → Should see new `products` table with columns:
+- product_id
+- vendor_id
+- name
+- description
+- image_url
+- price
+- quantity
+- is_active
+- low_stock_threshold
+- created_at
+- updated_at
+
+**If you see these columns** → Migration successful! ✅
