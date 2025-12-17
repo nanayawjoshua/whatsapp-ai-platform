@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
-import BeelineLogoNew from './components/BeelineLogoNew';
+import BeelineLogo from './components/BeelineLogo';
 
 export default function HomePage() {
   return (
@@ -11,7 +11,7 @@ export default function HomePage() {
       <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-xl border-b border-cream-border">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <BeelineLogoNew size="md" />
+            <BeelineLogo size="md" />
             <div className="hidden md:flex items-center gap-8">
               <a href="#how-it-works" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">How it works</a>
               <a href="#pricing" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Pricing</a>
@@ -33,14 +33,10 @@ export default function HomePage() {
 
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <h1 className="text-6xl sm:text-7xl lg:text-8xl font-light tracking-tight mb-6 text-text-primary">
-            Your WhatsApp.
-            <br />
-            <span className="bg-gradient-beeline bg-clip-text text-transparent font-normal">
-              But it never sleeps.
-            </span>
+            Never miss a customer again.
           </h1>
           <p className="text-xl sm:text-2xl text-text-secondary mb-12 max-w-3xl mx-auto font-light">
-            AI that handles sales and customer service on WhatsApp. 24/7. In your voice.
+            Your phone number now works 24/7. Answers every message. Closes sales while you sleep. You only pay when you make money.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
@@ -48,13 +44,13 @@ export default function HomePage() {
               href="/signup"
               className="inline-block px-10 py-5 bg-gradient-beeline text-white text-lg font-semibold rounded-full hover:scale-105 transition-all shadow-medium"
             >
-              Try 10 conversations free →
+              Start Selling 24/7 →
             </Link>
             <a
               href="#how-it-works"
               className="inline-block px-10 py-5 bg-surface text-text-primary text-lg font-semibold rounded-full border border-cream-border hover:bg-cream-dark transition-all"
             >
-              See how it works
+              See how it works (2 min)
             </a>
           </div>
 
@@ -100,31 +96,19 @@ export default function HomePage() {
 
       {/* Problem - Jobs always showed the pain first */}
       <section className="py-20 px-6 bg-cream-dark">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl sm:text-5xl font-light tracking-tight mb-6 text-text-primary">
-            You're losing money
-            <br />
-            <span className="text-text-secondary">while you sleep.</span>
+            You're losing sales right now.
           </h2>
-          <p className="text-lg text-text-secondary max-w-2xl mx-auto mb-12">
-            Every unanswered message is a missed sale. Every delayed customer service question drives them to your competitor.
+          <p className="text-lg text-text-secondary max-w-3xl mx-auto mb-12 leading-relaxed">
+            Every day, customers message your business number. They want to buy. They have questions. They're ready to spend money. But you're with another customer. Or it's 11 PM. Or it's Sunday. So they message your competitor instead.
           </p>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { stat: "67%", label: "of customers expect replies within 1 hour" },
-              { stat: "3AM", label: "when most sales & support requests happen" },
-              { stat: "₵450", label: "average value of a missed customer inquiry" }
-            ].map((item, i) => (
-              <div key={i} className="bg-surface rounded-2xl p-8 border border-cream-border shadow-soft">
-                <div className="text-4xl font-bold bg-gradient-beeline bg-clip-text text-transparent mb-2">
-                  {item.stat}
-                </div>
-                <div className="text-sm text-text-secondary">{item.label}</div>
-              </div>
-            ))}
-          </div>
+          <p className="text-lg text-text-secondary max-w-3xl mx-auto mb-12 font-semibold">
+            The average small business loses 67% of potential sales just because someone wasn't available to respond.
+          </p>
+          <p className="text-lg text-text-secondary max-w-3xl mx-auto">
+            That's not a business problem. That's a tragedy. You work too hard to let money walk away because you can't be in two places at once.
+          </p>
         </div>
       </section>
 
@@ -148,9 +132,9 @@ export default function HomePage() {
               <div className="w-16 h-16 bg-gradient-beeline rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-glow">
                 <span className="text-2xl font-bold text-white">1</span>
               </div>
-              <h3 className="text-2xl font-semibold text-text-primary mb-4">Scan</h3>
+              <h3 className="text-2xl font-semibold text-text-primary mb-4">Connect your business number</h3>
               <p className="text-text-secondary leading-relaxed">
-                Scan a QR code with WhatsApp. Your AI connects to your number in 5 seconds.
+                It takes 30 seconds - just scan a code with your phone.
               </p>
             </div>
 
@@ -159,9 +143,9 @@ export default function HomePage() {
               <div className="w-16 h-16 bg-gradient-beeline rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-glow">
                 <span className="text-2xl font-bold text-white">2</span>
               </div>
-              <h3 className="text-2xl font-semibold text-text-primary mb-4">Train</h3>
+              <h3 className="text-2xl font-semibold text-text-primary mb-4">Your number starts working for you</h3>
               <p className="text-text-secondary leading-relaxed">
-                Tell it about your products, pricing, and personality. Upload your knowledge base.
+                Every customer message gets answered instantly, naturally, like you would respond.
               </p>
             </div>
 
@@ -170,9 +154,9 @@ export default function HomePage() {
               <div className="w-16 h-16 bg-gradient-beeline rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-glow">
                 <span className="text-2xl font-bold text-white">3</span>
               </div>
-              <h3 className="text-2xl font-semibold text-text-primary mb-4">Sell</h3>
+              <h3 className="text-2xl font-semibold text-text-primary mb-4">You step in only when it matters</h3>
               <p className="text-text-secondary leading-relaxed">
-                Your AI handles sales and customer service. You take over anytime.
+                Get a notification when someone's ready to buy - you close the deal, we handle everything else.
               </p>
             </div>
           </div>
@@ -201,124 +185,70 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pricing - Jobs Style: Three Clear Choices */}
+      {/* Pricing - Pay Per Sale Model */}
       <section id="pricing" className="py-32 px-6 bg-cream">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-5xl sm:text-6xl font-light tracking-tight mb-6 text-text-primary">
-            Three plans.
-            <br />
-            <span className="text-text-secondary">Pick yours.</span>
+            You only pay when you earn.
           </h2>
-          <p className="text-xl text-text-secondary mb-16 max-w-2xl mx-auto">
-            Less than hiring someone for a single day. Cancel anytime.
+          <p className="text-xl text-text-secondary mb-16 max-w-3xl mx-auto">
+            Here's how it works: For every sale that comes through a conversation your number handled, we take 15%. That's it.
           </p>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Personal */}
-            <div className="bg-surface rounded-3xl p-10 border border-cream-border shadow-soft hover:shadow-medium transition-all">
-              <div className="mb-8">
-                <h3 className="text-2xl font-semibold text-text-primary mb-2">Personal</h3>
-                <p className="text-text-secondary text-sm mb-6">For individuals and side hustles</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-bold text-text-primary">₵49</span>
-                  <span className="text-text-secondary">/month</span>
-                </div>
+          {/* Pricing Card */}
+          <div className="bg-gradient-beeline rounded-3xl p-12 shadow-glow mb-12 max-w-2xl mx-auto">
+            <div className="mb-8">
+              <h3 className="text-3xl font-semibold text-white mb-4">Standard Pricing</h3>
+              <div className="flex items-baseline justify-center gap-3 mb-2">
+                <span className="text-5xl font-bold text-white">15%</span>
+                <span className="text-white/80 text-xl">per sale</span>
               </div>
-              <ul className="space-y-4 mb-8 text-left">
-                {[
-                  "1 WhatsApp number",
-                  "Unlimited conversations",
-                  "Custom personality",
-                  "24/7 AI responses",
-                  "Basic analytics"
-                ].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-text-secondary">
-                    <FaCheckCircle className="text-success w-5 h-5 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/signup?plan=personal"
-                className="block w-full px-6 py-3 bg-cream-dark text-text-primary font-semibold rounded-full hover:bg-text-primary hover:text-white transition-all border border-cream-border"
-              >
-                Start free
-              </Link>
-            </div>
-
-            {/* Business - Highlighted */}
-            <div className="bg-gradient-beeline rounded-3xl p-10 shadow-glow relative">
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-text-primary text-white text-xs font-bold rounded-full">
-                MOST POPULAR
-              </div>
-              <div className="mb-8">
-                <h3 className="text-2xl font-semibold text-white mb-2">Business</h3>
-                <p className="text-white/80 text-sm mb-6">For serious sellers</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-bold text-white">₵99</span>
-                  <span className="text-white/80">/month</span>
-                </div>
-              </div>
-              <ul className="space-y-4 mb-8 text-left">
-                {[
-                  "Everything in Personal",
-                  "Product catalog",
-                  "Advanced analytics",
-                  "Priority support",
-                  "Human takeover controls"
-                ].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-white">
-                    <FaCheckCircle className="w-5 h-5 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/signup?plan=business"
-                className="block w-full px-6 py-3 bg-white text-beeline-orange font-semibold rounded-full hover:bg-cream transition-all shadow-medium"
-              >
-                Start free
-              </Link>
-            </div>
-
-            {/* Enterprise */}
-            <div className="bg-surface rounded-3xl p-10 border-2 border-beeline-yellow/30 shadow-soft hover:shadow-medium transition-all">
-              <div className="mb-8">
-                <h3 className="text-2xl font-semibold text-text-primary mb-2">Enterprise</h3>
-                <p className="text-text-secondary text-sm mb-6">For chains & teams</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-5xl font-bold text-text-primary">₵599</span>
-                  <span className="text-text-secondary">/month</span>
-                </div>
-                <p className="text-xs text-text-tertiary mt-2">5-60 locations</p>
-              </div>
-              <ul className="space-y-4 mb-8 text-left">
-                {[
-                  "Everything in Business",
-                  "Multi-location dashboard",
-                  "Knowledge base (upload docs)",
-                  "Team management",
-                  "Volume discounts (up to 50%)",
-                  "Dedicated account manager"
-                ].map((feature, i) => (
-                  <li key={i} className="flex items-center gap-3 text-text-secondary">
-                    <FaCheckCircle className="text-success w-5 h-5 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/signup?plan=enterprise"
-                className="block w-full px-6 py-3 bg-cream-dark text-text-primary font-semibold rounded-full hover:bg-text-primary hover:text-white transition-all border border-cream-border"
-              >
-                Contact sales
-              </Link>
+              <p className="text-white/70 text-sm">No setup fees. No monthly subscriptions. No contracts.</p>
             </div>
           </div>
 
-          <p className="text-sm text-text-tertiary mt-12">
-            First 10 conversations free. No credit card required. Cancel anytime.
+          {/* What's Included */}
+          <div className="bg-surface rounded-3xl p-12 border border-cream-border shadow-medium mb-8">
+            <h3 className="text-2xl font-semibold text-text-primary mb-8">What's Included:</h3>
+            <ul className="grid md:grid-cols-2 gap-6 text-left max-w-2xl mx-auto">
+              {[
+                "Unlimited messages answered",
+                "24/7 availability, every day of the year",
+                "Works with your existing phone number",
+                "Notifications when customers are ready to buy",
+                "You close the deals, we handle the rest",
+                "Real-time conversation analytics"
+              ].map((feature, i) => (
+                <li key={i} className="flex items-start gap-3 text-text-secondary">
+                  <FaCheckCircle className="text-success w-5 h-5 flex-shrink-0 mt-1" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* What's NOT Included */}
+          <div className="bg-cream-dark rounded-3xl p-8 border border-cream-border mb-12">
+            <h3 className="text-lg font-semibold text-text-primary mb-4">What's NOT Included:</h3>
+            <div className="grid md:grid-cols-2 gap-4 text-sm text-text-secondary max-w-2xl mx-auto">
+              <div>No setup fees</div>
+              <div>No monthly subscriptions</div>
+              <div>No per-message charges</div>
+              <div>No contracts or commitments</div>
+              <div>No hidden costs</div>
+            </div>
+          </div>
+
+          <p className="text-lg font-semibold text-text-primary mb-8">
+            If you don't make money, we don't make money. Simple as that.
           </p>
+
+          <Link
+            href="/signup"
+            className="inline-block px-10 py-5 bg-gradient-beeline text-white text-lg font-semibold rounded-full hover:scale-105 transition-all shadow-medium"
+          >
+            Start Selling 24/7 →
+          </Link>
         </div>
       </section>
 
@@ -326,18 +256,18 @@ export default function HomePage() {
       <section className="py-32 px-6 bg-text-primary text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-beeline opacity-10"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <p className="text-sm font-semibold tracking-wider mb-4 text-white/60">ONE MORE THING</p>
+          <p className="text-sm font-semibold tracking-wider mb-4 text-white/60">THE PROMISE</p>
           <h2 className="text-5xl sm:text-6xl font-light tracking-tight mb-6">
-            It learns your business.
+            Your phone number should work as hard as you do.
           </h2>
           <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto">
-            Upload your menu, pricing, FAQs, policies—anything. Your AI becomes an expert on YOUR business. Perfect for customer service at scale.
+            While you sleep. While you're with another customer. While you're on vacation. Your AI is selling. Your phone number never stops working.
           </p>
           <Link
             href="/signup"
             className="inline-block px-10 py-5 bg-white text-text-primary text-lg font-semibold rounded-full hover:scale-105 transition-all shadow-large"
           >
-            Try 10 conversations free →
+            Start Selling 24/7 →
           </Link>
         </div>
       </section>
@@ -347,9 +277,12 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
             <div className="col-span-2">
-              <BeelineLogoNew size="sm" className="mb-4" />
-              <p className="text-sm text-text-secondary max-w-xs">
-                AI-powered WhatsApp assistant for businesses in Ghana.
+              <BeelineLogo size="sm" className="mb-4" />
+              <p className="text-sm text-text-secondary max-w-xs font-semibold mb-4">
+                Every message answered. Every sale captured.
+              </p>
+              <p className="text-sm text-text-tertiary max-w-xs">
+                Your phone number should work as hard as you do.
               </p>
             </div>
             <div>
