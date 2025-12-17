@@ -43,11 +43,11 @@ export async function POST(request: NextRequest) {
     });
 
     if (!phoneResponse.ok) {
-      const errorData = await cloudResponse.json();
+      const errorData = await phoneResponse.json();
       console.error('Cloud bridge error:', errorData);
       return NextResponse.json(
         { error: errorData.error || 'Failed to generate QR code' },
-        { status: cloudResponse.status }
+        { status: phoneResponse.status }
       );
     }
 

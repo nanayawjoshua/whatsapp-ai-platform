@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '../../../../lib/supabase';
+import { supabase } from '../../../../lib/supabase';
 import { getVendorFromSession } from '../../../../lib/session';
 
 export const dynamic = 'force-dynamic';
@@ -13,8 +13,6 @@ export async function GET(request: NextRequest) {
     if (!vendorId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const supabase = createClient();
 
     // Get query params
     const { searchParams } = new URL(request.url);
@@ -69,8 +67,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    const supabase = createClient();
 
     const { data: product, error } = await supabase
       .from('products')

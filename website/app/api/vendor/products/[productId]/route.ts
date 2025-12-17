@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '../../../../../lib/supabase';
+import { supabase } from '../../../../../lib/supabase';
 import { getVendorFromSession } from '../../../../../lib/session';
 
 export const dynamic = 'force-dynamic';
@@ -17,7 +17,6 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const supabase = createClient();
     const { data: product, error } = await supabase
       .from('products')
       .select('*')
@@ -61,7 +60,6 @@ export async function PATCH(
     if (body.is_active !== undefined) updates.is_active = body.is_active;
     if (body.low_stock_threshold !== undefined) updates.low_stock_threshold = parseInt(body.low_stock_threshold);
 
-    const supabase = createClient();
     const { data: product, error } = await supabase
       .from('products')
       .update(updates)
@@ -95,7 +93,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const supabase = createClient();
     const { error } = await supabase
       .from('products')
       .delete()
