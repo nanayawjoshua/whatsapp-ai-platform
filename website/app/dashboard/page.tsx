@@ -144,7 +144,8 @@ export default function DashboardPage() {
           />
           <NavItem
             icon={<Package size={20} />}
-            label="Orders"
+            label="Products"
+            href="/dashboard/products"
             collapsed={sidebarCollapsed}
           />
           <NavItem
