@@ -45,3 +45,13 @@ export async function invalidateSession(sessionToken: string): Promise<void> {
 export async function cleanupExpiredSessions(): Promise<number> {
   return 0; // No-op - deprecated
 }
+
+/**
+ * DEPRECATED: Use Supabase Auth instead
+ * Get vendor ID from session
+ */
+export async function getVendorFromSession(request: NextRequest): Promise<string | null> {
+  // TODO: Implement proper Supabase Auth session check
+  // For now, return null - this should be replaced with proper auth
+  return null;
+}

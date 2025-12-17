@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '../../../../lib/supabase';
+import { supabase } from '../../../../lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +21,6 @@ export async function POST(request: NextRequest) {
     const normalizedPhone = phone.replace(/[\s\-()]/g, '');
 
     // Look up vendor in Supabase
-    const supabase = createClient();
     const { data: vendor, error } = await supabase
       .from('vendors')
       .select('vendor_id, name, phone')
