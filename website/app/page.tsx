@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
-import BeelineLogo from './components/BeelineLogo';
+import BeelineLogoNew from './components/BeelineLogoNew';
 
 export default function HomePage() {
   return (
@@ -11,7 +11,7 @@ export default function HomePage() {
       <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-xl border-b border-cream-border">
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <BeelineLogo size="md" />
+            <BeelineLogoNew size="md" />
             <div className="hidden md:flex items-center gap-8">
               <a href="#how-it-works" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">How it works</a>
               <a href="#pricing" className="text-sm font-medium text-text-secondary hover:text-text-primary transition-colors">Pricing</a>
@@ -347,7 +347,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
             <div className="col-span-2">
-              <BeelineLogo size="sm" className="mb-4" />
+              <BeelineLogoNew size="sm" className="mb-4" />
               <p className="text-sm text-text-secondary max-w-xs">
                 AI-powered WhatsApp assistant for businesses in Ghana.
               </p>

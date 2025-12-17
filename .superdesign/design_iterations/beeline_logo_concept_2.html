@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beeline Logo Concept 2 - Modern Circular</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 60px;
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .logo-container {
+            background: white;
+            padding: 80px;
+            border-radius: 32px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        .logo {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 0 auto 40px;
+        }
+
+        /* Circular base with gradient */
+        .circle-base {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFB800 0%, #FF8C00 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Abstract bee path */
+        .bee-path {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+        }
+
+        .bee-path svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Central bee icon - ultra minimal */
+        .bee-icon {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .bee-body {
+            width: 60px;
+            height: 80px;
+            background: white;
+            border-radius: 30px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .bee-stripe-1, .bee-stripe-2 {
+            position: absolute;
+            width: 60px;
+            height: 12px;
+            background: #FFB800;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .bee-stripe-1 { top: 48%; }
+        .bee-stripe-2 { top: 68%; }
+
+        .bee-wing {
+            position: absolute;
+            width: 45px;
+            height: 35px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            top: 35%;
+        }
+
+        .bee-wing-left { left: -15px; transform: rotate(-15deg); }
+        .bee-wing-right { right: -15px; transform: rotate(15deg); }
+
+        /* Brand Name */
+        .brand-name {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FFB800 0%, #FF8C00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+
+        .tagline {
+            font-size: 16px;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Variants */
+        .variants {
+            margin-top: 60px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .variant {
+            padding: 30px;
+            border-radius: 16px;
+            background: #f5f5f5;
+        }
+
+        .variant-title {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .variant-logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
+
+        /* WhatsApp Green variant */
+        .variant.whatsapp .circle-base {
+            background: #25D366;
+        }
+
+        .variant.whatsapp .bee-stripe-1,
+        .variant.whatsapp .bee-stripe-2 {
+            background: #128C7E;
+        }
+
+        /* Dark variant */
+        .variant.dark {
+            background: #1a1a1a;
+        }
+
+        .variant.dark .variant-title {
+            color: #666;
+        }
+
+        .variant.dark .circle-base {
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        }
+
+        .variant.dark .bee-body {
+            background: #FFB800;
+        }
+
+        .variant.dark .bee-stripe-1,
+        .variant.dark .bee-stripe-2 {
+            background: #1a1a1a;
+        }
+
+        /* Minimal variant */
+        .variant.minimal .circle-base {
+            background: white;
+            border: 4px solid #FFB800;
+        }
+
+        .variant.minimal .bee-body {
+            background: #FFB800;
+        }
+
+        .variant.minimal .bee-stripe-1,
+        .variant.minimal .bee-stripe-2 {
+            background: white;
+        }
+
+        .variant.minimal .bee-wing {
+            background: rgba(255, 184, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <div class="logo">
+            <div class="circle-base">
+                <div class="bee-icon">
+                    <div class="bee-body"></div>
+                    <div class="bee-stripe-1"></div>
+                    <div class="bee-stripe-2"></div>
+                    <div class="bee-wing bee-wing-left"></div>
+                    <div class="bee-wing bee-wing-right"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="brand-name">Beeline</div>
+        <div class="tagline">WhatsApp AI Platform</div>
+
+        <div class="variants">
+            <div class="variant whatsapp">
+                <div class="variant-title">WhatsApp Theme</div>
+                <div class="variant-logo">
+                    <div class="circle-base" style="width: 100px; height: 100px;">
+                        <div class="bee-icon" style="width: 50px; height: 50px;">
+                            <div class="bee-body" style="width: 25px; height: 33px; border-radius: 12px;"></div>
+                            <div class="bee-stripe-1" style="width: 25px; height: 5px; top: 48%;"></div>
+                            <div class="bee-stripe-2" style="width: 25px; height: 5px; top: 68%;"></div>
+                            <div class="bee-wing bee-wing-left" style="width: 18px; height: 14px;"></div>
+                            <div class="bee-wing bee-wing-right" style="width: 18px; height: 14px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="variant dark">
+                <div class="variant-title">Dark Mode</div>
+                <div class="variant-logo">
+                    <div class="circle-base" style="width: 100px; height: 100px;">
+                        <div class="bee-icon" style="width: 50px; height: 50px;">
+                            <div class="bee-body" style="width: 25px; height: 33px; border-radius: 12px;"></div>
+                            <div class="bee-stripe-1" style="width: 25px; height: 5px; top: 48%;"></div>
+                            <div class="bee-stripe-2" style="width: 25px; height: 5px; top: 68%;"></div>
+                            <div class="bee-wing bee-wing-left" style="width: 18px; height: 14px;"></div>
+                            <div class="bee-wing bee-wing-right" style="width: 18px; height: 14px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="variant minimal">
+                <div class="variant-title">Minimal Outline</div>
+                <div class="variant-logo">
+                    <div class="circle-base" style="width: 100px; height: 100px;">
+                        <div class="bee-icon" style="width: 50px; height: 50px;">
+                            <div class="bee-body" style="width: 25px; height: 33px; border-radius: 12px;"></div>
+                            <div class="bee-stripe-1" style="width: 25px; height: 5px; top: 48%;"></div>
+                            <div class="bee-stripe-2" style="width: 25px; height: 5px; top: 68%;"></div>
+                            <div class="bee-wing bee-wing-left" style="width: 18px; height: 14px;"></div>
+                            <div class="bee-wing bee-wing-right" style="width: 18px; height: 14px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

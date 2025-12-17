@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beeline Text Logo 2 - Rounded Modern</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 60px;
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .logo-container {
+            background: white;
+            padding: 80px;
+            border-radius: 32px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 900px;
+        }
+
+        .main-logo {
+            font-size: 96px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .main-logo .bee {
+            color: #FFB800;
+        }
+
+        .description {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 60px;
+            font-weight: 500;
+        }
+
+        .variants {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .variant {
+            padding: 40px;
+            border-radius: 20px;
+            background: #f8f8f8;
+        }
+
+        .variant-title {
+            font-size: 13px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        /* Style 1: Rounded with dot accent */
+        .style-1 {
+            font-size: 72px;
+            font-weight: 700;
+            letter-spacing: 0px;
+            color: #1a1a1a;
+            position: relative;
+        }
+
+        .style-1::before {
+            content: '•';
+            color: #FFB800;
+            margin-right: 8px;
+        }
+
+        /* Style 2: Extra bold rounded */
+        .style-2 {
+            font-size: 72px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #1a1a1a;
+            text-transform: lowercase;
+        }
+
+        .style-2 .line {
+            color: #FFB800;
+        }
+
+        /* Style 3: Pill background */
+        .style-3 {
+            font-size: 72px;
+            font-weight: 700;
+            letter-spacing: 0px;
+            color: white;
+            background: linear-gradient(135deg, #FFB800 0%, #FF8C00 100%);
+            padding: 20px 50px;
+            border-radius: 100px;
+            display: inline-block;
+        }
+
+        /* WhatsApp theme variant */
+        .variant.whatsapp {
+            background: #25D366;
+        }
+
+        .variant.whatsapp .variant-title {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .variant.whatsapp .style-1 {
+            color: white;
+        }
+
+        .variant.whatsapp .style-1::before {
+            color: white;
+        }
+
+        .variant.whatsapp .style-2 {
+            color: white;
+        }
+
+        .variant.whatsapp .style-2 .line {
+            color: #FFB800;
+        }
+
+        /* Dark variant */
+        .variant.dark {
+            background: #1a1a1a;
+        }
+
+        .variant.dark .variant-title {
+            color: #666;
+        }
+
+        .variant.dark .style-1 {
+            color: white;
+        }
+
+        .variant.dark .style-1::before {
+            color: #FFB800;
+        }
+
+        .variant.dark .style-2 {
+            color: white;
+        }
+
+        .variant.dark .style-2 .line {
+            color: #FFB800;
+        }
+
+        /* Outlined variant */
+        .variant.outline .style-3 {
+            color: #FFB800;
+            background: transparent;
+            border: 4px solid #FFB800;
+        }
+
+        /* Size demo */
+        .size-demo {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .size-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .size-label {
+            font-size: 11px;
+            color: #999;
+            width: 60px;
+            text-align: right;
+        }
+
+        .logo-64 { font-size: 64px; font-weight: 700; letter-spacing: 0; }
+        .logo-48 { font-size: 48px; font-weight: 700; letter-spacing: 0; }
+        .logo-32 { font-size: 32px; font-weight: 700; letter-spacing: 0; }
+        .logo-24 { font-size: 24px; font-weight: 700; letter-spacing: 0; }
+        .logo-18 { font-size: 18px; font-weight: 700; letter-spacing: 0; }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <div class="main-logo">
+            <span class="bee">bee</span><span>line</span>
+        </div>
+        <div class="description">
+            Concept 2: DM Sans - Friendly rounded sans-serif
+        </div>
+
+        <div class="variants">
+            <!-- Dot Accent -->
+            <div class="variant">
+                <div class="variant-title">Dot Accent (Bee Symbol)</div>
+                <div class="style-1">beeline</div>
+            </div>
+
+            <!-- Heavy Weight Split -->
+            <div class="variant">
+                <div class="variant-title">Heavy Weight with Color Split</div>
+                <div class="style-2">
+                    <span>bee</span><span class="line">line</span>
+                </div>
+            </div>
+
+            <!-- Pill Background -->
+            <div class="variant">
+                <div class="variant-title">Pill Badge Style</div>
+                <div class="style-3">beeline</div>
+            </div>
+
+            <!-- WhatsApp Theme -->
+            <div class="variant whatsapp">
+                <div class="variant-title">WhatsApp Green Theme</div>
+                <div style="display: grid; gap: 30px;">
+                    <div class="style-1">beeline</div>
+                    <div class="style-2">
+                        <span>bee</span><span class="line">line</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dark Mode -->
+            <div class="variant dark">
+                <div class="variant-title">Dark Mode</div>
+                <div style="display: grid; gap: 30px;">
+                    <div class="style-1">beeline</div>
+                    <div class="style-2">
+                        <span>bee</span><span class="line">line</span>
+                    </div>
+                    <div class="style-3">beeline</div>
+                </div>
+            </div>
+
+            <!-- Outlined Pill -->
+            <div class="variant outline">
+                <div class="variant-title">Outlined Pill (White Background)</div>
+                <div class="style-3">beeline</div>
+            </div>
+
+            <!-- Responsive Sizes -->
+            <div class="variant">
+                <div class="variant-title">Responsive Sizing</div>
+                <div class="size-demo">
+                    <div class="size-row">
+                        <div class="size-label">64px</div>
+                        <div class="logo-64" style="color: #1a1a1a;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                    <div class="size-row">
+                        <div class="size-label">48px</div>
+                        <div class="logo-48" style="color: #1a1a1a;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                    <div class="size-row">
+                        <div class="size-label">32px</div>
+                        <div class="logo-32" style="color: #1a1a1a;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                    <div class="size-row">
+                        <div class="size-label">24px</div>
+                        <div class="logo-24" style="color: #1a1a1a;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                    <div class="size-row">
+                        <div class="size-label">18px</div>
+                        <div class="logo-18" style="color: #1a1a1a;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -25,7 +25,7 @@ import {
   CheckCircle2,
   AlertCircle,
 } from 'lucide-react';
-import BeelineLogo from '../components/BeelineLogo';
+import BeelineLogoNew from '../components/BeelineLogoNew';
 import WhatsAppConnection from '../../components/WhatsAppConnection';
 
 interface Vendor {
@@ -108,7 +108,7 @@ export default function DashboardPage() {
     return (
       <div className="min-h-screen bg-cream flex items-center justify-center">
         <div className="text-center">
-          <BeelineLogo size="lg" />
+          <BeelineLogoNew size="lg" />
           <p className="text-text-secondary mt-4">Loading your dashboard...</p>
         </div>
       </div>
@@ -125,8 +125,7 @@ export default function DashboardPage() {
       >
         {/* Logo */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-cream-border">
-          {!sidebarCollapsed && <BeelineLogo size="sm" />}
-          {sidebarCollapsed && <BeelineLogo size="sm" showText={false} />}
+          <BeelineLogoNew size="sm" showCursor={!sidebarCollapsed} />
         </div>
 
         {/* Navigation */}

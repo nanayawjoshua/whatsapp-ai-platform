@@ -69,9 +69,14 @@ const config: Config = {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-4px)' },
         },
+        blink: {
+          '0%, 49%': { opacity: '1' },
+          '50%, 100%': { opacity: '0' },
+        },
       },
       animation: {
         float: 'float 3s ease-in-out infinite',
+        blink: 'blink 1s infinite',
       },
     },
   },

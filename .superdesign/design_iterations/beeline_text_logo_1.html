@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beeline Text Logo 1 - Geometric Sans</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 60px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .logo-container {
+            background: white;
+            padding: 80px;
+            border-radius: 32px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.15);
+            text-align: center;
+            max-width: 900px;
+        }
+
+        .main-logo {
+            font-size: 96px;
+            font-weight: 700;
+            letter-spacing: -3px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+        }
+
+        .main-logo .bee {
+            color: #FFB800;
+        }
+
+        .main-logo .line {
+            color: #1a1a1a;
+        }
+
+        .description {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 60px;
+            font-weight: 500;
+        }
+
+        .variants {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .variant {
+            padding: 40px;
+            border-radius: 20px;
+            background: #f8f8f8;
+        }
+
+        .variant-title {
+            font-size: 13px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        /* Style 1: Monospaced weight contrast */
+        .style-1 {
+            font-size: 72px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            color: #1a1a1a;
+        }
+
+        .style-1 .bee {
+            font-weight: 300;
+            color: #FFB800;
+        }
+
+        /* Style 2: All bold with underline */
+        .style-2 {
+            font-size: 72px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            color: #1a1a1a;
+            position: relative;
+            display: inline-block;
+        }
+
+        .style-2::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: #FFB800;
+        }
+
+        /* Style 3: Split color - gradient */
+        .style-3 {
+            font-size: 72px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            background: linear-gradient(90deg, #FFB800 0%, #FFB800 50%, #1a1a1a 50%, #1a1a1a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Dark variants */
+        .variant.dark {
+            background: #1a1a1a;
+        }
+
+        .variant.dark .variant-title {
+            color: #666;
+        }
+
+        .variant.dark .style-1 {
+            color: white;
+        }
+
+        .variant.dark .style-1 .bee {
+            color: #FFB800;
+        }
+
+        .variant.dark .style-2 {
+            color: white;
+        }
+
+        .variant.dark .style-3 {
+            background: linear-gradient(90deg, #FFB800 0%, #FFB800 50%, white 50%, white 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Minimal variant */
+        .variant.minimal .style-1,
+        .variant.minimal .style-2,
+        .variant.minimal .style-3 {
+            font-weight: 400;
+            letter-spacing: 0px;
+        }
+
+        .variant.minimal .style-1 .bee {
+            font-weight: 300;
+        }
+
+        /* Compact sizes */
+        .size-options {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .size-option {
+            padding: 20px 30px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .size-label {
+            font-size: 10px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .size-48 { font-size: 48px; font-weight: 700; letter-spacing: -1.5px; }
+        .size-32 { font-size: 32px; font-weight: 700; letter-spacing: -1px; }
+        .size-24 { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; }
+        .size-16 { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <div class="main-logo">
+            <span class="bee">bee</span><span class="line">line</span>
+        </div>
+        <div class="description">
+            Concept 1: Space Grotesk - Modern geometric sans-serif
+        </div>
+
+        <div class="variants">
+            <!-- Weight Contrast -->
+            <div class="variant">
+                <div class="variant-title">Weight Contrast (Light Bee + Bold Line)</div>
+                <div class="style-1">
+                    <span class="bee">bee</span><span>line</span>
+                </div>
+            </div>
+
+            <!-- Underline Emphasis -->
+            <div class="variant">
+                <div class="variant-title">Underline Accent</div>
+                <div class="style-2">beeline</div>
+            </div>
+
+            <!-- Split Color -->
+            <div class="variant">
+                <div class="variant-title">Split Color (50/50)</div>
+                <div class="style-3">beeline</div>
+            </div>
+
+            <!-- Dark Mode -->
+            <div class="variant dark">
+                <div class="variant-title">Dark Mode Versions</div>
+                <div style="display: grid; gap: 30px;">
+                    <div class="style-1">
+                        <span class="bee">bee</span><span>line</span>
+                    </div>
+                    <div class="style-2">beeline</div>
+                    <div class="style-3">beeline</div>
+                </div>
+            </div>
+
+            <!-- Size Options -->
+            <div class="variant">
+                <div class="variant-title">Scalability Test</div>
+                <div class="size-options">
+                    <div class="size-option">
+                        <div class="size-label">Large (48px)</div>
+                        <div class="size-48" style="color: #1a1a1a;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                    <div class="size-option">
+                        <div class="size-label">Medium (32px)</div>
+                        <div class="size-32" style="color: #1a1a1a;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                    <div class="size-option">
+                        <div class="size-label">Small (24px)</div>
+                        <div class="size-24" style="color: #1a1a1a;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                    <div class="size-option">
+                        <div class="size-label">Tiny (16px)</div>
+                        <div class="size-16" style="color: #1a1a1a;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Minimal Weight -->
+            <div class="variant minimal">
+                <div class="variant-title">Light Weight Alternative</div>
+                <div class="style-1">
+                    <span class="bee">bee</span><span>line</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

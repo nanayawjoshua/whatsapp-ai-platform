@@ -5,37 +5,52 @@ import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { FaGoogle } from 'react-icons/fa';
-import BeelineLogo from '../components/BeelineLogo';
+import BeelineLogoNew from '../components/BeelineLogoNew';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePhoneLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
+      if (!phone.match(/^\+?[0-9\s\-()]{8,}$/)) {
+        throw new Error('Please enter a valid phone number');
+      }
+
+      // Look up vendor by phone number
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Login failed');
+      }
+
+      const data = await response.json();
+
+      // Sign in with vendorId
       const result = await signIn('credentials', {
-        identifier,
-        password,
+        vendorId: data.vendorId,
         redirect: false,
       });
 
       if (result?.error) {
-        setError('Invalid email/phone or password');
-        setLoading(false);
-        return;
+        throw new Error('Authentication failed');
       }
 
       router.push('/dashboard');
       router.refresh();
     } catch (err: any) {
-      setError('Network error. Please try again.');
+      setError(err.message || 'Login failed. Please try again.');
       setLoading(false);
     }
   };
@@ -60,7 +75,7 @@ export default function LoginPage() {
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/">
-              <BeelineLogo size="md" />
+              <BeelineLogoNew size="md" />
             </Link>
             <Link href="/" className="text-text-secondary hover:text-text-primary transition-colors text-sm font-medium">
               ← Back
@@ -101,69 +116,40 @@ export default function LoginPage() {
                 <div className="w-full border-t border-cream-border"></div>
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="px-3 bg-surface text-text-tertiary font-medium">or with credentials</span>
+                <span className="px-3 bg-surface text-text-tertiary font-medium">or with phone number</span>
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Error Message */}
-              {error && (
-                <div className="p-4 bg-error/10 border border-error/20 rounded-xl text-error text-sm">
-                  {error}
-                </div>
-              )}
-
-              {/* Email/Phone Input */}
-              <div>
-                <label htmlFor="identifier" className="block text-sm font-medium text-text-secondary mb-2">
-                  Email or Phone Number
+            {/* Phone Login Form */}
+            <form onSubmit={handlePhoneLogin}>
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-text-secondary mb-2">
+                  WhatsApp Number
                 </label>
                 <input
-                  id="identifier"
-                  type="text"
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="your@email.com or +233..."
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+233 24 123 4567"
+                  className="w-full text-lg px-4 py-3.5 bg-surface border-2 border-cream-border rounded-xl focus:ring-2 focus:ring-beeline-yellow/20 focus:border-beeline-yellow transition-all text-text-primary placeholder:text-text-tertiary"
                   required
-                  className="w-full px-4 py-3.5 bg-surface border-2 border-cream-border rounded-xl focus:ring-2 focus:ring-beeline-yellow/20 focus:border-beeline-yellow transition-all text-text-primary placeholder:text-text-tertiary"
                 />
               </div>
-
-              {/* Password Input */}
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-2">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  required
-                  className="w-full px-4 py-3.5 bg-surface border-2 border-cream-border rounded-xl focus:ring-2 focus:ring-beeline-yellow/20 focus:border-beeline-yellow transition-all text-text-primary placeholder:text-text-tertiary"
-                />
-              </div>
-
-              {/* Forgot Password Link */}
-              <div className="text-right">
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-text-secondary hover:text-text-primary font-medium"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-
-              {/* Submit Button */}
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !phone}
                 className="w-full px-8 py-4 bg-gradient-beeline text-white font-semibold rounded-full shadow-medium hover:shadow-hover hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Logging in...' : 'Log in →'}
+                {loading ? 'Signing in...' : 'Sign in →'}
               </button>
             </form>
+
+            {/* Error Message */}
+            {error && (
+              <div className="mt-6 p-4 bg-error/10 border border-error/20 rounded-xl text-error text-sm">
+                {error}
+              </div>
+            )}
           </div>
 
           {/* Signup Link */}

@@ -1,19 +1,50 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '../../../../lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
 /**
- * DEPRECATED: Use Supabase Auth instead
- *
- * In BUZZ MVP, vendors authenticate via WhatsApp
- * This endpoint is kept for backwards compatibility
+ * Vendor Login - Look up vendor by phone number
  */
 export async function POST(request: NextRequest) {
-  return NextResponse.json(
-    {
-      error: 'This endpoint is deprecated in BUZZ. Use Supabase Auth or WhatsApp authentication instead.',
-      note: 'Vendor authentication is now handled through WhatsApp/Supabase.',
-    },
-    { status: 410 } // Gone
-  );
+  try {
+    const { phone } = await request.json();
+
+    if (!phone) {
+      return NextResponse.json(
+        { error: 'Phone number is required' },
+        { status: 400 }
+      );
+    }
+
+    // Normalize phone number (remove spaces, dashes, etc.)
+    const normalizedPhone = phone.replace(/[\s\-()]/g, '');
+
+    // Look up vendor in Supabase
+    const supabase = createClient();
+    const { data: vendor, error } = await supabase
+      .from('vendors')
+      .select('vendor_id, name, phone')
+      .eq('phone', normalizedPhone)
+      .single();
+
+    if (error || !vendor) {
+      return NextResponse.json(
+        { error: 'No account found with this phone number. Please sign up first.' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      vendorId: vendor.vendor_id,
+      name: vendor.name,
+      phone: vendor.phone,
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    return NextResponse.json(
+      { error: 'Login failed. Please try again.' },
+      { status: 500 }
+    );
+  }
 }

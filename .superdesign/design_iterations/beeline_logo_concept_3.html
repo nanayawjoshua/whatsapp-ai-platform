@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beeline Logo Concept 3 - Linear Path</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 60px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .logo-container {
+            background: white;
+            padding: 80px;
+            border-radius: 32px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.15);
+            text-align: center;
+        }
+
+        .logo {
+            position: relative;
+            width: 350px;
+            height: 200px;
+            margin: 0 auto 40px;
+        }
+
+        /* Dotted line path (representing "beeline" - shortest path) */
+        .path-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-image: linear-gradient(to right, #FFB800 0%, #FFB800 60%, transparent 60%, transparent 100%);
+            background-size: 30px 4px;
+            background-repeat: repeat-x;
+            transform: translateY(-50%);
+        }
+
+        /* Start point */
+        .start-point {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            background: #e0e0e0;
+            border: 4px solid #FFB800;
+            border-radius: 50%;
+        }
+
+        /* End point */
+        .end-point {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            background: #FFB800;
+            border: 4px solid #FFB800;
+            border-radius: 50%;
+        }
+
+        /* Bee traveling along the line */
+        .bee-traveler {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-10deg);
+            width: 80px;
+            height: 60px;
+            animation: fly 3s ease-in-out infinite;
+        }
+
+        @keyframes fly {
+            0%, 100% { transform: translate(-50%, -50%) rotate(-10deg) translateY(0); }
+            50% { transform: translate(-50%, -50%) rotate(-10deg) translateY(-8px); }
+        }
+
+        /* Bee body - simple ellipse */
+        .bee-ellipse {
+            width: 45px;
+            height: 60px;
+            background: linear-gradient(135deg, #FFB800 0%, #FF8C00 100%);
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Stripes */
+        .travel-stripe {
+            position: absolute;
+            width: 45px;
+            height: 8px;
+            background: rgba(0,0,0,0.2);
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 4px;
+        }
+
+        .travel-stripe:nth-child(1) { top: 18px; }
+        .travel-stripe:nth-child(2) { top: 35px; }
+
+        /* Wings - simple curves */
+        .travel-wing {
+            position: absolute;
+            width: 28px;
+            height: 20px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            top: 15px;
+            animation: wing-flap 0.3s ease-in-out infinite;
+        }
+
+        .travel-wing-left { left: -10px; transform-origin: right center; }
+        .travel-wing-right { right: -10px; transform-origin: left center; }
+
+        @keyframes wing-flap {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(0.7); }
+        }
+
+        /* Brand Name with "line" emphasized */
+        .brand-name {
+            font-size: 48px;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+
+        .brand-name .bee {
+            color: #FFB800;
+        }
+
+        .brand-name .line {
+            color: #1a1a1a;
+            border-bottom: 4px solid #FFB800;
+        }
+
+        .tagline {
+            font-size: 16px;
+            color: #666;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Variants */
+        .variants {
+            margin-top: 60px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .variant {
+            padding: 30px;
+            border-radius: 16px;
+            background: #f5f5f5;
+        }
+
+        .variant-title {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .variant-logo {
+            width: 140px;
+            height: 80px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Compact version */
+        .variant.compact .path-line {
+            background-size: 15px 3px;
+            height: 3px;
+        }
+
+        .variant.compact .start-point,
+        .variant.compact .end-point {
+            width: 12px;
+            height: 12px;
+            border-width: 2px;
+        }
+
+        .variant.compact .start-point { left: 10px; }
+        .variant.compact .end-point { right: 10px; }
+
+        /* Icon only version */
+        .variant.icon-only {
+            background: #FFB800;
+        }
+
+        .variant.icon-only .variant-title {
+            color: rgba(255,255,255,0.7);
+        }
+
+        .variant.icon-only .path-line {
+            background-image: linear-gradient(to right, white 0%, white 60%, transparent 60%, transparent 100%);
+        }
+
+        .variant.icon-only .start-point {
+            background: #FFB800;
+            border-color: white;
+        }
+
+        .variant.icon-only .end-point {
+            background: white;
+            border-color: white;
+        }
+
+        .variant.icon-only .bee-ellipse {
+            background: white;
+        }
+
+        .variant.icon-only .travel-stripe {
+            background: rgba(255,184,0,0.4);
+        }
+
+        /* Dark version */
+        .variant.dark {
+            background: #1a1a1a;
+        }
+
+        .variant.dark .variant-title {
+            color: #666;
+        }
+
+        .variant.dark .path-line {
+            background-image: linear-gradient(to right, #FFB800 0%, #FFB800 60%, transparent 60%, transparent 100%);
+        }
+
+        .variant.dark .start-point {
+            background: #2d2d2d;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <div class="logo">
+            <div class="path-line"></div>
+            <div class="start-point"></div>
+            <div class="end-point"></div>
+            <div class="bee-traveler">
+                <div class="bee-ellipse">
+                    <div class="travel-stripe"></div>
+                    <div class="travel-stripe"></div>
+                </div>
+                <div class="travel-wing travel-wing-left"></div>
+                <div class="travel-wing travel-wing-right"></div>
+            </div>
+        </div>
+
+        <div class="brand-name"><span class="bee">Bee</span><span class="line">line</span></div>
+        <div class="tagline">The Straight Path to Sales</div>
+
+        <div class="variants">
+            <div class="variant compact">
+                <div class="variant-title">Compact</div>
+                <div class="variant-logo">
+                    <div class="path-line"></div>
+                    <div class="start-point"></div>
+                    <div class="end-point"></div>
+                    <div class="bee-traveler" style="width: 32px; height: 24px;">
+                        <div class="bee-ellipse" style="width: 18px; height: 24px;">
+                            <div class="travel-stripe" style="width: 18px; height: 3px; top: 7px;"></div>
+                            <div class="travel-stripe" style="width: 18px; height: 3px; top: 14px;"></div>
+                        </div>
+                        <div class="travel-wing travel-wing-left" style="width: 11px; height: 8px; top: 6px;"></div>
+                        <div class="travel-wing travel-wing-right" style="width: 11px; height: 8px; top: 6px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="variant icon-only">
+                <div class="variant-title">App Icon</div>
+                <div class="variant-logo">
+                    <div class="path-line"></div>
+                    <div class="start-point"></div>
+                    <div class="end-point"></div>
+                    <div class="bee-traveler" style="width: 32px; height: 24px;">
+                        <div class="bee-ellipse" style="width: 18px; height: 24px;">
+                            <div class="travel-stripe" style="width: 18px; height: 3px; top: 7px;"></div>
+                            <div class="travel-stripe" style="width: 18px; height: 3px; top: 14px;"></div>
+                        </div>
+                        <div class="travel-wing travel-wing-left" style="width: 11px; height: 8px; top: 6px; background: rgba(255,184,0,0.5);"></div>
+                        <div class="travel-wing travel-wing-right" style="width: 11px; height: 8px; top: 6px; background: rgba(255,184,0,0.5);"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="variant dark">
+                <div class="variant-title">Dark Mode</div>
+                <div class="variant-logo">
+                    <div class="path-line"></div>
+                    <div class="start-point"></div>
+                    <div class="end-point"></div>
+                    <div class="bee-traveler" style="width: 32px; height: 24px;">
+                        <div class="bee-ellipse" style="width: 18px; height: 24px;">
+                            <div class="travel-stripe" style="width: 18px; height: 3px; top: 7px;"></div>
+                            <div class="travel-stripe" style="width: 18px; height: 3px; top: 14px;"></div>
+                        </div>
+                        <div class="travel-wing travel-wing-left" style="width: 11px; height: 8px; top: 6px;"></div>
+                        <div class="travel-wing travel-wing-right" style="width: 11px; height: 8px; top: 6px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

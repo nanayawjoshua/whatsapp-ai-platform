@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beeline Text Logo 3 - Tech Monospace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 60px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .logo-container {
+            background: white;
+            padding: 80px;
+            border-radius: 32px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 900px;
+        }
+
+        .main-logo {
+            font-size: 96px;
+            font-weight: 700;
+            letter-spacing: 0px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .main-logo .bee {
+            color: #FFB800;
+        }
+
+        .description {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 60px;
+            font-weight: 500;
+        }
+
+        .variants {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            margin-top: 60px;
+        }
+
+        .variant {
+            padding: 40px;
+            border-radius: 20px;
+            background: #f8f8f8;
+        }
+
+        .variant-title {
+            font-size: 13px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            font-weight: 600;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        /* Style 1: Monospace with brackets */
+        .style-1 {
+            font-size: 72px;
+            font-weight: 600;
+            letter-spacing: 0px;
+            color: #1a1a1a;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .style-1::before {
+            content: '[';
+            color: #FFB800;
+            margin-right: 5px;
+        }
+
+        .style-1::after {
+            content: ']';
+            color: #FFB800;
+            margin-left: 5px;
+        }
+
+        /* Style 2: Terminal cursor */
+        .style-2 {
+            font-size: 72px;
+            font-weight: 600;
+            letter-spacing: 0px;
+            color: #1a1a1a;
+            font-family: 'JetBrains Mono', monospace;
+            position: relative;
+        }
+
+        .style-2::after {
+            content: '_';
+            color: #FFB800;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        /* Style 3: Code comment style */
+        .style-3 {
+            font-size: 72px;
+            font-weight: 600;
+            letter-spacing: 0px;
+            color: #1a1a1a;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .style-3::before {
+            content: '// ';
+            color: #999;
+            margin-right: 10px;
+        }
+
+        .style-3 .bee {
+            color: #FFB800;
+        }
+
+        /* Terminal theme variant */
+        .variant.terminal {
+            background: #1a1a1a;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .variant.terminal .variant-title {
+            color: #666;
+        }
+
+        .variant.terminal .style-1,
+        .variant.terminal .style-2,
+        .variant.terminal .style-3 {
+            color: #00FF00;
+        }
+
+        .variant.terminal .style-1::before,
+        .variant.terminal .style-1::after {
+            color: #FFB800;
+        }
+
+        .variant.terminal .style-2::after {
+            color: #00FF00;
+        }
+
+        .variant.terminal .style-3::before {
+            color: #666;
+        }
+
+        .variant.terminal .style-3 .bee {
+            color: #FFB800;
+        }
+
+        /* VS Code theme */
+        .variant.vscode {
+            background: #1e1e1e;
+        }
+
+        .variant.vscode .variant-title {
+            color: #858585;
+        }
+
+        .variant.vscode .style-1 {
+            color: #CE9178;
+        }
+
+        .variant.vscode .style-1::before,
+        .variant.vscode .style-1::after {
+            color: #569CD6;
+        }
+
+        .variant.vscode .style-3 {
+            color: #CE9178;
+        }
+
+        .variant.vscode .style-3::before {
+            color: #6A9955;
+        }
+
+        .variant.vscode .style-3 .bee {
+            color: #DCDCAA;
+        }
+
+        /* Matrix theme */
+        .variant.matrix {
+            background: #000;
+        }
+
+        .variant.matrix .variant-title {
+            color: #00FF00;
+        }
+
+        .variant.matrix .style-1,
+        .variant.matrix .style-2,
+        .variant.matrix .style-3 {
+            color: #00FF00;
+            text-shadow: 0 0 10px #00FF00;
+        }
+
+        .variant.matrix .style-1::before,
+        .variant.matrix .style-1::after,
+        .variant.matrix .style-2::after {
+            color: #00FF00;
+        }
+
+        .variant.matrix .style-3::before {
+            color: #008800;
+        }
+
+        .variant.matrix .style-3 .bee {
+            color: #00FF00;
+        }
+
+        /* Light minimal */
+        .variant.minimal .style-1,
+        .variant.minimal .style-2,
+        .variant.minimal .style-3 {
+            font-weight: 400;
+        }
+
+        /* Size scaling */
+        .size-grid {
+            display: grid;
+            gap: 25px;
+        }
+
+        .size-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .size-label {
+            font-size: 11px;
+            color: #999;
+            width: 70px;
+            text-align: right;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .mono-72 { font-size: 72px; font-weight: 600; }
+        .mono-56 { font-size: 56px; font-weight: 600; }
+        .mono-40 { font-size: 40px; font-weight: 600; }
+        .mono-28 { font-size: 28px; font-weight: 600; }
+        .mono-20 { font-size: 20px; font-weight: 600; }
+        .mono-14 { font-size: 14px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <div class="main-logo">
+            <span class="bee">bee</span><span>line</span>
+        </div>
+        <div class="description">
+            Concept 3: JetBrains Mono - Technical monospace
+        </div>
+
+        <div class="variants">
+            <!-- Brackets Style -->
+            <div class="variant">
+                <div class="variant-title">Array Notation Style</div>
+                <div class="style-1">beeline</div>
+            </div>
+
+            <!-- Terminal Cursor -->
+            <div class="variant">
+                <div class="variant-title">Terminal Cursor (Animated)</div>
+                <div class="style-2">beeline</div>
+            </div>
+
+            <!-- Comment Style -->
+            <div class="variant">
+                <div class="variant-title">Code Comment Style</div>
+                <div class="style-3">
+                    <span class="bee">bee</span><span>line</span>
+                </div>
+            </div>
+
+            <!-- Terminal Theme -->
+            <div class="variant terminal">
+                <div class="variant-title">Terminal Green Theme</div>
+                <div style="display: grid; gap: 30px;">
+                    <div class="style-1">beeline</div>
+                    <div class="style-2">beeline</div>
+                    <div class="style-3">
+                        <span class="bee">bee</span><span>line</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VS Code Theme -->
+            <div class="variant vscode">
+                <div class="variant-title">VS Code Dark+ Theme</div>
+                <div style="display: grid; gap: 30px;">
+                    <div class="style-1">beeline</div>
+                    <div class="style-3">
+                        <span class="bee">bee</span><span>line</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Matrix Theme -->
+            <div class="variant matrix">
+                <div class="variant-title">Matrix Digital Rain</div>
+                <div style="display: grid; gap: 30px;">
+                    <div class="style-1">beeline</div>
+                    <div class="style-2">beeline</div>
+                </div>
+            </div>
+
+            <!-- Light Minimal -->
+            <div class="variant minimal">
+                <div class="variant-title">Light Weight (Regular)</div>
+                <div class="style-1">beeline</div>
+            </div>
+
+            <!-- Size Scale -->
+            <div class="variant">
+                <div class="variant-title">Size Scaling</div>
+                <div class="size-grid">
+                    <div class="size-item">
+                        <div class="size-label">72px</div>
+                        <div class="mono-72" style="color: #1a1a1a; font-family: 'JetBrains Mono', monospace;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                    <div class="size-item">
+                        <div class="size-label">56px</div>
+                        <div class="mono-56" style="color: #1a1a1a; font-family: 'JetBrains Mono', monospace;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                    <div class="size-item">
+                        <div class="size-label">40px</div>
+                        <div class="mono-40" style="color: #1a1a1a; font-family: 'JetBrains Mono', monospace;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                    <div class="size-item">
+                        <div class="size-label">28px</div>
+                        <div class="mono-28" style="color: #1a1a1a; font-family: 'JetBrains Mono', monospace;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                    <div class="size-item">
+                        <div class="size-label">20px</div>
+                        <div class="mono-20" style="color: #1a1a1a; font-family: 'JetBrains Mono', monospace;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                    <div class="size-item">
+                        <div class="size-label">14px</div>
+                        <div class="mono-14" style="color: #1a1a1a; font-family: 'JetBrains Mono', monospace;">
+                            <span style="color: #FFB800;">bee</span>line
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
