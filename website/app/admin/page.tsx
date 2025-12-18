@@ -20,7 +20,7 @@ import {
   ArrowUp,
   ArrowDown,
 } from 'lucide-react';
-import BeelineLogo from '../components/BeelineLogo';
+import BeelineLogoNew from '../components/BeelineLogoNew';
 
 interface AdminMetrics {
   totalVendors: number;
@@ -87,7 +87,7 @@ export default function AdminDashboardPage() {
     return (
       <div className="min-h-screen bg-cream flex items-center justify-center">
         <div className="text-center">
-          <BeelineLogo size="lg" />
+          <BeelineLogoNew size="lg" />
           <p className="text-text-secondary mt-4">Loading Admin Dashboard...</p>
         </div>
       </div>
@@ -102,7 +102,7 @@ export default function AdminDashboardPage() {
           <div className="flex items-center justify-between h-16">
             {/* Left: Logo + Nav */}
             <div className="flex items-center gap-8">
-              <BeelineLogo size="sm" />
+              <BeelineLogoNew size="sm" />
 
               {/* Navigation Tabs */}
               <nav className="hidden md:flex items-center gap-1">

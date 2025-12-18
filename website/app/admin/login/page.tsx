@@ -3,40 +3,24 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import { FaGoogle } from 'react-icons/fa';
 import BeelineLogoNew from '../../components/BeelineLogoNew';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleGoogleSignIn = async () => {
     setIsSubmitting(true);
     setError(null);
-
     try {
-      const response = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+      await signIn('google', {
+        callbackUrl: '/admin',
       });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Login failed');
-      }
-
-      const data = await response.json();
-
-      // Store admin session
-      localStorage.setItem('adminToken', data.token);
-
-      router.push('/admin');
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please try again.');
+      setError('Google sign-in failed. Please try again.');
       setIsSubmitting(false);
     }
   };
@@ -74,44 +58,21 @@ export default function AdminLoginPage() {
               </p>
             </div>
 
-            {/* Login Form */}
-            <form onSubmit={handleSubmit}>
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-text-secondary mb-2">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@beeline.works"
-                  className="w-full text-lg px-4 py-3.5 bg-surface border-2 border-cream-border rounded-xl focus:ring-2 focus:ring-beeline-yellow/20 focus:border-beeline-yellow transition-all text-text-primary placeholder:text-text-tertiary"
-                  required
-                />
-              </div>
+            {/* Google Sign In */}
+            <button
+              onClick={handleGoogleSignIn}
+              disabled={isSubmitting}
+              className="w-full px-6 py-4 mb-6 bg-surface border-2 border-cream-border rounded-2xl text-text-primary font-semibold flex items-center justify-center gap-3 hover:border-beeline-yellow hover:shadow-soft transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <FaGoogle className="text-xl text-beeline-orange" />
+              Continue with Google
+            </button>
 
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-text-secondary mb-2">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full text-lg px-4 py-3.5 bg-surface border-2 border-cream-border rounded-xl focus:ring-2 focus:ring-beeline-yellow/20 focus:border-beeline-yellow transition-all text-text-primary placeholder:text-text-tertiary"
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSubmitting || !email || !password}
-                className="w-full px-8 py-4 bg-gradient-beeline text-white font-semibold rounded-full shadow-medium hover:shadow-hover hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? 'Signing in...' : 'Sign in →'}
-              </button>
-            </form>
+            <div className="text-center">
+              <p className="text-sm text-text-tertiary">
+                Admin access requires Google authentication
+              </p>
+            </div>
 
             {error && (
               <div className="mt-6 p-4 bg-error/10 border border-error/20 rounded-xl text-error text-sm">
