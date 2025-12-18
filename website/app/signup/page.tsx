@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { signIn, useSession } from 'next-auth/react';
 import { FaGoogle, FaCheckCircle } from 'react-icons/fa';
