@@ -30,6 +30,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { phone, name, category, password, authMethod } = body;
 
+    console.log('📥 Received data:', {
+      phone: phone ? phone.substring(0, 4) + '****' : 'MISSING',
+      hasPassword: !!password,
+      authMethod
+    });
+
     // Validation
     if (!phone || typeof phone !== 'string') {
       return NextResponse.json(
@@ -50,7 +56,14 @@ export async function POST(request: NextRequest) {
 
     // Normalize phone (Ghana format)
     const normalizedPhone = phone.replace(/\D/g, '').slice(-9);
+    console.log('📱 Phone normalization:', {
+      original: phone,
+      normalized: normalizedPhone,
+      length: normalizedPhone.length
+    });
+
     if (normalizedPhone.length < 8) {
+      console.log('❌ Phone validation failed: too short');
       return NextResponse.json(
         { error: 'Invalid phone number format' },
         { status: 400 }
@@ -59,31 +72,53 @@ export async function POST(request: NextRequest) {
 
     // Format as +233...
     const fullPhone = '+233' + normalizedPhone;
-
     console.log(`📱 Registering vendor: ${fullPhone}`);
 
     // Check if vendor already exists
-    const { data: existingVendor } = await supabase
+    console.log('🔍 Checking for existing vendor...');
+    const { data: existingVendor, error: checkError } = await supabase
       .from('vendors')
       .select('id')
       .eq('phone', fullPhone)
       .single();
 
+    if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows found
+      console.error('❌ Database check error:', checkError);
+      return NextResponse.json(
+        { error: 'Database error during registration' },
+        { status: 500 }
+      );
+    }
+
     if (existingVendor) {
+      console.log('❌ Vendor already exists');
       return NextResponse.json(
         { error: 'This vendor is already registered' },
         { status: 409 }
       );
     }
 
+    console.log('✅ Vendor does not exist, proceeding...');
+
     // Hash password if provided
     let hashedPassword = null;
     if (authMethod === 'password' && password) {
-      const saltRounds = 12;
-      hashedPassword = await bcrypt.hash(password, saltRounds);
+      console.log('🔐 Hashing password...');
+      try {
+        const saltRounds = 12;
+        hashedPassword = await bcrypt.hash(password, saltRounds);
+        console.log('✅ Password hashed successfully');
+      } catch (hashError) {
+        console.error('❌ Password hashing failed:', hashError);
+        return NextResponse.json(
+          { error: 'Password processing failed' },
+          { status: 500 }
+        );
+      }
     }
 
     // Create vendor in Supabase
+    console.log('💾 Inserting vendor into database...');
     const { data: newVendor, error: insertError } = await supabase
       .from('vendors')
       .insert({
@@ -97,7 +132,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError) {
-      console.error('Database error:', insertError);
+      console.error('❌ Database insertion error:', insertError);
       return NextResponse.json(
         { error: 'Failed to register vendor' },
         { status: 500 }
