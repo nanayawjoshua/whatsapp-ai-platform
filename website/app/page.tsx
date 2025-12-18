@@ -277,7 +277,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
             <div className="col-span-2">
-              <BeelineLogo size="sm" className="mb-4" />
+              <BeelineLogoNew size="sm" className="mb-4" />
               <p className="text-sm text-text-secondary max-w-xs font-semibold mb-4">
                 Every message answered. Every sale captured.
               </p>
