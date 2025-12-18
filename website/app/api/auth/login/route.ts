@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     // Look up vendor in Supabase
     const { data: vendor, error } = await supabase
       .from('vendors')
-      .select('vendor_id, name, phone')
+      .select('id, name, phone')
       .eq('phone', normalizedPhone)
       .single();
 
@@ -34,11 +34,47 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({
-      vendorId: vendor.vendor_id,
-      name: vendor.name,
-      phone: vendor.phone,
-    });
+    // Generate QR code for login verification
+    const bridgeUrl = process.env.PHONE_BRIDGE_URL || 'http://localhost:3001';
+
+    try {
+      const qrResponse = await fetch(`${bridgeUrl}/api/generate-qr`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          vendorId: vendor.id,
+          vendorData: {
+            phone: vendor.phone,
+            name: vendor.name,
+          }
+        }),
+        signal: AbortSignal.timeout(30000)
+      });
+
+      if (!qrResponse.ok) {
+        const errorText = await qrResponse.text();
+        console.error('QR generation failed:', qrResponse.status, errorText);
+        return NextResponse.json(
+          { error: 'Failed to generate verification code. Please try again.' },
+          { status: 503 }
+        );
+      }
+
+      const qrData = await qrResponse.json();
+
+      return NextResponse.json({
+        vendorId: vendor.id,
+        qrCode: qrData.qrCode,
+        expiresIn: qrData.expiresIn,
+        message: 'Scan this QR code with WhatsApp to verify your identity'
+      });
+    } catch (bridgeError: any) {
+      console.error('Bridge error:', bridgeError.message);
+      return NextResponse.json(
+        { error: 'Verification service is temporarily unavailable' },
+        { status: 503 }
+      );
+    }
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(
