@@ -96,58 +96,8 @@ export async function generateReconnectionQR(vendorId: string): Promise<{
 }
 
 /**
- * Compress and optimize product images
- * Works for both web uploads and WhatsApp uploads
- */
-export async function compressProductImage(
-  imageBuffer: Buffer,
-  options: {
-    maxWidth?: number;
-    maxHeight?: number;
-    quality?: number;
-    format?: 'jpeg' | 'png' | 'webp';
-  } = {}
-): Promise<Buffer> {
-  const {
-    maxWidth = 1200,
-    maxHeight = 1200,
-    quality = 85,
-    format = 'jpeg'
-  } = options;
-
-  try {
-    // Use Sharp for server-side image processing
-    const sharp = (await import('sharp')).default;
-
-    let pipeline = sharp(imageBuffer)
-      .resize(maxWidth, maxHeight, {
-        fit: 'inside',
-        withoutEnlargement: true
-      });
-
-    // Apply format-specific options
-    switch (format) {
-      case 'jpeg':
-        pipeline = pipeline.jpeg({ quality, progressive: true });
-        break;
-      case 'png':
-        pipeline = pipeline.png({ compressionLevel: 9 });
-        break;
-      case 'webp':
-        pipeline = pipeline.webp({ quality });
-        break;
-    }
-
-    return await pipeline.toBuffer();
-  } catch (error) {
-    console.error('Image compression failed:', error);
-    // Return original buffer if compression fails
-    return imageBuffer;
-  }
-}
-
-/**
- * Upload compressed image to Supabase Storage
+ * Upload product image to Supabase Storage
+ * Note: Compression should be done server-side via API route
  */
 export async function uploadProductImage(
   vendorId: string,
@@ -161,14 +111,6 @@ export async function uploadProductImage(
       process.env.SUPABASE_SERVICE_KEY!
     );
 
-    // Compress image first
-    const compressedBuffer = await compressProductImage(imageBuffer, {
-      maxWidth: 1200,
-      maxHeight: 1200,
-      quality: 85,
-      format: 'jpeg'
-    });
-
     // Generate unique filename
     const fileExt = filename.split('.').pop() || 'jpg';
     const uniqueFilename = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
@@ -177,7 +119,7 @@ export async function uploadProductImage(
     const filePath = `${vendorId}/${uniqueFilename}`;
     const { data, error } = await supabase.storage
       .from('product-images')
-      .upload(filePath, compressedBuffer, {
+      .upload(filePath, imageBuffer, {
         contentType: 'image/jpeg',
         upsert: false
       });
@@ -197,38 +139,6 @@ export async function uploadProductImage(
     };
   } catch (error: any) {
     console.error('Image upload failed:', error);
-    return { success: false, error: error.message };
-  }
-}
-
-    // Generate new QR code via phone bridge
-    const response = await fetch(`${PHONE_BRIDGE_URL}/api/generate-qr`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        vendorId: vendor.id,
-        vendorData: {
-          phone: vendor.phone,
-          name: vendor.name,
-        }
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      return { success: false, error: `Bridge error: ${errorText}` };
-    }
-
-    const data = await response.json();
-
-    return {
-      success: true,
-      qrCode: data.qrCode,
-    };
-  } catch (error: any) {
-    console.error('QR reconnection failed:', error);
     return { success: false, error: error.message };
   }
 }
