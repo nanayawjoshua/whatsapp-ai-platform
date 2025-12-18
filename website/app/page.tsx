@@ -173,7 +173,7 @@ export default function HomePage() {
               </div>
               <div className="flex-1 text-center md:text-left">
                 <p className="text-2xl font-light text-text-primary mb-6 leading-relaxed">
-                  "Last month, Beeline handled <strong className="font-semibold">412 conversations</strong> while I was sleeping, with family, or running my business. It's like hiring the world's best employee for ₵49."
+                  "Last month, Beeline handled <strong className="font-semibold">412 conversations</strong> while I was sleeping, with family, or running my business. I only pay <strong className="font-semibold">15% commission</strong> on sales - no monthly fees!"
                 </p>
                 <div>
                   <p className="font-semibold text-text-primary">Sarah Mensah</p>

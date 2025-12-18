@@ -120,6 +120,14 @@ export async function POST(request: NextRequest) {
 
     // Create vendor in Supabase
     console.log('💾 Inserting vendor into database...');
+    console.log('Insert payload:', {
+      phone: fullPhone,
+      name: name || 'New Vendor',
+      category: category || 'uncategorized',
+      status: 'active',
+      hasPasswordHash: !!hashedPassword
+    });
+
     const { data: newVendor, error: insertError } = await supabase
       .from('vendors')
       .insert({
@@ -133,12 +141,20 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (insertError) {
-      console.error('❌ Database insertion error:', insertError);
+      console.error('❌ Database insertion error:', {
+        message: insertError.message,
+        details: insertError.details,
+        hint: insertError.hint,
+        code: insertError.code,
+        fullError: insertError
+      });
       return NextResponse.json(
-        { error: 'Failed to register vendor' },
+        { error: `Registration failed: ${insertError.message}` },
         { status: 500 }
       );
     }
+
+    console.log('✅ Vendor created successfully:', newVendor.id);
 
     console.log(`✅ Vendor registered: ${newVendor.id}`);
 
