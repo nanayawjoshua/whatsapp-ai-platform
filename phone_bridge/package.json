@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node phone-bridge-server.js",
+    "monitor-ip": "node ip-monitor.js",
     "dev": "NODE_ENV=development node --watch phone-bridge-server.js",
     "lint": "eslint .",
     "test": "echo 'Tests added in Week 2' && exit 0"
@@ -29,6 +30,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "groq-sdk": "^0.3.0",
+    "node-fetch": "^3.3.2",
     "pino": "^9.5.0",
     "qrcode": "^1.5.4",
     "qrcode-terminal": "^0.12.0"
