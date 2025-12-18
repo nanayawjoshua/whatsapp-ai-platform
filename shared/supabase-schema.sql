@@ -275,8 +275,8 @@ VALUES (
   'product-images',
   'product-images',
   false, -- Private bucket
-  10485760, -- 10MB limit
-  ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif'] -- Allowed image types
+  2097152, -- 2MB limit (reasonable for web images)
+  ARRAY['image/jpeg', 'image/png', 'image/webp'] -- Allowed image types (no GIF for products)
 ) ON CONFLICT (id) DO NOTHING;
 
 -- Enable RLS on storage.objects
