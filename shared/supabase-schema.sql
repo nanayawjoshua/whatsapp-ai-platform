@@ -113,6 +113,16 @@ CREATE INDEX idx_transactions_vendor_id ON transactions(vendor_id);
 CREATE INDEX idx_transactions_payment_status ON transactions(payment_status);
 CREATE INDEX idx_transactions_created_at ON transactions(created_at);
 
+-- Allow transaction management
+CREATE POLICY "Vendors manage own transactions" ON transactions
+  FOR ALL USING (
+    vendor_id = (SELECT id FROM vendors WHERE auth.uid()::text = id::text)
+  );
+
+-- Allow transaction creation (payments, etc.)
+CREATE POLICY "Allow transaction creation" ON transactions
+  FOR INSERT WITH CHECK (true);
+
 -- ============================================================================
 -- 4. MESSAGES TABLE
 -- ============================================================================
@@ -142,6 +152,16 @@ CREATE TABLE messages (
 
 CREATE INDEX idx_messages_vendor_id ON messages(vendor_id);
 CREATE INDEX idx_messages_created_at ON messages(created_at);
+
+-- Allow message management
+CREATE POLICY "Vendors manage own messages" ON messages
+  FOR ALL USING (
+    vendor_id = (SELECT id FROM vendors WHERE auth.uid()::text = id::text)
+  );
+
+-- Allow message creation (WhatsApp bridge, AI responses)
+CREATE POLICY "Allow message creation" ON messages
+  FOR INSERT WITH CHECK (true);
 
 -- ============================================================================
 -- 5. JIJI LEADS TABLE (for outreach)
@@ -250,10 +270,52 @@ CREATE UNIQUE INDEX idx_daily_analytics_date ON daily_analytics(date);
 -- ============================================================================
 
 -- Create storage bucket for product images
--- Note: This is done via Supabase UI, but documenting here
--- Bucket name: product-images
--- Public: false (private, served via Supabase signed URLs)
--- Max file size: 10MB
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'product-images',
+  'product-images',
+  false, -- Private bucket
+  10485760, -- 10MB limit
+  ARRAY['image/jpeg', 'image/png', 'image/webp', 'image/gif'] -- Allowed image types
+) ON CONFLICT (id) DO NOTHING;
+
+-- Enable RLS on storage.objects
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+
+-- Allow vendors to upload images to their own folder
+CREATE POLICY "Vendors can upload product images" ON storage.objects
+  FOR INSERT WITH CHECK (
+    bucket_id = 'product-images'
+    AND auth.role() = 'authenticated'
+    AND (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+-- Allow vendors to view their own images
+CREATE POLICY "Vendors can view own product images" ON storage.objects
+  FOR SELECT USING (
+    bucket_id = 'product-images'
+    AND auth.role() = 'authenticated'
+    AND (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+-- Allow vendors to update/delete their own images
+CREATE POLICY "Vendors can manage own product images" ON storage.objects
+  FOR UPDATE USING (
+    bucket_id = 'product-images'
+    AND auth.role() = 'authenticated'
+    AND (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+CREATE POLICY "Vendors can delete own product images" ON storage.objects
+  FOR DELETE USING (
+    bucket_id = 'product-images'
+    AND auth.role() = 'authenticated'
+    AND (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+-- Allow public read access for product images (served via signed URLs)
+CREATE POLICY "Public can view product images" ON storage.objects
+  FOR SELECT USING (bucket_id = 'product-images');
 
 -- ============================================================================
 -- HELPER FUNCTIONS FOR RLS
@@ -291,9 +353,31 @@ CREATE POLICY "Vendors see own data" ON vendors
     (auth.role() = 'authenticated' AND is_admin())
   );
 
+-- Allow vendor registration (service key can insert)
+CREATE POLICY "Allow vendor registration" ON vendors
+  FOR INSERT WITH CHECK (true);
+
+-- Allow vendors to update their own data
+CREATE POLICY "Vendors update own data" ON vendors
+  FOR UPDATE USING (auth.uid()::text = id::text)
+  WITH CHECK (auth.uid()::text = id::text);
+
 CREATE POLICY "Products visible to vendor owner" ON products
   FOR SELECT USING (
     vendor_id = (SELECT id FROM vendors WHERE auth.uid()::text = id::text)
+  );
+
+-- Allow vendors to manage their own products
+CREATE POLICY "Vendors manage own products" ON products
+  FOR ALL USING (
+    vendor_id = (SELECT id FROM vendors WHERE auth.uid()::text = id::text)
+  );
+
+-- Allow product creation during registration/setup
+CREATE POLICY "Allow product creation" ON products
+  FOR INSERT WITH CHECK (
+    vendor_id = (SELECT id FROM vendors WHERE auth.uid()::text = id::text) OR
+    auth.role() = 'service_role'
   );
 
 -- ============================================================================
