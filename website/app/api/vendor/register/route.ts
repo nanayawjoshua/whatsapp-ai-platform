@@ -168,7 +168,7 @@ export async function POST(request: NextRequest) {
     const bridgeUrl = process.env.PHONE_BRIDGE_URL || 'http://localhost:3001';
 
     try {
-      const qrResponse = await fetch(`${bridgeUrl}/api/generate-qr`, {
+      const qrResponse = await fetch(`${bridgeUrl}/vendor/generate-qr`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
