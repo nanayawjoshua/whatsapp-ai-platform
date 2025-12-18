@@ -9,6 +9,7 @@ import BeelineLogoNew from '../components/BeelineLogoNew';
 
 export default function LoginPage() {
   const router = useRouter();
+  const [countryCode, setCountryCode] = useState('+233');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -20,7 +21,7 @@ export default function LoginPage() {
     setError('');
 
     try {
-      if (!phone.match(/^\+?[0-9\s\-()]{8,}$/)) {
+      if (!phone || phone.length < 8) {
         throw new Error('Please enter a valid phone number');
       }
 
@@ -28,11 +29,14 @@ export default function LoginPage() {
         throw new Error('Password is required');
       }
 
+      // Combine country code and phone number
+      const fullPhone = `${countryCode}${phone}`;
+
       // Authenticate with phone and password
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, password }),
+        body: JSON.stringify({ phone: fullPhone, password }),
       });
 
       if (!response.ok) {
@@ -139,14 +143,27 @@ export default function LoginPage() {
                 <label className="block text-sm font-medium text-text-secondary mb-2">
                   WhatsApp Number
                 </label>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+233 24 123 4567"
-                  className="w-full text-lg px-4 py-3.5 bg-surface border-2 border-cream-border rounded-xl focus:ring-2 focus:ring-beeline-yellow/20 focus:border-beeline-yellow transition-all text-text-primary placeholder:text-text-tertiary"
-                  required
-                />
+                <div className="flex gap-2">
+                  <select
+                    value={countryCode}
+                    onChange={(e) => setCountryCode(e.target.value)}
+                    className="px-3 py-3.5 bg-surface border-2 border-cream-border rounded-xl focus:ring-2 focus:ring-beeline-yellow/20 focus:border-beeline-yellow transition-all text-text-primary text-sm font-medium min-w-[100px]"
+                  >
+                    <option value="+233">🇬🇭 +233</option>
+                    <option value="+234">🇳🇬 +234</option>
+                    <option value="+225">🇨🇮 +225</option>
+                    <option value="+228">🇹🇬 +228</option>
+                  </select>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                    placeholder="501234567"
+                    className="flex-1 text-lg px-4 py-3.5 bg-surface border-2 border-cream-border rounded-xl focus:ring-2 focus:ring-beeline-yellow/20 focus:border-beeline-yellow transition-all text-text-primary placeholder:text-text-tertiary"
+                    required
+                    maxLength={10}
+                  />
+                </div>
               </div>
 
               <div className="mb-6">
@@ -165,7 +182,7 @@ export default function LoginPage() {
 
               <button
                 type="submit"
-                disabled={loading || !phone || !password}
+                disabled={loading || !countryCode || !phone || !password}
                 className="w-full px-8 py-4 bg-gradient-beeline text-white font-semibold rounded-full shadow-medium hover:shadow-hover hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Signing in...' : 'Sign in →'}

@@ -54,24 +54,25 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Normalize phone (Ghana format)
-    const normalizedPhone = phone.replace(/\D/g, '').slice(-9);
+    // Normalize phone - now comes in +233XXXXXXXXX format from frontend
+    const normalizedPhone = phone.replace(/\D/g, ''); // Remove all non-digits
     console.log('📱 Phone normalization:', {
       original: phone,
       normalized: normalizedPhone,
       length: normalizedPhone.length
     });
 
-    if (normalizedPhone.length < 8) {
-      console.log('❌ Phone validation failed: too short');
+    // Validate phone format (should be country code + number)
+    if (normalizedPhone.length < 10 || normalizedPhone.length > 15) {
+      console.log('❌ Phone validation failed: invalid length');
       return NextResponse.json(
-        { error: 'Invalid phone number format' },
+        { error: 'Invalid phone number format. Please include country code.' },
         { status: 400 }
       );
     }
 
-    // Format as +233...
-    const fullPhone = '+233' + normalizedPhone;
+    // Use the normalized phone as-is (already includes country code)
+    const fullPhone = '+' + normalizedPhone;
     console.log(`📱 Registering vendor: ${fullPhone}`);
 
     // Check if vendor already exists
