@@ -10,6 +10,8 @@ import BeelineLogoNew from '../components/BeelineLogoNew';
 function SignupContent() {
   const { data: session } = useSession();
   const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [stage, setStage] = useState<'input' | 'qr' | 'success'>('input');
@@ -41,23 +43,37 @@ function SignupContent() {
     setError(null);
 
     try {
+      // Validation
       if (!phone.match(/^\+?[0-9\s\-()]{8,}$/)) {
         throw new Error('Please enter a valid phone number');
       }
 
-      const body: any = { phone };
+      if (password.length < 8) {
+        throw new Error('Password must be at least 8 characters long');
+      }
+
+      if (password !== confirmPassword) {
+        throw new Error('Passwords do not match');
+      }
+
+      const body: any = {
+        phone,
+        password,
+        authMethod: 'password'
+      };
+
       if (isCompletingGoogleSignup && session?.user?.vendorId) {
         body.vendorId = session.user.vendorId;
       }
 
-      const response = await fetch('/api/auth/initiate-whatsapp', {
+      const response = await fetch('/api/vendor/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
       });
 
       if (!response.ok) {
-        let errorMsg = 'Failed to initiate WhatsApp connection';
+        let errorMsg = 'Failed to create account';
         try {
           const errorData = await response.json();
           if (errorData.error) {
@@ -72,7 +88,6 @@ function SignupContent() {
       const data = await response.json();
       setQrCode(data.qrCode);
       setVendorId(data.vendorId);
-      setStartTime(Date.now());
       setStage('qr');
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
@@ -235,9 +250,9 @@ function SignupContent() {
                 </>
               )}
 
-              {/* Phone Input */}
+              {/* Signup Form */}
               <form onSubmit={handlePhoneSubmit}>
-                <div className="mb-6">
+                <div className="mb-4">
                   <label className="block text-sm font-medium text-text-secondary mb-2">
                     WhatsApp Number
                   </label>
@@ -250,15 +265,49 @@ function SignupContent() {
                     required
                   />
                   <p className="mt-2 text-xs text-text-tertiary">
-                    We'll send a QR code to connect your WhatsApp
+                    Your business WhatsApp number
                   </p>
                 </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Create a secure password"
+                    className="w-full text-lg px-4 py-3.5 bg-surface border-2 border-cream-border rounded-xl focus:ring-2 focus:ring-beeline-yellow/20 focus:border-beeline-yellow transition-all text-text-primary placeholder:text-text-tertiary"
+                    required
+                    minLength={8}
+                  />
+                  <p className="mt-2 text-xs text-text-tertiary">
+                    Minimum 8 characters
+                  </p>
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-text-secondary mb-2">
+                    Confirm Password
+                  </label>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm your password"
+                    className="w-full text-lg px-4 py-3.5 bg-surface border-2 border-cream-border rounded-xl focus:ring-2 focus:ring-beeline-yellow/20 focus:border-beeline-yellow transition-all text-text-primary placeholder:text-text-tertiary"
+                    required
+                    minLength={8}
+                  />
+                </div>
+
                 <button
                   type="submit"
-                  disabled={isSubmitting || !phone}
+                  disabled={isSubmitting || !phone || !password || !confirmPassword}
                   className="w-full px-8 py-4 bg-gradient-beeline text-white font-semibold rounded-full shadow-medium hover:shadow-hover hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? 'Connecting...' : 'Continue →'}
+                  {isSubmitting ? 'Creating account...' : 'Create Account →'}
                 </button>
               </form>
 

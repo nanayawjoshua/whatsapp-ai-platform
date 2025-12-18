@@ -19,6 +19,9 @@ CREATE TABLE vendors (
   email VARCHAR(255),
   category VARCHAR(100),
 
+  -- Authentication
+  password_hash VARCHAR(255), -- For password-based auth
+
   -- Commission and wallet
   commission_rate DECIMAL(5,2) DEFAULT 5.00, -- Percentage
   wallet_balance DECIMAL(15,2) DEFAULT 0,

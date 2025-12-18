@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '../../../../lib/supabase';
+import bcrypt from 'bcrypt';
 
 export const dynamic = 'force-dynamic';
 
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { phone, name, category } = body;
+    const { phone, name, category, password, authMethod } = body;
 
     // Validation
     if (!phone || typeof phone !== 'string') {
@@ -35,6 +36,16 @@ export async function POST(request: NextRequest) {
         { error: 'Phone number is required' },
         { status: 400 }
       );
+    }
+
+    // Password validation for password auth
+    if (authMethod === 'password') {
+      if (!password || password.length < 8) {
+        return NextResponse.json(
+          { error: 'Password must be at least 8 characters long' },
+          { status: 400 }
+        );
+      }
     }
 
     // Normalize phone (Ghana format)
@@ -65,6 +76,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Hash password if provided
+    let hashedPassword = null;
+    if (authMethod === 'password' && password) {
+      const saltRounds = 12;
+      hashedPassword = await bcrypt.hash(password, saltRounds);
+    }
+
     // Create vendor in Supabase
     const { data: newVendor, error: insertError } = await supabase
       .from('vendors')
@@ -72,7 +90,8 @@ export async function POST(request: NextRequest) {
         phone: fullPhone,
         name: name || 'New Vendor',
         category: category || 'uncategorized',
-        status: 'active'
+        status: 'active',
+        ...(hashedPassword && { password_hash: hashedPassword })
       })
       .select()
       .single();
