@@ -41,15 +41,6 @@ export async function getVendorFromSession(request: NextRequest): Promise<string
 /**
  * DEPRECATED: Use Supabase Auth instead
  */
-export async function getAuthenticatedVendor(
-  request: NextRequest
-): Promise<AuthenticatedVendor | null> {
-  return null; // Always return null - deprecated in BUZZ
-}
-
-/**
- * DEPRECATED: Use Supabase Auth instead
- */
 export async function requireAuth(request: NextRequest): Promise<AuthenticatedVendor> {
   throw new Error('UNAUTHORIZED - Use Supabase Auth instead');
 }
@@ -66,14 +57,4 @@ export async function invalidateSession(sessionToken: string): Promise<void> {
  */
 export async function cleanupExpiredSessions(): Promise<number> {
   return 0; // No-op - deprecated
-}
-
-/**
- * DEPRECATED: Use Supabase Auth instead
- * Get vendor ID from session
- */
-export async function getVendorFromSession(request: NextRequest): Promise<string | null> {
-  // TODO: Implement proper Supabase Auth session check
-  // For now, return null - this should be replaced with proper auth
-  return null;
 }
