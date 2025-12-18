@@ -6,7 +6,12 @@
  */
 
 import { NextRequest } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../app/api/auth/[...nextauth]/route';
 
+/**
+ * DEPRECATED: Use Supabase Auth instead
+ */
 export interface AuthenticatedVendor {
   vendorId: string;
   name: string;
@@ -14,6 +19,23 @@ export interface AuthenticatedVendor {
   phone?: string;
   businessType?: string;
   subscriptionStatus: string;
+}
+
+/**
+ * DEPRECATED: Use Supabase Auth instead
+ */
+export async function getAuthenticatedVendor(
+  request: NextRequest
+): Promise<AuthenticatedVendor | null> {
+  return null; // Always return null - deprecated in BUZZ
+}
+
+/**
+ * Get vendor ID from NextAuth session
+ */
+export async function getVendorFromSession(request: NextRequest): Promise<string | null> {
+  const session = await getServerSession(authOptions);
+  return session?.user?.id || null;
 }
 
 /**

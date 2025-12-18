@@ -365,11 +365,19 @@ app.get('/vendor/:vendorId/status', async (req, res) => {
   const { vendorId } = req.params;
   const session = vendorSessions.get(vendorId);
 
+  let qrCode = null;
+  if (session && session.qr) {
+    // Generate QR code image if QR exists
+    const QRCode = (await import('qrcode')).default;
+    qrCode = await QRCode.toDataURL(session.qr);
+  }
+
   res.json({
     vendorId,
     connected: session ? session.connectionState === 'open' : false,
     state: session ? session.connectionState : 'not_found',
-    hasQR: session ? !!session.qr : false
+    hasQR: session ? !!session.qr : false,
+    qrCode: qrCode
   });
 });
 

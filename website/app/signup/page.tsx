@@ -16,6 +16,8 @@ function SignupContent() {
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [vendorId, setVendorId] = useState<string | null>(null);
   const [authMethod, setAuthMethod] = useState<'google' | 'phone' | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<'checking' | 'connected' | 'failed'>('checking');
+  const [startTime, setStartTime] = useState<number | null>(null);
 
   // If user is signed in with Google but no phone, start with phone input
   const isCompletingGoogleSignup = session?.user && !session.user.phone;
@@ -70,12 +72,78 @@ function SignupContent() {
       const data = await response.json();
       setQrCode(data.qrCode);
       setVendorId(data.vendorId);
+      setStartTime(Date.now());
       setStage('qr');
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
       setIsSubmitting(false);
     }
   };
+
+  // Poll for connection status and QR updates when showing QR
+  useEffect(() => {
+    if (stage === 'qr' && vendorId && startTime) {
+      const pollConnection = async () => {
+        // Check for timeout (5 minutes)
+        if (Date.now() - startTime > 5 * 60 * 1000) {
+          setConnectionStatus('failed');
+          return;
+        }
+
+        try {
+          const bridgeUrl = process.env.NEXT_PUBLIC_PHONE_BRIDGE_URL || 'https://bridge.beeline.works';
+          const response = await fetch(`${bridgeUrl}/vendor/${vendorId}/status`);
+          const status = await response.json();
+
+          // Update QR code if a new one is available
+          if (status.qrCode && status.qrCode !== qrCode) {
+            setQrCode(status.qrCode);
+            // Reset start time for new QR
+            setStartTime(Date.now());
+          }
+
+          if (status.connected) {
+            setConnectionStatus('connected');
+            setStage('success');
+          } else {
+            setConnectionStatus('checking');
+          }
+        } catch (error) {
+          console.error('Failed to check connection status:', error);
+          setConnectionStatus('failed');
+        }
+      };
+
+      // Poll every 3 seconds for faster updates
+      const interval = setInterval(pollConnection, 3000);
+
+      // Initial check
+      pollConnection();
+
+      return () => clearInterval(interval);
+    }
+  }, [stage, vendorId, qrCode, startTime]);
+
+  // Auto-sign in when reaching success stage
+  useEffect(() => {
+    if (stage === 'success' && authMethod === 'phone' && vendorId) {
+      const autoSignIn = async () => {
+        try {
+          await signIn('credentials', {
+            vendorId,
+            redirect: false,
+          });
+          // Redirect after a short delay to show success message
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 2000);
+        } catch (error) {
+          console.error('Auto sign-in failed:', error);
+        }
+      };
+      autoSignIn();
+    }
+  }, [stage, authMethod, vendorId]);
 
   return (
     <div className="min-h-screen bg-cream flex flex-col">
@@ -229,23 +297,36 @@ function SignupContent() {
                 </div>
               </div>
 
-              <div className="text-center mb-6">
-                <p className="text-sm text-text-secondary flex items-center justify-center gap-2">
-                  <span className="inline-block w-2 h-2 bg-success rounded-full animate-pulse"></span>
-                  Waiting for you to scan...
-                </p>
-              </div>
+               <div className="text-center mb-6">
+                 <p className="text-sm text-text-secondary flex items-center justify-center gap-2">
+                   <span className={`inline-block w-2 h-2 rounded-full animate-pulse ${
+                     connectionStatus === 'connected' ? 'bg-success' :
+                     connectionStatus === 'failed' ? 'bg-error' : 'bg-beeline-yellow'
+                   }`}></span>
+                   {connectionStatus === 'connected' ? 'Connected! Setting up your account...' :
+                    connectionStatus === 'failed' ? 'Connection timed out. The QR code may have expired.' :
+                    startTime && Date.now() - startTime > 5 * 60 * 1000 ? 'Taking longer than expected. QR codes refresh automatically.' :
+                    'Waiting for you to scan and connect...'}
+                 </p>
+                 {connectionStatus === 'failed' && (
+                   <p className="text-xs text-text-tertiary mt-2">
+                     QR codes expire after 60 seconds and refresh automatically. Try scanning again.
+                   </p>
+                 )}
+               </div>
 
-              <button
-                onClick={() => {
-                  setStage('input');
-                  setPhone('');
-                  setQrCode(null);
-                  setAuthMethod(null);
-                  setError(null);
-                }}
-                className="w-full px-6 py-3 text-text-secondary hover:text-text-primary transition-colors text-sm font-medium"
-              >
+               <button
+                 onClick={() => {
+                   setStage('input');
+                   setPhone('');
+                   setQrCode(null);
+                   setAuthMethod(null);
+                   setError(null);
+                   setConnectionStatus('checking');
+                   setStartTime(null);
+                 }}
+                 className="w-full px-6 py-3 text-text-secondary hover:text-text-primary transition-colors text-sm font-medium"
+               >
                 ← Try another method
               </button>
             </div>
@@ -262,23 +343,13 @@ function SignupContent() {
               <h1 className="text-4xl font-light tracking-tight mb-3 text-text-primary">
                 You're all set!
               </h1>
-              <p className="text-lg text-text-secondary mb-8">
-                Your AI assistant is ready and waiting for customers.
-              </p>
-              <button
-                onClick={async () => {
-                  if (authMethod === 'phone' && vendorId) {
-                    await signIn('credentials', {
-                      vendorId,
-                      redirect: false,
-                    });
-                  }
-                  window.location.href = '/dashboard';
-                }}
-                className="inline-flex items-center gap-2 px-10 py-4 bg-gradient-beeline text-white font-semibold rounded-full shadow-medium hover:shadow-hover hover:scale-105 transition-all"
-              >
-                Go to Dashboard →
-              </button>
+               <p className="text-lg text-text-secondary mb-8">
+                 Your AI assistant is ready and waiting for customers.
+               </p>
+               <div className="flex items-center justify-center gap-2 text-sm text-text-secondary mb-4">
+                 <span className="inline-block w-2 h-2 bg-success rounded-full animate-pulse"></span>
+                 Setting up your account and redirecting...
+               </div>
             </div>
           )}
 
