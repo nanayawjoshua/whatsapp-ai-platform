@@ -6,15 +6,15 @@
 const PHONE_BRIDGE_URL = process.env.PHONE_BRIDGE_URL || 'http://localhost:3001';
 
 /**
- * BUZZ: Check phone bridge health (not vendor-specific)
+ * BUZZ: Check vendor-specific WhatsApp connection status
  */
 export async function checkWhatsAppConnection(vendorId: string): Promise<{
   connected: boolean;
   lastActive?: string;
 }> {
   try {
-    // BUZZ: Phone bridge is single instance, check overall health
-    const response = await fetch(`${PHONE_BRIDGE_URL}/health`, {
+    // Check vendor-specific connection status
+    const response = await fetch(`${PHONE_BRIDGE_URL}/vendor/${vendorId}/status`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -27,18 +27,18 @@ export async function checkWhatsAppConnection(vendorId: string): Promise<{
 
     const data = await response.json();
     return {
-      connected: data.status === 'healthy',
-      lastActive: data.timestamp,
+      connected: data.connected,
+      lastActive: data.connected ? new Date().toISOString() : undefined,
     };
   } catch (error) {
-    console.error('Failed to check phone bridge health:', error);
+    console.error('Failed to check vendor connection:', error);
     return { connected: false };
   }
 }
 
 /**
- * BUZZ: Generate QR code for vendor registration
- * Phone bridge handles single WhatsApp instance
+ * BUZZ: Generate QR code for vendor reconnection
+ * Recreates WhatsApp session for disconnected vendor
  */
 export async function generateReconnectionQR(vendorId: string): Promise<{
   success: boolean;
@@ -46,14 +46,51 @@ export async function generateReconnectionQR(vendorId: string): Promise<{
   error?: string;
 }> {
   try {
-    // BUZZ: QR generation happens during registration, not reconnection
-    // This function is kept for compatibility but redirects to registration flow
+    // Get vendor details from database
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_KEY!
+    );
+
+    const { data: vendor, error } = await supabase
+      .from('vendors')
+      .select('id, name, phone')
+      .eq('id', vendorId)
+      .single();
+
+    if (error || !vendor) {
+      return { success: false, error: 'Vendor not found' };
+    }
+
+    // Generate new QR code via phone bridge
+    const response = await fetch(`${PHONE_BRIDGE_URL}/api/generate-qr`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        vendorId: vendor.id,
+        vendorData: {
+          phone: vendor.phone,
+          name: vendor.name,
+        }
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return { success: false, error: `Bridge error: ${errorText}` };
+    }
+
+    const data = await response.json();
+
     return {
-      success: false,
-      error: 'BUZZ: Use vendor registration for QR codes. Phone bridge handles single WhatsApp instance.'
+      success: true,
+      qrCode: data.qrCode,
     };
   } catch (error: any) {
-    console.error('QR generation not available in BUZZ:', error);
+    console.error('QR reconnection failed:', error);
     return { success: false, error: error.message };
   }
 }
