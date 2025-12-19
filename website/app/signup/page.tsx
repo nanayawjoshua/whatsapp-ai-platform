@@ -82,6 +82,17 @@ function SignupContent() {
           const errorData = await response.json();
           if (errorData.error) {
             errorMsg = errorData.error;
+            // Include detailed diagnostics if available
+            if (errorData.details) {
+              const details = errorData.details;
+              errorMsg += `\n\nDiagnostics:\n`;
+              errorMsg += `- Bridge URL: ${details.bridgeUrl || 'N/A'}\n`;
+              errorMsg += `- Endpoint: ${details.endpoint || 'N/A'}\n`;
+              errorMsg += `- Status: ${details.status || 'N/A'}\n`;
+              if (details.responseBody) {
+                errorMsg += `- Response: ${details.responseBody.substring(0, 200)}`;
+              }
+            }
           }
         } catch {
           errorMsg = `Error: ${response.status} ${response.statusText}`;

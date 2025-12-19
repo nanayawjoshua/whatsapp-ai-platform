@@ -167,6 +167,12 @@ export async function POST(request: NextRequest) {
     // Get QR from phone bridge
     const bridgeUrl = process.env.PHONE_BRIDGE_URL || 'http://localhost:3001';
 
+    console.log('🔍 DEBUG: Attempting QR generation', {
+      bridgeUrl,
+      vendorId: newVendor.id,
+      endpoint: `${bridgeUrl}/api/generate-qr`
+    });
+
     try {
       const qrResponse = await fetch(`${bridgeUrl}/api/generate-qr`, {
         method: 'POST',
@@ -182,16 +188,41 @@ export async function POST(request: NextRequest) {
         signal: AbortSignal.timeout(30000)
       });
 
+      console.log('🔍 DEBUG: Bridge response received', {
+        status: qrResponse.status,
+        statusText: qrResponse.statusText,
+        headers: Object.fromEntries(qrResponse.headers.entries())
+      });
+
       if (!qrResponse.ok) {
         const errorText = await qrResponse.text();
-        console.error('QR generation failed:', qrResponse.status, errorText);
+        console.error('❌ QR generation failed:', {
+          status: qrResponse.status,
+          statusText: qrResponse.statusText,
+          errorBody: errorText
+        });
+
+        // Return detailed error to user for debugging
         return NextResponse.json(
-          { error: 'Failed to generate QR code. Try again.' },
+          {
+            error: `QR generation failed: ${qrResponse.status} ${qrResponse.statusText}`,
+            details: {
+              bridgeUrl,
+              endpoint: '/api/generate-qr',
+              status: qrResponse.status,
+              responseBody: errorText.substring(0, 500)
+            }
+          },
           { status: 503 }
         );
       }
 
       const qrData = await qrResponse.json();
+
+      console.log('✅ QR generated successfully', {
+        vendorId: newVendor.id,
+        hasQrCode: !!qrData.qrCode
+      });
 
       return NextResponse.json({
         success: true,
@@ -202,9 +233,22 @@ export async function POST(request: NextRequest) {
         message: 'Scan this QR code with WhatsApp to connect'
       });
     } catch (bridgeError: any) {
-      console.error('Bridge error:', bridgeError.message);
+      console.error('❌ Bridge connection error:', {
+        message: bridgeError.message,
+        name: bridgeError.name,
+        cause: bridgeError.cause
+      });
+
+      // Return detailed error to user
       return NextResponse.json(
-        { error: 'Phone bridge is temporarily unavailable' },
+        {
+          error: `Bridge connection failed: ${bridgeError.message}`,
+          details: {
+            bridgeUrl,
+            errorType: bridgeError.name,
+            errorMessage: bridgeError.message
+          }
+        },
         { status: 503 }
       );
     }
