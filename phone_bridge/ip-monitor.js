@@ -39,16 +39,36 @@ const CONFIG = {
  */
 function getCurrentIP() {
   try {
-    // Try wlan0 first (WiFi)
+    // Try wlan0 first (WiFi) - Android/Termux compatible
     const result = execSync('ip addr show wlan0 2>/dev/null | grep "inet " | head -1 | awk \'{print $2}\' | cut -d/ -f1', { encoding: 'utf8' });
     const ip = result.trim();
-    if (ip && ip !== '127.0.0.1') {
+    if (ip && ip !== '127.0.0.1' && ip.match(/^\d+\.\d+\.\d+\.\d+$/)) {
       return ip;
     }
 
-    // Fallback to general IP detection
-    const fallback = execSync('hostname -I | awk \'{print $1}\'', { encoding: 'utf8' });
-    return fallback.trim();
+    // Fallback: Try ap0 (Android hotspot)
+    try {
+      const apResult = execSync('ip addr show ap0 2>/dev/null | grep "inet " | head -1 | awk \'{print $2}\' | cut -d/ -f1', { encoding: 'utf8' });
+      const apIp = apResult.trim();
+      if (apIp && apIp !== '127.0.0.1' && apIp.match(/^\d+\.\d+\.\d+\.\d+$/)) {
+        return apIp;
+      }
+    } catch (e) {
+      // ap0 not available, continue
+    }
+
+    // Last fallback: Try general interface detection
+    try {
+      const ifconfigResult = execSync('ifconfig 2>/dev/null | grep "inet " | grep -v "127.0.0.1" | head -1 | awk \'{print $2}\'', { encoding: 'utf8' });
+      const fallbackIp = ifconfigResult.trim();
+      if (fallbackIp && fallbackIp.match(/^\d+\.\d+\.\d+\.\d+$/)) {
+        return fallbackIp;
+      }
+    } catch (e) {
+      // ifconfig not available or failed
+    }
+
+    return null;
   } catch (error) {
     console.error('Failed to get IP:', error.message);
     return null;
