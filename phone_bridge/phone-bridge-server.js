@@ -26,6 +26,7 @@ import Groq from 'groq-sdk';
 import fs from 'fs';
 import path from 'path';
 import { shouldUseAI } from './message-classifier.js';
+import { sessionMonitor } from './session-monitor.js';
 
 dotenv.config();
 
@@ -403,6 +404,25 @@ app.get('/stats/messages', async (req, res) => {
 });
 
 /**
+ * Session health statistics
+ */
+app.get('/stats/sessions', async (req, res) => {
+  const stats = sessionMonitor.getStats();
+  const sessions = Array.from(vendorSessions.entries()).map(([vendorId, session]) => ({
+    vendorId,
+    state: session.connectionState,
+    hasQR: !!session.qr,
+    uptime: stats.uptime[vendorId] ? Math.floor((Date.now() - stats.uptime[vendorId].startTime) / 1000) : 0
+  }));
+
+  res.json({
+    sessionStats: stats,
+    sessions,
+    timestamp: new Date().toISOString()
+  });
+});
+
+/**
  * Classify message using Grok AI
  */
 app.post('/vendor/send-message', async (req, res) => {
@@ -496,6 +516,10 @@ async function start() {
       logger.info(`🤖 AI: Grok (via Groq)`);
       logger.info(`👥 Multi-vendor mode enabled`);
     });
+
+    // Start session health monitoring
+    sessionMonitor.start();
+    logger.info('✅ Session health monitoring enabled (30s intervals)');
   } catch (error) {
     logger.error(error, 'Failed to start bridge');
     process.exit(1);

@@ -492,6 +492,25 @@ CREATE TRIGGER transactions_update_wallet AFTER UPDATE ON transactions
 -- (handled in application layer via defaults above)
 
 -- ============================================================================
+-- 8. SESSION HEALTH LOGS TABLE (for monitoring)
+-- ============================================================================
+
+CREATE TABLE session_health_logs (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  vendor_id UUID NOT NULL REFERENCES vendors(id),
+  event_type VARCHAR(50) NOT NULL, -- reconnection, reconnection_failed, health_check
+  old_state VARCHAR(50),
+  new_state VARCHAR(50),
+  error_message TEXT,
+  monitor_version VARCHAR(20) DEFAULT '1.0',
+  timestamp TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_session_health_logs_vendor_id ON session_health_logs(vendor_id);
+CREATE INDEX idx_session_health_logs_timestamp ON session_health_logs(timestamp);
+CREATE INDEX idx_session_health_logs_event_type ON session_health_logs(event_type);
+
+-- ============================================================================
 -- NOTES
 -- ============================================================================
 
