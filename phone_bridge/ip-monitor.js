@@ -8,10 +8,14 @@
  * updating the Cloudflare tunnel route via API.
  */
 
+import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
+
+// Load environment variables
+dotenv.config();
 
 // Configuration
 const CONFIG = {
