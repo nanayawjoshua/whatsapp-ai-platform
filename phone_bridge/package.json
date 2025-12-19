@@ -6,7 +6,11 @@
   "type": "module",
   "scripts": {
     "start": "node phone-bridge-server.js",
-    "monitor-ip": "node ip-monitor.js",
+    "monitor-ip": "node -r dotenv/config ip-monitor.js",
+    "start-pm2": "pm2 start ecosystem.config.js",
+    "stop-pm2": "pm2 stop ecosystem.config.js && pm2 delete ecosystem.config.js",
+    "restart-pm2": "pm2 restart ecosystem.config.js",
+    "logs": "pm2 logs",
     "dev": "NODE_ENV=development node --watch phone-bridge-server.js",
     "lint": "eslint .",
     "test": "echo 'Tests added in Week 2' && exit 0"
