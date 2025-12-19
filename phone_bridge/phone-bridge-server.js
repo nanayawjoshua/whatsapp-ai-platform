@@ -25,6 +25,7 @@ import { createClient } from '@supabase/supabase-js';
 import Groq from 'groq-sdk';
 import fs from 'fs';
 import path from 'path';
+import { shouldUseAI } from './message-classifier.js';
 
 dotenv.config();
 
@@ -66,6 +67,14 @@ import { default as makeWASocket, useMultiFileAuthState, fetchLatestBaileysVersi
 // Store all vendor sessions in memory
 // Format: { vendorId: { socket, qr, state, connectionState } }
 const vendorSessions = new Map();
+
+// Lazy AI filter statistics
+let messageStats = {
+  total: 0,
+  instantReplies: 0,
+  aiCalls: 0,
+  lastReset: new Date()
+};
 
 /**
  * Create or retrieve WhatsApp connection for a specific vendor
@@ -186,7 +195,38 @@ async function routeVendorMessage(vendorId, message) {
 
     if (!messageText.trim()) return;
 
-    // Classify message with Grok
+    // Update statistics
+    messageStats.total++;
+
+    // Check if we can use instant reply (lazy AI filter)
+    const aiCheck = shouldUseAI(messageText);
+
+    if (!aiCheck.useAI && aiCheck.reply) {
+      // Send instant reply without calling AI
+      logger.info(`💬 Instant reply to ${senderPhone}: ${aiCheck.replyType}`);
+      const session = vendorSessions.get(vendorId);
+      if (session && session.connectionState === 'open') {
+        await sendWhatsAppMessage(vendorId, senderPhone, aiCheck.reply);
+      }
+
+      // Still store message for conversation history
+      const conversationId = `${vendorId}:${senderPhone}`;
+      await supabase.from('messages').insert({
+        vendor_id: vendorId,
+        conversation_id: conversationId,
+        sender_phone: senderPhone,
+        message_text: messageText,
+        message_type: 'instant_reply',
+        classified_category: aiCheck.replyType,
+        classified_confidence: aiCheck.confidence || 1.0,
+        ai_suggested_response: aiCheck.reply
+      });
+
+      return; // Skip AI processing
+    }
+
+    // Use AI for complex messages
+    logger.info(`🤖 AI processing for ${senderPhone}: ${aiCheck.reason || 'complex'}`);
     const classification = await classifyWithGrok(messageText);
 
     // Generate conversation ID
@@ -199,6 +239,9 @@ async function routeVendorMessage(vendorId, message) {
       sender_phone: senderPhone,
       message_text: messageText,
       message_type: classification.type,
+      classified_category: classification.type,
+      classified_confidence: classification.confidence,
+      ai_suggested_response: classification.suggestedResponse,
       metadata: classification
     });
 
