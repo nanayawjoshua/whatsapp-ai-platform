@@ -35,42 +35,51 @@ const CONFIG = {
 };
 
 /**
- * Get current WiFi IP address
+ * Get current WiFi IP address (Android/Termux compatible)
  */
 function getCurrentIP() {
   try {
-    // Try wlan0 first (WiFi) - Android/Termux compatible
-    const result = execSync('ip addr show wlan0 2>/dev/null | grep "inet " | head -1 | awk \'{print $2}\' | cut -d/ -f1', { encoding: 'utf8' });
-    const ip = result.trim();
-    if (ip && ip !== '127.0.0.1' && ip.match(/^\d+\.\d+\.\d+\.\d+$/)) {
-      return ip;
-    }
-
-    // Fallback: Try ap0 (Android hotspot)
+    // Android/Termux: Use ifconfig with regex parsing (no awk needed)
+    // Try ap0 first (Android hotspot/WiFi)
     try {
-      const apResult = execSync('ip addr show ap0 2>/dev/null | grep "inet " | head -1 | awk \'{print $2}\' | cut -d/ -f1', { encoding: 'utf8' });
-      const apIp = apResult.trim();
-      if (apIp && apIp !== '127.0.0.1' && apIp.match(/^\d+\.\d+\.\d+\.\d+$/)) {
-        return apIp;
+      const result = execSync('ifconfig 2>/dev/null | grep -A 1 "ap0" | grep "inet "', { encoding: 'utf8' });
+      const match = result.match(/inet\s+(\d+\.\d+\.\d+\.\d+)/);
+      if (match && match[1] && match[1] !== '127.0.0.1') {
+        console.log('✅ Detected IP from ap0:', match[1]);
+        return match[1];
       }
     } catch (e) {
       // ap0 not available, continue
     }
 
-    // Last fallback: Try general interface detection
+    // Fallback: Try ccmni0 (mobile data)
     try {
-      const ifconfigResult = execSync('ifconfig 2>/dev/null | grep "inet " | grep -v "127.0.0.1" | head -1 | awk \'{print $2}\'', { encoding: 'utf8' });
-      const fallbackIp = ifconfigResult.trim();
-      if (fallbackIp && fallbackIp.match(/^\d+\.\d+\.\d+\.\d+$/)) {
-        return fallbackIp;
+      const ccmniResult = execSync('ifconfig 2>/dev/null | grep -A 1 "ccmni0" | grep "inet "', { encoding: 'utf8' });
+      const ccmniMatch = ccmniResult.match(/inet\s+(\d+\.\d+\.\d+\.\d+)/);
+      if (ccmniMatch && ccmniMatch[1] && ccmniMatch[1] !== '127.0.0.1') {
+        console.log('✅ Detected IP from ccmni0:', ccmniMatch[1]);
+        return ccmniMatch[1];
       }
     } catch (e) {
-      // ifconfig not available or failed
+      // ccmni0 not available, continue
     }
 
+    // Last fallback: Try any interface with ifconfig
+    try {
+      const allResult = execSync('ifconfig 2>/dev/null | grep "inet " | grep -v "127.0.0.1" | head -1', { encoding: 'utf8' });
+      const allMatch = allResult.match(/inet\s+(\d+\.\d+\.\d+\.\d+)/);
+      if (allMatch && allMatch[1]) {
+        console.log('✅ Detected IP from fallback:', allMatch[1]);
+        return allMatch[1];
+      }
+    } catch (e) {
+      // All methods failed
+    }
+
+    console.warn('⚠️  Could not detect IP address from any interface');
     return null;
   } catch (error) {
-    console.error('Failed to get IP:', error.message);
+    console.error('❌ Failed to get IP:', error.message);
     return null;
   }
 }
