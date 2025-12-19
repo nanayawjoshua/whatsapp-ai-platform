@@ -17,6 +17,13 @@ import { execSync } from 'child_process';
 // Load environment variables
 dotenv.config();
 
+// Debug: Check if env vars loaded
+console.log('🔍 Environment check:');
+console.log('CLOUDFLARE_API_TOKEN:', process.env.CLOUDFLARE_API_TOKEN ? 'PRESENT' : 'MISSING');
+console.log('CLOUDFLARE_ACCOUNT_ID:', process.env.CLOUDFLARE_ACCOUNT_ID ? 'PRESENT' : 'MISSING');
+console.log('Working directory:', process.cwd());
+console.log('.env file exists:', fs.existsSync('.env'));
+
 // Configuration
 const CONFIG = {
   cloudflareApiToken: process.env.CLOUDFLARE_API_TOKEN,
