@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     });
 
     // BUZZ: Call phone bridge to generate QR
-    const phoneResponse = await fetch(`${phoneBridgeUrl}/vendor/generate-qr`, {
+    const phoneResponse = await fetch(`${phoneBridgeUrl}/api/generate-qr`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
