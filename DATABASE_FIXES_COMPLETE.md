@@ -168,7 +168,7 @@ SELECT
   p.low_stock_threshold,
   v.phone as vendor_phone
 FROM products p
-JOIN vendors v ON p.vendor_id = v.id
+JOIN vendors v ON p.vendor_id = v.id  -- ✅ FIXED: was v.vendor_id
 WHERE p.is_active = true
   AND p.quantity <= p.low_stock_threshold
 ORDER BY p.quantity ASC;
