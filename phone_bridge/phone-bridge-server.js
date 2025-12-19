@@ -202,6 +202,7 @@ async function routeVendorMessage(vendorId, message) {
     const aiCheck = shouldUseAI(messageText);
 
     if (!aiCheck.useAI && aiCheck.reply) {
+      messageStats.instantReplies++;
       // Send instant reply without calling AI
       logger.info(`💬 Instant reply to ${senderPhone}: ${aiCheck.replyType}`);
       const session = vendorSessions.get(vendorId);
@@ -226,6 +227,7 @@ async function routeVendorMessage(vendorId, message) {
     }
 
     // Use AI for complex messages
+    messageStats.aiCalls++;
     logger.info(`🤖 AI processing for ${senderPhone}: ${aiCheck.reason || 'complex'}`);
     const classification = await classifyWithGrok(messageText);
 
@@ -377,7 +379,31 @@ app.post('/vendor/generate-qr', async (req, res) => {
 });
 
 /**
- * Send message from vendor's WhatsApp
+ * Message classification statistics
+ */
+app.get('/stats/messages', async (req, res) => {
+  const instantReplyRate = messageStats.total > 0
+    ? ((messageStats.instantReplies / messageStats.total) * 100).toFixed(1)
+    : '0.0';
+
+  const aiCallRate = messageStats.total > 0
+    ? ((messageStats.aiCalls / messageStats.total) * 100).toFixed(1)
+    : '0.0';
+
+  res.json({
+    messageStats,
+    rates: {
+      instantReplyRate: `${instantReplyRate}%`,
+      aiCallRate: `${aiCallRate}%`,
+      costSavings: `~${Math.round(parseFloat(instantReplyRate) * 0.7)}% reduction in API costs`
+    },
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
+});
+
+/**
+ * Classify message using Grok AI
  */
 app.post('/vendor/send-message', async (req, res) => {
   try {
